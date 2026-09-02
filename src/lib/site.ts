@@ -65,6 +65,13 @@ export const SITE = {
   },
 } as const;
 
+/**
+ * O site so aceita ser indexado quando alguem liga a variavel de propósito.
+ * Enquanto isso, `robots.txt` bloqueia tudo e cada pagina sai com `noindex`.
+ * Homologacao publica e indexavel canibaliza a busca do cliente.
+ */
+export const INDEXAVEL = process.env.NEXT_PUBLIC_INDEXAVEL === "1";
+
 export const NAV = [
   { href: "/planos", rotulo: "Planos" },
   { href: "/cremacao", rotulo: "Cremação" },

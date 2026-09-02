@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
-import { SITE } from "@/lib/site";
+import { SITE, INDEXAVEL } from "@/lib/site";
 import { Cabecalho } from "@/components/cabecalho";
 import { Rodape } from "@/components/rodape";
 import { BarraEmergencia } from "@/components/barra-emergencia";
@@ -63,7 +63,11 @@ export const metadata: Metadata = {
     description:
       "8 unidades na região de Campinas, atendimento de óbito 24 horas.",
   },
-  robots: { index: true, follow: true },
+  /* Enquanto NEXT_PUBLIC_INDEXAVEL nao for "1", toda pagina sai com noindex.
+     robots.txt sozinho nao basta: buscador que ja conhece a URL ignora. */
+  robots: INDEXAVEL
+    ? { index: true, follow: true }
+    : { index: false, follow: false, nocache: true },
   category: "Serviços funerários",
   formatDetection: { telephone: true, address: true },
 };
