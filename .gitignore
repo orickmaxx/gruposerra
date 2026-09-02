@@ -1,0 +1,33 @@
+# dependências
+node_modules/
+.pnp
+.pnp.*
+
+# build
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ambiente. NUNCA versionar: o .env.example diz quais variáveis existem.
+.env
+.env.*
+!.env.example
+
+# leads gravados em disco pela ação do formulário. São dados pessoais de
+# gente de verdade: não entram no git de jeito nenhum.
+.leads/
+
+# evidência de revisão visual. São megabytes de PNG que não servem no repo.
+.impeccable/
+
+# sistema
+.DS_Store
+Thumbs.db
+*.pem
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vercel

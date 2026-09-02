@@ -1,0 +1,489 @@
+@import "tailwindcss";
+
+/* =========================================================================
+   GRUPO SERRA — sistema de design
+
+   Direcao (revisada em 03/09/2026 a pedido do dono): moderno e fluido, no
+   registro dos sites do Plano Florees que a casa ja fez. A versao anterior
+   usava serifa editorial e foi recusada por parecer "juridica e antiga".
+   Saiu a serifa, entraram gradiente, vidro, revelacao no scroll e raio grande.
+
+   As CORES continuam medidas pixel a pixel no logo e no favicon reais do
+   cliente (ver ../../../CLAUDE.md secao 4.1). Cor da marca nao e gosto.
+   ========================================================================= */
+
+@theme {
+  /* --- azul institucional: 71 a 75% do logo --- */
+  --color-serra-50: #eff7fc;
+  --color-serra-100: #d7ecf7;
+  --color-serra-200: #aed9ee;
+  --color-serra-300: #6fbbdf;
+  --color-serra-400: #2f95c8;
+  --color-serra-500: #0069a3; /* A cor da marca */
+  --color-serra-600: #005a8d;
+  --color-serra-700: #0a4668;
+  --color-serra-800: #093750;
+  --color-serra-900: #07283a;
+
+  /* --- ciano de apoio: da o brilho moderno sem inventar cor nova --- */
+  --color-onda-400: #22b8d4;
+  --color-onda-500: #0e9cb8;
+
+  /* --- cinza pedra: segunda cor da marca, o logotipo --- */
+  --color-pedra-100: #f3f2f0;
+  --color-pedra-200: #e3e1dd;
+  --color-pedra-300: #c9c6c0;
+  --color-pedra-400: #9d9a93;
+  --color-pedra-500: #74726c; /* marca */
+  --color-pedra-600: #5f5d58; /* secundario acessivel sobre branco, 6.6:1 */
+  --color-pedra-700: #474540;
+
+  /* --- cor por servico, herdada do site atual e preservada, so que viva ---
+     O tom da marca continua sendo o mesmo; o que subiu foi a saturacao dos
+     acentos, que antes eram terrosos e faziam a pagina parecer apagada. */
+  --color-bronze: #c79a3f; /* cremacao: preenchimento e borda */
+  --color-bronze-forte: #8a6d3b; /* cremacao: superficie com texto branco */
+  --color-verde: #5ca038; /* homenagens */
+  --color-verde-forte: #467d2a;
+  --color-ouro: #e8a012; /* estrelas do Google, escurecido para 3:1 */
+
+  /* --- WhatsApp: as cores da propria marca, para o reconhecimento --- */
+  --color-zap: #25d366;
+  --color-zap-forte: #128c7e;
+  --color-zap-fundo: #075e54;
+
+  /* --- Clube de Beneficios: laranja, o unico calor da pagina, e de proposito.
+     Beneficio e a unica secao alegre de um site de funeraria. --- */
+  --color-clube: #f2711c;
+  --color-clube-forte: #c2410c;
+  --color-clube-veu: #fff4ec;
+
+  /* --- tinta e papel --- */
+  --color-tinta: #0f1c26;
+  --color-corpo: #3f4950;
+  --color-papel: #f5f8fb;
+  --color-linha: #e6ecf1;
+
+  --font-display: var(--fonte-display), system-ui, sans-serif;
+  --font-sans: var(--fonte-texto), system-ui, -apple-system, sans-serif;
+
+  /* Corpo grande por padrao: o publico e idoso e le no celular, muitas vezes
+     a noite. Requisito de produto, nao conforto. */
+  --text-nota: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-lead: clamp(1.125rem, 1rem + 0.55vw, 1.375rem);
+  --text-t3: clamp(1.3125rem, 1.16rem + 0.6vw, 1.625rem);
+  --text-t2: clamp(1.875rem, 1.45rem + 1.9vw, 3rem);
+  --text-t1: clamp(2.125rem, 1.6rem + 2.4vw, 3.5rem);
+  --text-hero: clamp(2.625rem, 1.75rem + 3.9vw, 4.75rem);
+
+  /* Raio grande: e metade do que separa "moderno" de "institucional" */
+  --radius-serra: 14px;
+  --radius-serra-lg: 22px;
+  --radius-serra-xl: 30px;
+
+  /* Sombra tingida de azul, nunca cinza morto */
+  --shadow-baixa: 0 1px 2px rgba(9, 55, 80, 0.05), 0 4px 14px rgba(9, 55, 80, 0.06);
+  --shadow-media: 0 2px 8px rgba(9, 55, 80, 0.06), 0 18px 44px rgba(9, 55, 80, 0.1);
+  --shadow-alta: 0 4px 14px rgba(9, 55, 80, 0.08), 0 34px 74px rgba(9, 55, 80, 0.16);
+  --shadow-azul: 0 10px 30px -8px rgba(0, 105, 163, 0.5);
+
+  --ease-serra: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --ease-suave: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================================================================
+   Base
+
+   TUDO que estiliza ELEMENTO fica dentro de @layer base. CSS fora de layer
+   vence TODAS as utilities do Tailwind v4: `p { margin: 0 }` solto mata todo
+   mt-* em paragrafo, e `a { color: inherit }` solto mata todo text-white em
+   link. Foi isso que quebrou a primeira captura deste site, com botao azul de
+   texto escuro ilegivel. Nao tirar do layer.
+   ========================================================================= */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+    color-scheme: light;
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--color-corpo);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: var(--color-tinta);
+    text-wrap: balance;
+  }
+
+  h3,
+  h4 {
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* --- superficies do navegador: as partes que ninguem desenha e que
+         entregam um site construido em vez de montado --- */
+
+  ::selection {
+    background: var(--color-serra-500);
+    color: #fff;
+  }
+
+  :root {
+    caret-color: var(--color-serra-500);
+    accent-color: var(--color-serra-500);
+    scrollbar-color: var(--color-pedra-300) var(--color-papel);
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-papel);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-pedra-300);
+    border: 3px solid var(--color-papel);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-pedra-400);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-serra-500);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  .faixa-escura :focus-visible {
+    outline-color: #ffffff;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   Materiais: gradiente, vidro e brilho
+   ========================================================================= */
+
+/* Malha de luz do topo. Dois focos radiais, nenhum deles um circulo visivel. */
+.malha {
+  background-image:
+    radial-gradient(58rem 34rem at 12% -8%, rgba(34, 184, 212, 0.16), transparent 62%),
+    radial-gradient(46rem 30rem at 92% 4%, rgba(0, 105, 163, 0.18), transparent 60%),
+    linear-gradient(180deg, #f2f9fd 0%, #ffffff 68%);
+}
+
+.malha-escura {
+  background-image:
+    radial-gradient(50rem 30rem at 88% 0%, rgba(34, 184, 212, 0.22), transparent 58%),
+    radial-gradient(46rem 32rem at 6% 100%, rgba(0, 105, 163, 0.35), transparent 60%),
+    linear-gradient(160deg, #0a4668 0%, #093750 100%);
+}
+
+/* 0.78 de alfa deixava o rodape escuro atravessar o cabecalho e o texto do
+   rodape aparecia cortado por dentro dele. Vidro so vale enquanto nao custa
+   legibilidade. */
+.vidro {
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+}
+
+.vidro-escuro {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+/* Texto em gradiente e proibido no manual de craft. Aqui o gradiente vive no
+   FUNDO do botao, que e outra coisa: e material, nao enfase tipografica. */
+.botao-cheio {
+  background-image: linear-gradient(135deg, var(--color-serra-500), var(--color-serra-700));
+  box-shadow: var(--shadow-azul);
+}
+
+/* Cartao que responde ao ponteiro sem virar brinquedo */
+.cartao {
+  transition:
+    transform 420ms var(--ease-serra),
+    box-shadow 420ms var(--ease-serra),
+    border-color 420ms var(--ease-serra);
+  will-change: transform;
+}
+.cartao:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-alta);
+}
+
+/* Materiais vivos por servico. Cada um tem gradiente proprio: e o que faz o
+   olho separar WhatsApp de clube de beneficios de cremacao sem ler o rotulo. */
+.mat-zap {
+  background-image: linear-gradient(135deg, var(--color-zap), var(--color-zap-forte));
+  box-shadow: 0 10px 30px -8px rgba(18, 140, 126, 0.55);
+}
+.mat-clube {
+  background-image: linear-gradient(135deg, #f9a03f, var(--color-clube));
+  box-shadow: 0 10px 30px -8px rgba(242, 113, 28, 0.5);
+}
+.mat-clube-fundo {
+  background-image:
+    radial-gradient(42rem 26rem at 88% 0%, rgba(249, 160, 63, 0.28), transparent 60%),
+    radial-gradient(38rem 24rem at 4% 100%, rgba(242, 113, 28, 0.2), transparent 62%),
+    linear-gradient(150deg, #fff8f2 0%, #fff4ec 100%);
+}
+.mat-cremacao {
+  background-image: linear-gradient(135deg, var(--color-bronze), var(--color-bronze-forte));
+}
+.mat-homenagens {
+  background-image: linear-gradient(135deg, var(--color-verde), var(--color-verde-forte));
+}
+
+/* Pulso do botao de WhatsApp. Um anel que sai e some, nada de piscar. */
+@keyframes serra-pulso {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.pulso::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-zap);
+  animation: serra-pulso 2.6s var(--ease-suave) infinite;
+  z-index: -1;
+}
+
+/* Fundo escuro dramatico das secoes de destaque.
+   Aprendido do Florees: eles nao alternam so branco e cinza, eles jogam uma
+   secao inteira num radial profundo e o conteudo branco salta. E o que faz a
+   pagina ter ritmo em vez de ser uma esteira de faixas claras. */
+.palco {
+  background-image:
+    radial-gradient(circle at 12% 16%, rgba(34, 184, 212, 0.22), transparent 44%),
+    radial-gradient(circle at 88% 84%, rgba(0, 105, 163, 0.3), transparent 46%),
+    linear-gradient(135deg, #0a4668 0%, #08334c 52%, #061f2e 100%);
+}
+
+/* Aspa tipografica grande atras do depoimento, como no cartao do Florees */
+.aspa::before {
+  content: "\201C";
+  position: absolute;
+  top: -2.6rem;
+  left: -0.4rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 7rem;
+  line-height: 1;
+  color: rgba(0, 105, 163, 0.14);
+  pointer-events: none;
+}
+
+/* Mancha organica no canto do cartao. O raio quebrado e o que impede de virar
+   um circulo obvio de CSS. */
+.mancha::after {
+  content: "";
+  position: absolute;
+  left: -2.8rem;
+  bottom: -2.8rem;
+  width: 9.5rem;
+  height: 9.5rem;
+  border-radius: 46% 54% 50% 50% / 50%;
+  background-image: linear-gradient(135deg, var(--color-serra-200), var(--color-serra-400));
+  opacity: 0.16;
+  pointer-events: none;
+  transition: transform 600ms var(--ease-serra), opacity 600ms var(--ease-serra);
+}
+.mancha:hover::after {
+  transform: scale(1.12) rotate(8deg);
+  opacity: 0.24;
+}
+
+/* Setas do carrossel, no mesmo desenho do carrossel do Florees */
+.seta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-linha);
+  background: #fff;
+  color: var(--color-serra-600);
+  box-shadow: var(--shadow-baixa);
+  transition:
+    transform 260ms var(--ease-serra),
+    box-shadow 260ms var(--ease-serra),
+    border-color 260ms var(--ease-serra);
+}
+.seta:hover:not(:disabled) {
+  transform: scale(1.08);
+  border-color: var(--color-serra-300);
+  box-shadow: var(--shadow-media);
+}
+.seta:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sublinhado que respeita a letra em vez de cortar a descendente */
+.link-texto {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
+  transition: text-decoration-color 180ms var(--ease-serra);
+}
+.link-texto:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Telefone, preco e data nao dancam entre estados */
+.numerais {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* =========================================================================
+   Movimento
+
+   Tres gestos, um proposito cada, no mesmo easing:
+   1. entrada do primeiro viewport, escalonada;
+   2. revelacao das secoes conforme entram na tela;
+   3. esteira continua dos depoimentos.
+   Conteudo VISIVEL por padrao: a animacao enriquece, nunca esconde. Se o JS
+   nao rodar, a pagina inteira continua legivel.
+   ========================================================================= */
+
+@keyframes serra-sobe {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.revela > * {
+  animation: serra-sobe 760ms var(--ease-serra) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+/* Revelacao no scroll. O estado inicial so e aplicado quando o JS confirma que
+   vai observar (html.js-revela), para nao esconder conteudo em pagina sem JS. */
+.js-revela [data-revela] {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 800ms var(--ease-serra),
+    transform 800ms var(--ease-serra);
+  transition-delay: var(--atraso, 0ms);
+}
+.js-revela [data-revela][data-visivel="1"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Trilho do carrossel: rola de verdade, encaixa no cartao e nao mostra barra.
+   A barra fica escondida, nunca a rolagem: arrastar no dedo continua valendo,
+   e por isso que ha seta e marcador visiveis para quem usa mouse ou teclado. */
+.trilho {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+}
+.trilho::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .revela > * {
+    animation: none;
+  }
+  /* O carrossel ja rola na mao por padrao; sem movimento, so nao anda sozinho
+     (isso e decidido no componente) e a rolagem deixa de ser suave. */
+  .trilho {
+    scroll-behavior: auto;
+  }
+  .pulso::before {
+    animation: none;
+  }
+  .js-revela [data-revela] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .cartao:hover {
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
