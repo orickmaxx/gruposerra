@@ -11,7 +11,6 @@ OctoberCMS num nginx de 2019.
 ## Rodar
 
 ```bash
-cd web
 npm install
 npm run dev
 ```
@@ -22,23 +21,23 @@ Abre em `http://localhost:3000`.
 
 ```
 .
-├── web/                 o site (Next.js 16 + React 19 + TypeScript + Tailwind v4)
-│   ├── src/app/         rotas: home, planos, blog, unidades, legais, sitemap, OG
-│   ├── src/components/  componentes, e src/components/home/ as seções da home
-│   ├── src/data/        dados reais: unidades, planos, depoimentos, benefícios, artigos
-│   ├── src/lib/         constantes da empresa e configuração de medição
-│   └── scripts/         verificação por Playwright (captura, movimento, interação)
+├── src/app/             rotas: home, planos, blog, unidades, legais, sitemap, OG
+├── src/components/      componentes, e src/components/home/ as seções da home
+├── src/data/            dados reais: unidades, planos, depoimentos, benefícios, artigos
+├── src/lib/             constantes da empresa e configuração de medição
+├── scripts/             verificação por Playwright (captura, movimento, interação)
 ├── marca/               logo, favicon e brasão originais do cliente
 ├── CLAUDE.md            dossiê da empresa: dados legais, paleta medida, auditoria do site antigo
 ├── PRODUCT.md           verdade de produto: usuários, princípios, régua de acabamento
 └── ANALISE-FLOREES.md   comparação contra os sites de referência, com o que falta
 ```
 
-**Na Vercel, o Root Directory precisa ser `web`.**
+O app fica na RAIZ do repositório, de propósito: assim a Vercel detecta o Next.js
+sozinha, sem ninguém precisar configurar Root Directory no painel.
 
 ## Variáveis de ambiente
 
-Copie `web/.env.example` para `web/.env.local`. Nenhuma é obrigatória para
+Copie `.env.example` para `.env.local`. Nenhuma é obrigatória para
 rodar, mas duas importam em produção:
 
 | Variável | Para quê |
@@ -57,7 +56,6 @@ Os scripts provam o comportamento em Chrome de verdade, em vez de confiar em
 inspeção visual. Com o site servindo em `BASE`:
 
 ```bash
-cd web
 npm run build && npx next start -p 4360
 
 BASE=http://127.0.0.1:4360 node scripts/verificar-novos.mjs      # cookies, formulário, 404

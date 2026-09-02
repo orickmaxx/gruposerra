@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "gruposerra",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,5 +23,6 @@
     "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "Site do Grupo Serra Funerarias, Campinas"
 }
