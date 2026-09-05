@@ -220,7 +220,7 @@ export function Comparador() {
 
 function Secao({ children }: { children: React.ReactNode }) {
   return (
-    <section id="comparador" className="bg-papel py-20 md:py-28">
+    <section id="comparador" className="bg-papel py-14 md:py-20">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
         {children}
       </div>

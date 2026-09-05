@@ -55,27 +55,34 @@ export function UnidadePerto() {
   const escolhida = ordem[0];
   const outras = ordem.slice(1);
 
+  /* O plantao tem dois numeros e a matriz usa um deles. Sem isto, quando a
+     unidade escolhida era a matriz, o cartao mostrava (19) 3775-9752 duas
+     vezes, uma embaixo da outra. */
+  const plantao =
+    escolhida.telefone === SITE.emergencia.rotulo
+      ? SITE.emergenciaAlt
+      : SITE.emergencia;
+
   return (
-    <section className="bg-papel py-20 md:py-28" id="unidades">
+    <section className="bg-white py-12 md:py-20" id="unidades">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-[32ch]">
-            <h2 className="text-t2">
-              {estado === "ok" ? "A unidade mais perto de você" : "Qual unidade chamar"}
-            </h2>
-            <p className="mt-5 max-w-[56ch] text-lead text-pedra-600">
-              {estado === "ok"
-                ? "Ordenamos as 8 unidades pela distância até onde você está agora. Nada disso sai do seu navegador."
-                : "São 8 unidades na região de Campinas, cada uma com telefone e equipe na cidade. Se preferir, deixe o site achar a mais perto."}
-            </p>
-          </div>
+        {/* Cabeca centralizada: e uma secao de oferta, nao de narrativa. */}
+        <div className="mx-auto max-w-[46rem] text-center">
+          <h2 className="text-t2">
+            {estado === "ok" ? "A unidade mais perto de você" : "Qual unidade chamar"}
+          </h2>
+          <p className="mx-auto mt-5 max-w-[56ch] text-lead text-pedra-600">
+            {estado === "ok"
+              ? "Ordenamos as 8 unidades pela distância até onde você está agora. Nada disso sai do seu navegador."
+              : "São 8 unidades na região de Campinas, cada uma com telefone e equipe na cidade. Se preferir, deixe o site achar a mais perto."}
+          </p>
 
           {estado !== "ok" && (
             <button
               type="button"
               onClick={localizar}
               disabled={estado === "buscando" || estado === "indisponivel"}
-              className="inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-serra border border-serra-300 bg-white px-5 font-semibold text-serra-600 shadow-baixa transition-all duration-300 hover:-translate-y-0.5 hover:border-serra-400 hover:bg-serra-50 disabled:translate-y-0 disabled:opacity-60"
+              className="mt-8 inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-serra border border-serra-300 bg-white px-6 font-semibold text-serra-600 shadow-baixa transition-all duration-300 hover:-translate-y-0.5 hover:border-serra-400 hover:bg-serra-50 disabled:translate-y-0 disabled:opacity-60"
             >
               <IconeLocal className="size-5 shrink-0" />
               {estado === "buscando" ? "Localizando…" : "Usar minha localização"}
@@ -84,7 +91,7 @@ export function UnidadePerto() {
         </div>
 
         {estado === "negado" && (
-          <p className="mt-5 max-w-[62ch] rounded-serra border border-linha bg-white px-5 py-4 text-[0.9375rem] text-pedra-700">
+          <p className="mx-auto mt-6 max-w-[62ch] rounded-serra border border-linha bg-white px-5 py-4 text-center text-[0.9375rem] text-pedra-700">
             Sem problema, a localização continua desligada. Abaixo está a
             matriz, e a lista completa das 8 unidades está logo em seguida.
           </p>
@@ -153,11 +160,11 @@ export function UnidadePerto() {
                 <span className="numerais">{escolhida.telefone}</span>
               </a>
               <a
-                href={`tel:${SITE.emergencia.tel}`}
+                href={`tel:${plantao.tel}`}
                 className="flex min-h-[3.5rem] items-center justify-center gap-2.5 rounded-serra border border-serra-200 bg-white px-5 font-semibold text-serra-600 transition-all duration-300 hover:-translate-y-0.5 hover:border-serra-400 hover:bg-serra-50"
               >
                 <IconeTelefone className="size-5 shrink-0" />
-                <span className="numerais">{SITE.emergencia.rotulo}</span>
+                <span className="numerais">{plantao.rotulo}</span>
               </a>
               <p className="text-center text-[0.8125rem] leading-relaxed text-pedra-600">
                 O segundo número atende óbito em qualquer cidade, 24 horas.

@@ -1,5 +1,5 @@
 import { Topo } from "@/components/home/topo";
-import { BarraConfianca, ComoFunciona, Garantias } from "@/components/home/confianca";
+import { BarraConfianca, ComoFunciona } from "@/components/home/confianca";
 import { Depoimentos } from "@/components/home/depoimentos";
 import { Planos, Inclusos } from "@/components/home/planos";
 import { Comparador } from "@/components/home/comparador";
@@ -8,7 +8,6 @@ import { Clube } from "@/components/home/clube";
 import { UnidadePerto } from "@/components/home/unidade-perto";
 import { Sobre } from "@/components/home/sobre";
 import { Historia } from "@/components/home/prova";
-import { Instagram } from "@/components/home/instagram";
 import { Duvidas, Fechamento } from "@/components/home/duvidas";
 import { Formulario } from "@/components/home/formulario";
 import { BarraFixaCelular } from "@/components/barra-emergencia";
@@ -53,12 +52,10 @@ export default function Home() {
       <Comparador />
       <Servicos />
       <Inclusos />
-      <Garantias />
       <Clube />
       <UnidadePerto />
       <Sobre />
       <Historia />
-      <Instagram />
       <Duvidas />
       <Formulario />
       <Fechamento />

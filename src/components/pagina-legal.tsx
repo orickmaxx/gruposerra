@@ -22,7 +22,7 @@ export function PaginaLegal({
   return (
     <>
       <div className="malha border-b border-linha">
-        <div className="mx-auto max-w-[52rem] px-5 py-16 md:py-20">
+        <div className="mx-auto max-w-[52rem] px-5 py-14 md:py-18">
           <h1 className="text-t1">{titulo}</h1>
           <p className="mt-5 max-w-[58ch] text-lead text-pedra-600">{resumo}</p>
           <p className="mt-6 text-[0.875rem] text-pedra-600">

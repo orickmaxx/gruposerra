@@ -38,31 +38,71 @@
   --color-pedra-600: #5f5d58; /* secundario acessivel sobre branco, 6.6:1 */
   --color-pedra-700: #474540;
 
-  /* --- cor por servico, herdada do site atual e preservada, so que viva ---
-     O tom da marca continua sendo o mesmo; o que subiu foi a saturacao dos
-     acentos, que antes eram terrosos e faziam a pagina parecer apagada. */
-  --color-bronze: #c79a3f; /* cremacao: preenchimento e borda */
-  --color-bronze-forte: #8a6d3b; /* cremacao: superficie com texto branco */
-  --color-verde: #5ca038; /* homenagens */
+  /* =======================================================================
+     COR POR SERVICO — agora com as cores REAIS das outras marcas do grupo
+
+     Ate esta versao a cremacao usava um dourado que eu tinha escolhido no
+     olho. O dono trouxe a paleta de verdade do Complexo Memorial Hortolandia
+     (#6D3316 terracota, branco e #C9B167 dourado) e a do Serra Pet (#E75C0D).
+     Cor de marca nao se inventa: entrou a paleta real e o site inteiro ganhou
+     tres familias cromaticas que existem fora dele.
+
+     O mapa completo:
+       azul #0069A3 ....... institucional, planos, obituario
+       terracota #6D3316 .. cremacao e Memorial Hortolandia
+       dourado #C9B167 .... Clube de Beneficios, e o acento do Memorial
+       laranja #E75C0D .... Serra Pet
+       verde #5CA038 ...... homenagens
+     ======================================================================= */
+
+  /* --- Memorial Hortolandia: a marca do crematorio do grupo --- */
+  --color-memorial: #6d3316; /* terracota, a base da marca */
+  --color-memorial-fundo: #8a4a25; /* o topo do gradiente */
+  --color-memorial-veu: #f9f1ea; /* papel quente da secao de cremacao */
+
+  /* Compatibilidade: `bronze` continua existindo e agora aponta para a cor de
+     verdade. Todo `text-bronze-forte` do site virou terracota sozinho. */
+  --color-bronze: #c9b167; /* dourado do Memorial: superficie e fio */
+  --color-bronze-forte: #6d3316; /* terracota: texto e botao */
+
+  /* --- dourado, tirado do proprio Memorial --- */
+  --color-dourado: #c9b167;
+  --color-dourado-claro: #e3d3a0;
+  --color-dourado-forte: #8a6a1f; /* escurecido para texto, 4.9:1 no branco */
+
+  /* --- Serra Pet --- */
+  --color-pet: #e75c0d;
+  --color-pet-claro: #f79445;
+  --color-pet-forte: #b34206; /* texto sobre branco, 4.8:1 */
+  --color-pet-veu: #fff3ea;
+
+  /* --- homenagens --- */
+  --color-verde: #5ca038;
   --color-verde-forte: #467d2a;
-  --color-ouro: #e8a012; /* estrelas do Google, escurecido para 3:1 */
+  --color-ouro: #e8a012; /* estrelas do Google */
 
   /* --- WhatsApp: as cores da propria marca, para o reconhecimento --- */
   --color-zap: #25d366;
   --color-zap-forte: #128c7e;
   --color-zap-fundo: #075e54;
 
-  /* --- Clube de Beneficios: laranja, o unico calor da pagina, e de proposito.
-     Beneficio e a unica secao alegre de um site de funeraria. --- */
-  --color-clube: #f2711c;
-  --color-clube-forte: #c2410c;
-  --color-clube-veu: #fff4ec;
+  /* --- Clube de Beneficios: o dourado do grupo. Beneficio e a unica coisa
+     alegre que uma funeraria tem para oferecer, e dourado diz vantagem sem
+     gritar como o laranja gritava. --- */
+  --color-clube: #c9b167;
+  --color-clube-forte: #8a6a1f;
+  --color-clube-veu: #fdf8ec;
 
-  /* --- tinta e papel --- */
+  /* --- tinta e papel ---
+     `papel` era #f5f8fb, 2% de diferenca para o branco. Na captura da pagina
+     inteira as faixas "papel" e "branco" eram indistinguiveis e seis secoes
+     seguidas liam como um borrao unico. Agora o azul-gelo tem presenca de
+     verdade, e entrou uma areia quente para as zonas de marca terrosa. */
   --color-tinta: #0f1c26;
   --color-corpo: #3f4950;
-  --color-papel: #f5f8fb;
-  --color-linha: #e6ecf1;
+  --color-papel: #eaf1f7; /* azul-gelo, a superficie institucional */
+  --color-areia: #f9f4ec; /* areia quente, para vizinhar com terracota e ouro */
+  --color-linha: #dde5ec;
 
   --font-display: var(--fonte-display), system-ui, sans-serif;
   --font-sans: var(--fonte-texto), system-ui, -apple-system, sans-serif;
@@ -215,18 +255,24 @@
    ========================================================================= */
 
 /* Malha de luz do topo. Dois focos radiais, nenhum deles um circulo visivel. */
+/* Fundo do primeiro viewport.
+   ⛔ NAO usar tres manchas radiais coloridas. Aquilo e a assinatura visual de
+   fundo gerado, o dono reprovou na hora e estava certo. Aqui e uma lavagem
+   vertical unica, num tom so, e a profundidade vem do SIMBOLO da marca em
+   marca d'agua no componente, nao de bolha de cor. */
 .malha {
-  background-image:
-    radial-gradient(58rem 34rem at 12% -8%, rgba(34, 184, 212, 0.16), transparent 62%),
-    radial-gradient(46rem 30rem at 92% 4%, rgba(0, 105, 163, 0.18), transparent 60%),
-    linear-gradient(180deg, #f2f9fd 0%, #ffffff 68%);
+  background-color: #ffffff;
+  background-image: linear-gradient(180deg, #eef5fa 0%, #f7fbfd 46%, #ffffff 100%);
+}
+
+/* Faixa azul cheia da marca. E o degrau que faltava entre o claro e o quase
+   preto: da para pintar uma secao inteira de azul sem que ela vire noite. */
+.mat-azul {
+  background-image: linear-gradient(165deg, #0a76b3 0%, var(--color-serra-500) 48%, var(--color-serra-700) 100%);
 }
 
 .malha-escura {
-  background-image:
-    radial-gradient(50rem 30rem at 88% 0%, rgba(34, 184, 212, 0.22), transparent 58%),
-    radial-gradient(46rem 32rem at 6% 100%, rgba(0, 105, 163, 0.35), transparent 60%),
-    linear-gradient(160deg, #0a4668 0%, #093750 100%);
+  background-image: linear-gradient(165deg, #0b4d72 0%, #093750 55%, #062533 100%);
 }
 
 /* 0.78 de alfa deixava o rodape escuro atravessar o cabecalho e o texto do
@@ -264,27 +310,186 @@
   box-shadow: var(--shadow-alta);
 }
 
+/* =========================================================================
+   Cartao de depoimento
+
+   Tres gestos, e nenhum deles decorativo:
+   1. entrada escalonada por cartao, 3 a 3, que e o tamanho da pagina do
+      carrossel: o olho percebe que chegaram TRES, nao nove;
+   2. o cartao sobe e ganha profundidade no ponteiro;
+   3. um fio na cor da marca corre no topo, da esquerda para a direita, e diz
+      qual cartao esta ativo sem piscar nada.
+   ========================================================================= */
+
+.depo-entra {
+  animation: serra-sobe 700ms var(--ease-serra) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+.depo-cartao {
+  transition:
+    transform 480ms var(--ease-serra),
+    box-shadow 480ms var(--ease-serra);
+  will-change: transform;
+}
+.depo-cartao:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 6px 18px rgba(9, 55, 80, 0.1),
+    0 44px 80px -28px rgba(9, 55, 80, 0.32);
+}
+
+.depo-fio {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background-image: linear-gradient(90deg, var(--color-serra-500), var(--color-onda-400));
+  transition: transform 620ms var(--ease-serra);
+}
+.depo-cartao:hover .depo-fio,
+.depo-cartao:focus-visible .depo-fio {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .depo-entra {
+    animation: none;
+  }
+  .depo-cartao:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================================
+   Cascata
+
+   Entrada em sequência dentro de uma seção já revelada. Serve para lista longa
+   (os 20 itens inclusos): o olho percebe a lista sendo CONTADA em vez de
+   aparecer inteira de uma vez, que é o que a seção quer dizer.
+
+   O atraso é curto de propósito, 35ms: com 20 itens, qualquer coisa acima
+   disso vira espera. O estado escondido só existe dentro de `.js-revela`.
+   ========================================================================= */
+
+.js-revela [data-revela] .item-cascata {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+.js-revela [data-revela][data-visivel="1"] .item-cascata {
+  animation: serra-sobe 620ms var(--ease-serra) both;
+  animation-delay: calc(var(--i, 0) * 35ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-revela [data-revela] .item-cascata,
+  .js-revela [data-revela][data-visivel="1"] .item-cascata {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* =========================================================================
+   Esteira de marcas parceiras
+
+   A lista duplicada anda 50% e reinicia, entao a emenda e invisivel. A mascara
+   nas bordas evita o corte seco, que e o detalhe que separa esteira feita de
+   esteira colada. Para no ponteiro, para quem quiser ler um logotipo, e nao
+   anda sozinha em prefers-reduced-motion.
+   ========================================================================= */
+
+.esteira {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.esteira-fita {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: esteira-anda 38s linear infinite;
+}
+
+.esteira:hover .esteira-fita {
+  animation-play-state: paused;
+}
+
+@keyframes esteira-anda {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esteira {
+    overflow-x: auto;
+  }
+  .esteira-fita {
+    animation: none;
+  }
+}
+
 /* Materiais vivos por servico. Cada um tem gradiente proprio: e o que faz o
    olho separar WhatsApp de clube de beneficios de cremacao sem ler o rotulo. */
 .mat-zap {
   background-image: linear-gradient(135deg, var(--color-zap), var(--color-zap-forte));
   box-shadow: 0 10px 30px -8px rgba(18, 140, 126, 0.55);
 }
+/* Clube de Beneficios: o dourado do Memorial. */
+/* ⚠ CONTRASTE: #C9B167 com texto branco da 1.9:1 e o botao principal do
+   clube ficava ilegivel. O dourado claro serve para superficie decorativa; o
+   que leva texto branco e o dourado ESCURO, que da 4.9:1. */
 .mat-clube {
-  background-image: linear-gradient(135deg, #f9a03f, var(--color-clube));
-  box-shadow: 0 10px 30px -8px rgba(242, 113, 28, 0.5);
+  background-image: linear-gradient(135deg, #96741f, #6f5416);
+  box-shadow: 0 10px 30px -8px rgba(111, 84, 22, 0.45);
 }
+.mat-clube-veu-superficie {
+  background-image: linear-gradient(135deg, var(--color-dourado-claro), var(--color-dourado));
+}
+/* Clube: creme quente e continuo, sem mancha radial. */
 .mat-clube-fundo {
-  background-image:
-    radial-gradient(42rem 26rem at 88% 0%, rgba(249, 160, 63, 0.28), transparent 60%),
-    radial-gradient(38rem 24rem at 4% 100%, rgba(242, 113, 28, 0.2), transparent 62%),
-    linear-gradient(150deg, #fff8f2 0%, #fff4ec 100%);
+  background-color: #fbf5e8;
+  background-image: linear-gradient(180deg, #fdf9f0 0%, #f7edd6 100%);
 }
+
+/* Cremacao e Memorial Hortolandia: a terracota da marca do crematorio, com o
+   dourado dela por cima. Nao e cor escolhida no olho, e a paleta que o
+   Memorial ja usa na fachada, no copo de cafe e na assinatura. */
 .mat-cremacao {
-  background-image: linear-gradient(135deg, var(--color-bronze), var(--color-bronze-forte));
+  background-image: linear-gradient(135deg, var(--color-memorial-fundo), var(--color-memorial));
+  box-shadow: 0 10px 30px -8px rgba(109, 51, 22, 0.45);
 }
+.mat-memorial-fundo {
+  background-color: #fbf4ed;
+  background-image: linear-gradient(180deg, #fdf8f3 0%, #f6e9dd 100%);
+}
+/* Superficie escura do Memorial: e onde a assinatura branca e dourada da marca
+   do crematorio pode aparecer como ela foi desenhada. */
+.mat-memorial-escuro {
+  background-image: linear-gradient(158deg, #8a4520 0%, var(--color-memorial) 52%, #4d240f 100%);
+}
+
+/* Serra Pet: o laranja da propria marca pet do grupo. */
+.mat-pet {
+  background-image: linear-gradient(135deg, var(--color-pet-claro), var(--color-pet));
+  box-shadow: 0 10px 30px -8px rgba(231, 92, 13, 0.45);
+}
+.mat-pet-fundo {
+  background-color: #fff4ec;
+  background-image: linear-gradient(180deg, #fff8f3 0%, #ffe9d9 100%);
+}
+
 .mat-homenagens {
   background-image: linear-gradient(135deg, var(--color-verde), var(--color-verde-forte));
+  box-shadow: 0 10px 30px -8px rgba(70, 125, 42, 0.45);
 }
 
 /* Pulso do botao de WhatsApp. Um anel que sai e some, nada de piscar. */
@@ -317,11 +522,14 @@
    Aprendido do Florees: eles nao alternam so branco e cinza, eles jogam uma
    secao inteira num radial profundo e o conteudo branco salta. E o que faz a
    pagina ter ritmo em vez de ser uma esteira de faixas claras. */
+/* Palco escuro dos depoimentos.
+   Antes: dois circulos radiais de ciano e azul, mais o LOGOTIPO INTEIRO
+   girado 8 graus no canto, com o texto "Grupo Serra Funerarias" legivel e
+   torto. O dono derrubou os dois, com razao. Agora e um plano de cor profundo
+   e continuo, e a marca d'agua e SO O SIMBOLO, reto e centralizado, como faz
+   o site do Florees. */
 .palco {
-  background-image:
-    radial-gradient(circle at 12% 16%, rgba(34, 184, 212, 0.22), transparent 44%),
-    radial-gradient(circle at 88% 84%, rgba(0, 105, 163, 0.3), transparent 46%),
-    linear-gradient(135deg, #0a4668 0%, #08334c 52%, #061f2e 100%);
+  background-image: linear-gradient(165deg, #0c5279 0%, #093a55 52%, #061e2c 100%);
 }
 
 /* Aspa tipografica grande atras do depoimento, como no cartao do Florees */
@@ -444,6 +652,66 @@
   transform: none;
 }
 
+/* =========================================================================
+   Linha do tempo
+
+   O unico lugar da home onde a animacao carrega SIGNIFICADO: o que esta sendo
+   mostrado e literalmente uma passagem de tempo, entao o trilho se desenha de
+   cima para baixo e os marcos aparecem na ordem em que aconteceram.
+
+   Estado inicial so dentro de `.js-revela`: sem JS a linha do tempo aparece
+   inteira, pronta, como qualquer outro conteudo.
+   ========================================================================= */
+
+.js-revela .linha-tempo .lt-trilho {
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 1500ms var(--ease-serra) 180ms;
+}
+.js-revela .linha-tempo[data-visivel="1"] .lt-trilho {
+  transform: scaleY(1);
+}
+
+.js-revela .linha-tempo .lt-item {
+  opacity: 0;
+  transform: translate3d(-14px, 0, 0);
+}
+.js-revela .linha-tempo[data-visivel="1"] .lt-item {
+  animation: serra-entra-lado 620ms var(--ease-serra) both;
+  animation-delay: calc(300ms + var(--i, 0) * 110ms);
+}
+
+.js-revela .linha-tempo .lt-ponto {
+  transform: translate(-50%, 0.4rem) scale(0);
+}
+.js-revela .linha-tempo[data-visivel="1"] .lt-ponto {
+  animation: serra-ponto 420ms var(--ease-serra) both;
+  animation-delay: calc(360ms + var(--i, 0) * 110ms);
+}
+
+@keyframes serra-entra-lado {
+  from {
+    opacity: 0;
+    transform: translate3d(-14px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes serra-ponto {
+  from {
+    transform: translate(-50%, 0.4rem) scale(0);
+  }
+  60% {
+    transform: translate(-50%, 0.4rem) scale(1.35);
+  }
+  to {
+    transform: translate(-50%, 0.4rem) scale(1);
+  }
+}
+
 /* Trilho do carrossel: rola de verdade, encaixa no cartao e nao mostra barra.
    A barra fica escondida, nunca a rolagem: arrastar no dedo continua valendo,
    e por isso que ha seta e marcador visiveis para quem usa mouse ou teclado. */
@@ -476,6 +744,19 @@
     transform: none;
     transition: none;
   }
+  .js-revela .linha-tempo .lt-trilho {
+    transform: scaleY(1);
+    transition: none;
+  }
+  .js-revela .linha-tempo .lt-item {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .js-revela .linha-tempo .lt-ponto {
+    transform: translate(-50%, 0.4rem) scale(1);
+    animation: none;
+  }
   .cartao:hover {
     transform: none;
   }
@@ -485,5 +766,60 @@
     transition-duration: 1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+/* =========================================================================
+   FAQ
+
+   `<details>` nativo continua sendo a base: funciona sem JS, e navegavel por
+   teclado e o leitor de tela anuncia expandido/recolhido sozinho. O que falta
+   no nativo e a transicao, porque `display` nao anima.
+
+   A solucao aqui e a grade de uma linha: a resposta vive dentro de um filho
+   com `grid-template-rows: 0fr` que vai para `1fr` ao abrir. Anima altura de
+   verdade, sem medir nada em JavaScript e sem altura fixa chutada.
+
+   260ms, dentro da faixa de 150 a 300ms que a regra de micro-interacao pede.
+   ========================================================================= */
+
+details.faq > .faq-corpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 260ms var(--ease-serra);
+}
+details.faq[open] > .faq-corpo {
+  grid-template-rows: 1fr;
+}
+details.faq > .faq-corpo > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Barra de cor a esquerda do cartao aberto: da para ver qual esta aberto sem
+   ler nada, que e o que a regra de estado visivel pede. */
+details.faq {
+  position: relative;
+}
+details.faq::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background: var(--color-serra-500);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 300ms var(--ease-serra);
+}
+details.faq[open]::before {
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details.faq > .faq-corpo,
+  details.faq::before {
+    transition: none;
   }
 }

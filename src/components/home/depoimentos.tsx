@@ -61,26 +61,34 @@ export function Depoimentos() {
   };
 
   return (
-    <section id="depoimentos" className="palco relative overflow-hidden py-20 md:py-28">
-      {/* A marca como motivo de ambiente, bem apagada, igual ao Florees. */}
+    <section id="depoimentos" className="palco relative overflow-hidden py-12 md:py-20">
+      {/*
+        MARCA D'AGUA. Antes era o LOGOTIPO INTEIRO, girado 8 graus no canto
+        superior esquerdo, com a palavra "Grupo Serra Funerarias" legivel e
+        torta. Ficava exatamente com cara de placeholder de gerador. O site do
+        Florees usa so o simbolo, reto e centralizado, e e o certo: simbolo e
+        ambiente, logotipo com texto e ruido. Este arquivo foi recortado do
+        logotipo HD real do cliente.
+      */}
       <Image
-        src="/marca/logo-grupo-serra-branco.png"
+        src="/marca/simbolo-serra-branco.png"
         alt=""
-        width={347}
-        height={93}
+        width={379}
+        height={376}
         aria-hidden
-        className="pointer-events-none absolute -top-8 -left-16 w-[26rem] max-w-none rotate-[-8deg] opacity-[0.06]"
+        priority={false}
+        className="pointer-events-none absolute top-1/2 left-1/2 w-[34rem] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.045]"
       />
 
-      <div className="relative mx-auto max-w-[76rem] px-5" data-revela>
+      <div className="relative mx-auto max-w-[76rem] px-5 text-center" data-revela>
         <p className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-[0.875rem] font-semibold text-serra-100 backdrop-blur-sm">
           <IconeGoogle className="size-4 shrink-0" />
           Avaliações públicas no Google
         </p>
-        <h2 className="mt-5 max-w-[22ch] text-t2 text-white">
+        <h2 className="mx-auto mt-5 max-w-[20ch] text-t2 text-white">
           Quem já passou por isso conta melhor
         </h2>
-        <p className="mt-5 max-w-[58ch] text-lead text-serra-100">
+        <p className="mx-auto mt-5 max-w-[58ch] text-lead text-serra-100">
           Copiadas na íntegra, sem corte e sem retoque. Quase todas fazem
           questão de dizer o nome de quem atendeu.
         </p>
@@ -103,8 +111,12 @@ export function Depoimentos() {
           className="trilho grid snap-x snap-mandatory grid-flow-col gap-5 overflow-x-auto pb-2 [grid-auto-columns:100%] sm:[grid-auto-columns:calc(50%-0.625rem)] lg:[grid-auto-columns:calc(33.333%-0.834rem)]"
           aria-label="Depoimentos de clientes no Google"
         >
-          {DEPOIMENTOS.map((d) => (
-            <li key={d.slug} className="flex snap-start">
+          {DEPOIMENTOS.map((d, i) => (
+            <li
+              key={d.slug}
+              className="depo-entra flex snap-start"
+              style={{ ["--i" as string]: i % 3 }}
+            >
               <Cartao d={d} />
             </li>
           ))}
@@ -145,8 +157,10 @@ function Cartao({ d }: { d: Depoimento }) {
       href={d.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="cartao mancha group relative flex w-full flex-col overflow-hidden rounded-serra-xl bg-white p-7 shadow-alta md:p-8"
+      className="depo-cartao group relative flex w-full flex-col overflow-hidden rounded-serra-xl bg-white p-7 shadow-alta md:p-8"
     >
+      {/* Fio de cor que corre no topo do cartao ao passar o ponteiro. */}
+      <span aria-hidden className="depo-fio" />
       {/* O depoimento mais longo tem 3x o tamanho do mais curto e esticava os
           tres cartoes da pagina. O corte deixa os curtos inteiros e so encurta
           os dois maiores, que continuam abrindo completos no Google. */}

@@ -1,19 +1,26 @@
 /**
  * Clube de Benefícios.
  *
- * Dados raspados do proprio clube do cliente (beneficios.gruposerra.com.br) em
- * 02/09/2026, com Chrome de verdade: a pagina monta o catalogo por JS, entao
- * fetch simples volta uma casca vazia e foi assim que a primeira leitura
- * concluiu, errado, que "nao existe lista de parceiros".
+ * Origem dos dados: a API pública do próprio clube do cliente,
+ * `api.uppo.com.br/gruposerra/public/benefits`, lida em 04/09/2026 nas 8
+ * páginas do catálogo. São **96 benefícios ativos**.
  *
- * Existe: 9 categorias e 42 paginas de parceiros. O que entra aqui e uma
- * AMOSTRA para a home, com o desconto exatamente como o clube anuncia. O site
- * nao tenta reproduzir o catalogo inteiro: manda para o clube, que e onde ele
- * vive e onde ele se atualiza sozinho.
+ * Por que isso importa: a leitura anterior parou no HTML e concluiu, errado,
+ * que "a página não lista os parceiros". Lista, e a lista é o melhor argumento
+ * de venda do clube, porque os parceiros são marcas que qualquer família da
+ * região reconhece: Cinemark, Beto Carrero, Leroy Merlin, Casas Bahia, USP,
+ * Mackenzie, Shell, Natura, Domino's. Uma pílula escrita "Gastronomia" não
+ * vende nada; o logotipo do Domino's vende.
+ *
+ * Os logotipos em `public/parceiros/` vieram do CDN do próprio clube.
+ *
+ * A home mostra TRÊS categorias com três parceiros cada, com logotipo, e manda
+ * para o catálogo completo. Não tenta reproduzir 96 ofertas que mudam sozinhas.
  */
 
 export const BENEFICIOS_URL = "https://beneficios.gruposerra.com.br/";
 
+/** Categorias do catálogo, como o próprio clube nomeia. */
 export const CATEGORIAS = [
   "Bem-estar e saúde",
   "Educação",
@@ -26,25 +33,72 @@ export const CATEGORIAS = [
   "Moda",
 ] as const;
 
-/** Paginas de parceiros no catalogo do clube, contadas na paginacao. */
-export const PAGINAS_DE_PARCEIROS = 42;
+/** Benefícios ativos no catálogo, contados na API em 04/09/2026. */
+export const TOTAL_BENEFICIOS = 96;
 
 export type Parceiro = {
   nome: string;
   oferta: string;
-  categoria: (typeof CATEGORIAS)[number];
+  logo: string;
 };
 
-export const PARCEIROS: Parceiro[] = [
-  { nome: "Shell", oferta: "R$ 10,00 OFF para abastecer", categoria: "Produtos e serviços" },
-  { nome: "Vigilantes do Peso", oferta: "Até 60% OFF", categoria: "Bem-estar e saúde" },
-  { nome: "Espaçolaser", oferta: "Desconto para conhecer", categoria: "Bem-estar e saúde" },
-  { nome: "Zattini", oferta: "50% OFF + 20% da parceria", categoria: "Moda" },
-  { nome: "Olympikus", oferta: "15% OFF", categoria: "Moda" },
-  { nome: "Morana", oferta: "17% OFF extra", categoria: "Moda" },
-  { nome: "Evino", oferta: "R$ 50 em compras acima de R$ 350", categoria: "Gastronomia" },
-  { nome: "Museu de Cera", oferta: "Até 30% OFF no ingresso", categoria: "Lazer e cultura" },
-  { nome: "Thermas da Mata", oferta: "15% OFF na hospedagem", categoria: "Viagens" },
-  { nome: "EW Pass", oferta: "Inglês por menos de R$ 1 por dia", categoria: "Educação" },
-  { nome: "Escola Infantil Vila Kids", oferta: "20% OFF na matrícula", categoria: "Infantil" },
+export type Vitrine = {
+  slug: string;
+  titulo: string;
+  resumo: string;
+  url: string;
+  parceiros: Parceiro[];
+};
+
+/**
+ * As três vitrines da home.
+ *
+ * Escolhidas por RECONHECIMENTO, não por tamanho de categoria: o que faz a
+ * pessoa entender o clube em dois segundos é ver uma marca que ela já usa.
+ */
+export const VITRINES: Vitrine[] = [
+  {
+    slug: "lazer",
+    titulo: "Lazer e cultura",
+    resumo: "Cinema, parque e ingresso com desconto o ano inteiro.",
+    url: `${BENEFICIOS_URL}?page=1&category=lazer-e-cultura`,
+    parceiros: [
+      { nome: "Cinemark", oferta: "Ingressos com preços especiais", logo: "/parceiros/cinemark.png" },
+      { nome: "Cinépolis", oferta: "Ingressos por R$ 25,90", logo: "/parceiros/cinepolis.png" },
+      { nome: "Beto Carrero", oferta: "10% OFF em ingressos", logo: "/parceiros/beto-carrero.png" },
+    ],
+  },
+  {
+    slug: "casa",
+    titulo: "Casa e compras",
+    resumo: "Obra, reforma e eletrodoméstico, que é onde o desconto pesa.",
+    url: `${BENEFICIOS_URL}?page=1&category=casa`,
+    parceiros: [
+      { nome: "Leroy Merlin", oferta: "10% OFF na sua obra", logo: "/parceiros/leroy-merlin.png" },
+      { nome: "Casas Bahia", oferta: "Desconto para renovar a casa", logo: "/parceiros/casas-bahia.png" },
+      { nome: "LG", oferta: "Até 20% OFF em produtos LG", logo: "/parceiros/lg.png" },
+    ],
+  },
+  {
+    slug: "educacao",
+    titulo: "Educação",
+    resumo: "Graduação, pós e curso livre para a família toda.",
+    url: `${BENEFICIOS_URL}?page=1&category=educacao`,
+    parceiros: [
+      { nome: "USP", oferta: "Até 15% OFF no MBA USP EACH", logo: "/parceiros/usp.png" },
+      { nome: "Mackenzie", oferta: "Até 30% OFF no Mackenzie", logo: "/parceiros/mackenzie.png" },
+      { nome: "Descomplica", oferta: "20% OFF no preparatório do ENEM", logo: "/parceiros/descomplica.png" },
+    ],
+  },
+];
+
+/** Marcas extras para a esteira, só logotipo, sem oferta. */
+export const MARCAS_PARCEIRAS = [
+  { nome: "Shell", logo: "/parceiros/shell.png" },
+  { nome: "Natura", logo: "/parceiros/natura.png" },
+  { nome: "Domino's Pizza", logo: "/parceiros/domino-s-pizza.png" },
+  { nome: "Netshoes", logo: "/parceiros/netshoes.png" },
+  { nome: "Movida", logo: "/parceiros/movida-rent-a-car.png" },
+  { nome: "Vivara", logo: "/parceiros/vivara.png" },
+  { nome: "Espaçolaser", logo: "/parceiros/espacolaser.png" },
 ];

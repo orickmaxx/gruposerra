@@ -1,7 +1,6 @@
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
 import { MolduraFoto } from "../moldura-foto";
-import { Pendencia } from "../ui";
 import { IconeCoracao } from "../icones";
 
 /**
@@ -12,33 +11,15 @@ import { IconeCoracao } from "../icones";
  * o rosto nao e enfeite, e o produto: a empresa vende proximidade contra um
  * concorrente de escala nacional.
  *
- * As pessoas citadas abaixo NAO foram inventadas. Sao os nomes que as proprias
- * familias escreveram nas avaliacoes publicas do Google (ver data/depoimentos).
- * E o ativo mais dificil de copiar que o Grupo Serra tem, e estava jogado fora.
+ * ⛔ Aqui existia uma lista com os NOMES de quinze colaboradores, tirada das
+ * avaliacoes do Google. O dono mandou remover e a razao dele e boa: se alguem
+ * for desligado amanha, o site vira um problema de RH. A prova social continua,
+ * o fato continua dito, e nenhum funcionario fica dependurado no HTML.
  */
-
-/** Nomes citados espontaneamente pelas familias nas 9 avaliacoes do Google. */
-const CITADOS = [
-  "Robson",
-  "Anderson",
-  "Rosemeire",
-  "Thalia",
-  "Jéssica",
-  "Marli",
-  "Luciana",
-  "William",
-  "Julio",
-  "John",
-  "Patricia",
-  "Gabriel",
-  "Amaury",
-  "Marcio",
-  "Diego",
-];
 
 export function Sobre() {
   return (
-    <section id="sobre" className="bg-papel py-20 md:py-28">
+    <section id="sobre" className="bg-papel py-12 md:py-20">
       <div className="mx-auto max-w-[76rem] px-5">
         {/* --- historia --- */}
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16" data-revela>
@@ -68,83 +49,40 @@ export function Sobre() {
               </p>
             </div>
 
-            <div className="mt-8 max-w-[58ch]">
-              <Pendencia>
-                <strong className="font-semibold text-tinta">
-                  Falta a história contada pela empresa:
-                </strong>{" "}
-                quem fundou, em que circunstância, e o que mudou de lá para cá.
-                Nada aqui foi inventado, e o ano de {SITE.fundacao} continua sem
-                documento público (o CNPJ ativo é de {SITE.cnpjDesde}).
-              </Pendencia>
-            </div>
           </div>
 
+          {/*
+            As duas fotos de baixo sao REAIS e sao do proprio grupo: vieram do
+            site do Complexo Memorial Hortolandia. A de cima continua reservada
+            porque a matriz de Campinas e a equipe ainda nao foram fotografadas,
+            e foto de banco de imagens aqui destruiria a confianca das outras
+            duas.
+          */}
           <div className="grid gap-4">
             <MolduraFoto
               proporcao="16/10"
-              titulo="Foto da família fundadora, ou da fachada da matriz"
-              detalhe="Horizontal, mínimo 1600px de largura. É a primeira imagem humana do site."
+              titulo="Foto da fachada da matriz, em Campinas"
+              detalhe="Horizontal, mínimo 1600px de largura."
             />
             <div className="grid grid-cols-2 gap-4">
               <MolduraFoto
                 proporcao="1/1"
-                titulo="Atendimento no balcão"
-                detalhe="Alguém da equipe recebendo uma família."
+                src="/fotos/memorial-atendimento.webp"
+                alt="Sala de atendimento do Complexo Memorial Hortolândia"
+                titulo="Sala de atendimento"
+                legenda="Sala de atendimento do Memorial Hortolândia"
               />
               <MolduraFoto
                 proporcao="1/1"
-                titulo="Sala de velório"
-                detalhe="Interior do Memorial Hortolândia."
+                src="/fotos/memorial-recepcao.webp"
+                alt="Recepção do Complexo Memorial Hortolândia"
+                titulo="Recepção do Memorial"
+                legenda="Recepção do Memorial, em Hortolândia"
               />
             </div>
           </div>
         </div>
 
-        {/* --- equipe --- */}
-        <div className="mt-24" data-revela>
-          <div className="max-w-[42ch]">
-            <h2 className="text-t2">As pessoas que as famílias citam pelo nome</h2>
-            <p className="mt-5 max-w-[62ch] text-lead text-pedra-600">
-              Nas nove avaliações que este site publica, quinze colaboradores
-              aparecem citados espontaneamente por quem foi atendido. Nenhum
-              concorrente consegue copiar isso.
-            </p>
-          </div>
-
-          <ul className="mt-8 flex flex-wrap gap-2.5">
-            {CITADOS.map((n) => (
-              <li
-                key={n}
-                className="rounded-full border border-serra-200 bg-serra-50 px-4 py-2 font-display text-[0.9375rem] font-bold text-serra-700"
-              >
-                {n}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <MolduraFoto
-              proporcao="3/4"
-              titulo="Foto da equipe"
-              detalhe="Retrato de quem atende, com nome e função."
-            />
-            <MolduraFoto proporcao="3/4" titulo="Foto da equipe" />
-            <MolduraFoto proporcao="3/4" titulo="Foto da equipe" />
-            <MolduraFoto
-              proporcao="3/4"
-              titulo="Foto da frota"
-              detalhe="Carro assistencial, que aparece em vários depoimentos."
-            />
-          </div>
-
-          <p className="mt-6 max-w-[70ch] text-[0.9375rem] leading-relaxed text-pedra-600">
-            Os retratos entram nesses espaços quando o Grupo Serra enviar as
-            imagens. Enquanto não chegarem, o site prefere o espaço declarado a
-            uma foto de banco de imagens: numa funerária, foto genérica de
-            pessoas sorrindo é pior do que foto nenhuma.
-          </p>
-        </div>
       </div>
     </section>
   );

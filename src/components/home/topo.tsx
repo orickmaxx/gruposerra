@@ -1,104 +1,128 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
-import { DEPOIMENTOS } from "@/data/depoimentos";
 import { Botao } from "../ui";
 import {
-  IconeBoleto,
+  IconeAmparo,
   IconeGoogle,
   IconeSeta,
   IconeTelefone,
   IconeVela,
-  IconeWhatsApp,
 } from "../icones";
 
 /**
  * Primeiro viewport.
- *
- * Ordem deliberada: quem esta em luto acha o telefone antes de qualquer outra
- * coisa, e so depois vem a venda. As 8 unidades aparecem aqui porque
- * proximidade e o posicionamento da empresa contra o Grupo Zelo, que tem
- * escala nacional, e nao um detalhe do rodape.
  */
 export function Topo() {
   const cidades = [...new Set(UNIDADES.map((u) => u.cidade))];
 
   return (
-    <section className="malha relative overflow-hidden">
-      <div className="relative mx-auto grid max-w-[76rem] items-start gap-14 px-5 pt-14 pb-16 md:pt-20 lg:grid-cols-[1.1fr_minmax(0,24rem)] lg:gap-16 lg:pb-24">
-        <div className="revela">
-          <a
-            href="#depoimentos"
-            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-serra-200/70 bg-white/70 py-2 pr-4 pl-2.5 shadow-baixa backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-serra-300"
-            style={{ ["--i" as string]: 0 }}
-          >
-            <IconeGoogle className="size-5 shrink-0" />
-            <span className="text-[0.9375rem] font-semibold text-tinta">
-              {DEPOIMENTOS.length} famílias contaram no Google como foram
-              atendidas
-            </span>
-            <IconeSeta className="size-4 shrink-0 rotate-90 text-pedra-400" />
-          </a>
+    <>
+      <section className="malha relative overflow-hidden">
+        {/* Marca d'agua do simbolo, recortado do logotipo HD real do cliente. */}
+        <Image
+          src="/marca/simbolo-serra.png"
+          alt=""
+          width={379}
+          height={376}
+          aria-hidden
+          priority
+          className="pointer-events-none absolute -top-24 -right-24 w-[30rem] max-w-none opacity-[0.05] md:-right-32 md:w-[42rem] lg:opacity-[0.07]"
+        />
 
-          <h1 className="max-w-[15ch] text-hero" style={{ ["--i" as string]: 1 }}>
-            Estamos perto, e atendemos a qualquer hora.
-          </h1>
+        <div className="relative mx-auto grid max-w-[80rem] items-start gap-14 px-5 pt-14 pb-16 md:pt-20 lg:grid-cols-[1.1fr_minmax(0,24rem)] lg:gap-16 lg:pb-24">
+          <div className="revela">
+            <SeloGoogle />
 
-          <p
-            className="mt-7 max-w-[52ch] text-lead text-pedra-600"
-            style={{ ["--i" as string]: 2 }}
-          >
-            O Grupo Serra atende famílias na região de Campinas{" "}
-            {SITE.idadeTexto}. São {UNIDADES.length} unidades, e o telefone do
-            atendimento de óbito não fecha nunca, nem no fim de semana, nem no
-            feriado.
-          </p>
+            <h1 className="mt-7 max-w-[15ch] text-hero" style={{ ["--i" as string]: 1 }}>
+              Estamos perto, e atendemos a qualquer hora.
+            </h1>
 
-          <div
-            className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
-            style={{ ["--i" as string]: 3 }}
-          >
-            <Botao
-              href={`tel:${SITE.emergencia.tel}`}
-              externo
-              icone={<IconeTelefone className="size-5 shrink-0" />}
+            <p
+              className="mt-7 max-w-[52ch] text-lead text-pedra-600"
+              style={{ ["--i" as string]: 2 }}
             >
-              Ligar agora, {SITE.emergencia.rotulo}
-            </Botao>
-            <Botao
-              href="/planos"
-              tom="contorno"
-              icone={
+              O Grupo Serra atende famílias na região de Campinas{" "}
+              {SITE.idadeTexto}. São {UNIDADES.length} unidades, e o telefone do
+              atendimento de óbito não fecha nunca, nem no fim de semana, nem no
+              feriado.
+            </p>
+
+            <div
+              className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+              style={{ ["--i" as string]: 3 }}
+            >
+              <Botao
+                href={`tel:${SITE.emergencia.tel}`}
+                externo
+                icone={<IconeTelefone className="size-5 shrink-0" />}
+              >
+                Ligar agora, {SITE.emergencia.rotulo}
+              </Botao>
+              <Botao href="/planos" tom="contorno">
+                Ver planos e preços
                 <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
-              }
+              </Botao>
+            </div>
+
+            <p
+              className="mt-7 max-w-[52ch] text-[0.9375rem] text-pedra-600"
+              style={{ ["--i" as string]: 4 }}
             >
-              Ver planos e preços
-            </Botao>
+              Atendimento em {cidades.join(", ")}.
+            </p>
           </div>
 
-          <p
-            className="mt-7 max-w-[52ch] text-[0.9375rem] text-pedra-600"
-            style={{ ["--i" as string]: 4 }}
-          >
-            Atendimento em {cidades.join(", ")}.
-          </p>
+          <ListaTelefones />
         </div>
+      </section>
 
-        <ListaTelefones />
-      </div>
-
-      <AcoesRapidas />
-    </section>
+      <Caminhos />
+    </>
   );
 }
 
 /**
- * O que ocupa a coluna direita do heroi.
+ * Selo do Google.
  *
- * O lugar onde a categoria poe uma foto de banco. Nao temos foto do cliente, e
- * inventar uma seria pior do que a ausencia. Entao o espaco carrega a coisa
- * mais util que existe para quem abriu este site em panico: o telefone da
- * unidade da cidade dele, discavel, sem rolar a pagina.
+ * ⛔ SEM contagem. O dono pediu o icone e as cinco estrelas, sem numero, e a
+ * razao e boa: "9 famílias contaram no Google" e um numero pequeno que trabalha
+ * CONTRA a prova social. Nove avaliacoes nao impressionam ninguem; cinco
+ * estrelas cheias, sim. A contagem continua no carrossel para quem quiser
+ * conferir, e cada depoimento leva ao Google de origem.
+ */
+function SeloGoogle() {
+  return (
+    <a
+      href="#depoimentos"
+      className="group inline-flex items-center gap-3 rounded-full border border-serra-200/80 bg-white/80 py-2.5 pr-5 pl-3 shadow-baixa backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-serra-300 hover:shadow-media"
+      style={{ ["--i" as string]: 0 }}
+    >
+      <IconeGoogle className="size-6 shrink-0" />
+      <span className="flex items-center gap-1" role="img" aria-label="5 de 5 estrelas">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <svg
+            key={i}
+            viewBox="0 0 20 20"
+            className="size-[1.0625rem] text-ouro"
+            fill="currentColor"
+            aria-hidden
+          >
+            <path d="M10 1.6l2.47 5.28 5.53.73-4.08 3.9 1.05 5.62L10 14.42l-4.97 2.71 1.05-5.62L2 7.61l5.53-.73z" />
+          </svg>
+        ))}
+      </span>
+      <span className="text-[0.9375rem] font-semibold text-tinta">
+        Avaliações de famílias no Google
+      </span>
+      <IconeSeta className="size-4 shrink-0 rotate-90 text-pedra-400 transition-transform duration-300 group-hover:translate-y-0.5" />
+    </a>
+  );
+}
+
+/**
+ * A coluna direita do herói: o telefone da cidade da pessoa, sem rolar nada.
  */
 function ListaTelefones() {
   return (
@@ -107,8 +131,8 @@ function ListaTelefones() {
         Ligue para a unidade mais perto
       </h2>
       <ul className="divide-y divide-linha/80">
-        {UNIDADES.map((u) => (
-          <li key={u.slug}>
+        {UNIDADES.map((u, i) => (
+          <li key={u.slug} className={i > 3 ? "hidden sm:block" : undefined}>
             <a
               href={`tel:${u.tel}`}
               className="group flex items-center justify-between gap-3 px-6 py-3 transition-colors hover:bg-serra-500/[0.07]"
@@ -128,6 +152,10 @@ function ListaTelefones() {
         ))}
       </ul>
       <p className="border-t border-linha/80 bg-white/50 px-6 py-4 text-[0.875rem] leading-relaxed text-pedra-600">
+        <a href="#unidades" className="link-texto font-semibold text-serra-600 sm:hidden">
+          Ver as {UNIDADES.length} unidades
+        </a>
+        <span className="sm:hidden"> · </span>
         Óbito é atendido 24 horas, todos os dias.
       </p>
     </aside>
@@ -135,75 +163,100 @@ function ListaTelefones() {
 }
 
 /**
- * As tres tarefas reais do site, lado a lado. A segunda via vem primeiro entre
- * as tarefas de associado porque e a reclamacao numero 1 da empresa no
- * Reclame Aqui (ver CLAUDE.md secao 6.2).
+ * Roteador por intenção.
+ *
+ * ⛔ O que estava aqui: tres cartoes brancos com "Segunda via", "Obituário" e
+ * "Falar no WhatsApp". O dono chamou de "sem destaque ou inúteis" e as duas
+ * coisas eram verdade ao mesmo tempo: eram palidos E repetiam exatamente os
+ * tres links que agora moram na faixa de utilidades do topo.
+ *
+ * No lugar entrou outra pergunta. Quem abre este site chega por UM de tres
+ * motivos, e cada motivo quer uma pagina diferente. A faixa pergunta o motivo e
+ * leva direto. Em azul cheio, entao e impossivel passar batido, e ainda da o
+ * degrau de cor que faltava logo abaixo do herói.
  */
-function AcoesRapidas() {
-  const acoes = [
+function Caminhos() {
+  const caminhos = [
     {
-      href: SITE.externos.segundaVia,
+      href: `tel:${SITE.emergencia.tel}`,
       externo: true,
-      Icone: IconeBoleto,
-      cor: "bg-serra-500/10 text-serra-600",
-      titulo: "Segunda via de boleto",
-      texto: "Emita o boleto da mensalidade sem precisar ligar na central.",
+      Icone: IconeTelefone,
+      etiqueta: "Aconteceu agora",
+      titulo: "Preciso de atendimento",
+      texto: "Ligue e alguém assume tudo a partir daí, a qualquer hora do dia ou da noite.",
+      acao: SITE.emergencia.rotulo,
+    },
+    {
+      href: "/planos",
+      externo: false,
+      Icone: IconeAmparo,
+      etiqueta: "Quero me antecipar",
+      titulo: "Contratar um plano",
+      texto: "A partir de R$ 18,90 por mês, com assistência 24 horas e traslado inclusos.",
+      acao: "Ver planos e preços",
     },
     {
       href: "/obituario",
       externo: false,
       Icone: IconeVela,
-      cor: "bg-pedra-500/10 text-pedra-600",
-      titulo: "Obituário",
-      texto: "Local e horário do velório e da despedida, atualizado o dia todo.",
-    },
-    {
-      href: SITE.whatsapp.link,
-      externo: true,
-      Icone: IconeWhatsApp,
-      cor: "bg-verde-forte/10 text-verde-forte",
-      titulo: "Falar no WhatsApp",
-      texto: "Dúvida sobre plano, cobertura ou pagamento com uma pessoa de verdade.",
+      etiqueta: "Vou a uma despedida",
+      titulo: "Procuro um velório",
+      texto: "Local e horário da cerimônia, atualizado ao longo do dia.",
+      acao: "Abrir o obituário",
     },
   ];
 
   return (
-    <div className="relative mx-auto max-w-[76rem] px-5 pb-16 md:pb-24" data-revela>
-      <ul className="grid gap-4 sm:grid-cols-3">
-        {acoes.map(({ href, externo, Icone, cor, titulo, texto }) => {
-          const conteudo = (
+    <section
+      className="mat-azul faixa-escura relative overflow-hidden"
+      aria-label="Por onde começar"
+    >
+      <ul className="mx-auto grid max-w-[80rem] md:grid-cols-3" data-revela>
+        {caminhos.map(({ href, externo, Icone, etiqueta, titulo, texto, acao }, i) => {
+          const miolo = (
             <>
-              <span
-                className={`inline-flex size-12 items-center justify-center rounded-serra ${cor}`}
-              >
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-serra bg-white/15 text-white transition-colors duration-300 group-hover:bg-white group-hover:text-serra-600">
                 <Icone className="size-6" />
               </span>
-              <span className="mt-5 flex items-center gap-1.5 font-display text-[1.1875rem] font-bold text-tinta">
-                {titulo}
-                <IconeSeta className="size-[1.05rem] shrink-0 text-pedra-400 transition-transform duration-300 group-hover:translate-x-1" />
+              <span className="mt-6 block text-[0.8125rem] font-bold tracking-[0.14em] text-serra-200 uppercase">
+                {etiqueta}
               </span>
-              <span className="mt-2 block text-[0.9375rem] leading-relaxed text-pedra-600">
+              <span className="mt-2 block font-display text-[1.375rem] font-bold text-white">
+                {titulo}
+              </span>
+              <span className="mt-2.5 block max-w-[34ch] flex-1 text-[0.9375rem] leading-relaxed text-serra-100/85">
                 {texto}
+              </span>
+              <span className="mt-6 inline-flex items-center gap-2 font-semibold text-white">
+                <span className="numerais border-b border-white/40 pb-0.5 transition-colors group-hover:border-white">
+                  {acao}
+                </span>
+                <IconeSeta className="size-[1.05rem] shrink-0 transition-transform duration-300 group-hover:translate-x-1.5" />
               </span>
             </>
           );
           const classe =
-            "cartao group flex h-full flex-col rounded-serra-lg border border-white/70 bg-white/80 p-6 shadow-media backdrop-blur-sm hover:border-serra-200 md:p-7";
+            "group flex h-full flex-col px-6 py-10 transition-colors duration-300 hover:bg-white/[0.07] md:px-9 md:py-12";
           return (
-            <li key={titulo} className="flex">
+            <li
+              key={titulo}
+              className={`flex ${
+                i > 0 ? "border-t border-white/12 md:border-t-0 md:border-l" : ""
+              }`}
+            >
               {externo ? (
-                <a href={href} target="_blank" rel="noopener noreferrer" className={classe}>
-                  {conteudo}
+                <a href={href} className={classe}>
+                  {miolo}
                 </a>
               ) : (
                 <Link href={href} className={classe}>
-                  {conteudo}
+                  {miolo}
                 </Link>
               )}
             </li>
           );
         })}
       </ul>
-    </div>
+    </section>
   );
 }

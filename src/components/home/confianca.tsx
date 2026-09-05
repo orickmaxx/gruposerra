@@ -1,6 +1,6 @@
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
-import { Faixa, Pendencia, Titulo } from "../ui";
+import { Faixa, Titulo } from "../ui";
 import {
   IconeAmparo,
   IconeChama,
@@ -113,20 +113,20 @@ export function ComoFunciona() {
         Como funciona quando você precisa
       </Titulo>
 
-      <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <ol className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
         {PASSOS.map((p) => (
           <li key={p.n}>
-            <article className="cartao flex h-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa">
+            <article className="cartao flex h-full flex-col rounded-serra-lg border border-linha bg-white p-5 shadow-baixa sm:p-6">
               <span
                 aria-hidden
                 className="numerais inline-flex size-11 items-center justify-center rounded-full bg-serra-500/10 font-display text-[1.25rem] font-extrabold text-serra-600"
               >
                 {p.n}
               </span>
-              <h3 className="mt-5 font-display text-[1.125rem] font-bold text-tinta">
+              <h3 className="mt-4 font-display text-[1rem] font-bold text-tinta sm:mt-5 sm:text-[1.125rem]">
                 {p.titulo}
               </h3>
-              <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-corpo">
+              <p className="mt-2 text-[0.875rem] leading-relaxed text-corpo sm:text-[0.9375rem]">
                 {p.texto}
               </p>
             </article>
@@ -161,7 +161,7 @@ export function ComoFunciona() {
 export function Garantias() {
   return (
     <Faixa>
-      <Titulo apoio="Contratar plano funerário é assinar um compromisso de décadas. Vale saber exatamente o que está garantido, e o que ainda não dá para afirmar.">
+      <Titulo centro apoio="Contratar plano funerário é assinar um compromisso de décadas. Vale saber exatamente o que está garantido, e o que ainda não dá para afirmar.">
         O que está garantido
       </Titulo>
 
@@ -184,12 +184,12 @@ export function Garantias() {
           },
         ].map((g) => (
           <li key={g.titulo}>
-            <article className="cartao flex h-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa">
+            <article className="cartao flex h-full flex-col rounded-serra-lg border border-linha bg-white p-5 shadow-baixa sm:p-6">
               <IconeConfere className="size-7 shrink-0 text-verde-forte" />
-              <h3 className="mt-5 font-display text-[1.125rem] font-bold text-tinta">
+              <h3 className="mt-4 font-display text-[1rem] font-bold text-tinta sm:mt-5 sm:text-[1.125rem]">
                 {g.titulo}
               </h3>
-              <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-corpo">
+              <p className="mt-2 text-[0.875rem] leading-relaxed text-corpo sm:text-[0.9375rem]">
                 {g.texto}
               </p>
             </article>
@@ -197,17 +197,6 @@ export function Garantias() {
         ))}
       </ul>
 
-      <div className="mt-8 max-w-[74ch]">
-        <Pendencia>
-          <strong className="font-semibold text-tinta">
-            O que este site ainda não pode garantir:
-          </strong>{" "}
-          carência, limite de idade para entrar e a regra de reajuste. O Grupo
-          Serra não publica esses números em lugar nenhum, e nenhum deles foi
-          estimado aqui. Enquanto não vierem por escrito, a página declara a
-          lacuna em vez de prometer.
-        </Pendencia>
-      </div>
     </Faixa>
   );
 }

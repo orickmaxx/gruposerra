@@ -44,7 +44,7 @@ export function Formulario() {
 
   if (estado.estado === "ok") {
     return (
-      <section id="contato" className="bg-papel py-20 md:py-28">
+      <section id="contato" className="bg-white py-12 md:py-20">
         <div className="mx-auto max-w-[46rem] px-5 text-center" data-revela>
           <span className="mx-auto inline-flex size-16 items-center justify-center rounded-full bg-verde/15 text-verde-forte">
             <IconeConfere className="size-8" />
@@ -78,7 +78,7 @@ export function Formulario() {
   }
 
   return (
-    <section id="contato" className="bg-papel py-20 md:py-28">
+    <section id="contato" className="bg-white py-12 md:py-20">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
         <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <div>

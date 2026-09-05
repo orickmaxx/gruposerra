@@ -1,7 +1,20 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/** Largura de leitura e respiro vertical unicos do site. */
+/**
+ * Largura de leitura e respiro vertical unicos do site.
+ *
+ * SUPERFICIES. A medicao da versao anterior deu 75,5% da pagina em branco ou
+ * cinza e 2,1% de area com cor: seis faixas seguidas quase identicas, porque
+ * "papel" era 2% diferente do branco e quase toda secao caia no padrao. Agora
+ * sao seis degraus de verdade, e a home nunca repete o mesmo em vizinhas.
+ *
+ *   branco ... o respiro, usado com parcimonia
+ *   papel .... azul-gelo institucional
+ *   areia .... quente, vizinha das zonas de terracota e ouro
+ *   azul ..... azul cheio da marca, texto branco
+ *   escuro ... o quase preto azulado, para os momentos dramaticos
+ */
 export function Faixa({
   children,
   fundo = "branco",
@@ -10,7 +23,7 @@ export function Faixa({
   revela = true,
 }: {
   children: ReactNode;
-  fundo?: "branco" | "papel" | "escuro";
+  fundo?: "branco" | "papel" | "areia" | "azul" | "escuro";
   className?: string;
   id?: string;
   revela?: boolean;
@@ -18,12 +31,14 @@ export function Faixa({
   const fundos = {
     branco: "bg-white",
     papel: "bg-papel",
+    areia: "bg-areia",
+    azul: "faixa-escura mat-azul text-serra-100",
     escuro: "faixa-escura malha-escura text-serra-100",
   } as const;
   return (
     <section id={id} className={`${fundos[fundo]} ${className}`}>
       <div
-        className="mx-auto max-w-[76rem] px-5 py-20 md:py-28"
+        className="mx-auto max-w-[76rem] px-5 py-12 md:py-20"
         {...(revela ? { "data-revela": "" } : {})}
       >
         {children}
@@ -40,17 +55,29 @@ export function Titulo({
   children,
   apoio,
   claro = false,
+  centro = false,
 }: {
   children: ReactNode;
   apoio?: ReactNode;
   claro?: boolean;
+  /**
+   * Cabeca centralizada.
+   *
+   * A pagina inteira estava alinhada a esquerda, secao apos secao, e o dono
+   * apontou que isso deixa tudo com a mesma cadencia. As secoes de OFERTA
+   * (planos, servicos, unidades, clube, duvidas) passam a abrir centralizadas,
+   * que e o gesto de landing page, e as de NARRATIVA (historia, como funciona)
+   * continuam a esquerda, que e o gesto de leitura. A alternancia e o que da
+   * ritmo horizontal a pagina.
+   */
+  centro?: boolean;
 }) {
   return (
-    <div className="max-w-[34ch]">
+    <div className={centro ? "mx-auto max-w-[46rem] text-center" : "max-w-[34ch]"}>
       <h2 className={`text-t2 ${claro ? "text-white" : ""}`}>{children}</h2>
       {apoio ? (
         <p
-          className={`mt-5 max-w-[58ch] text-lead ${
+          className={`mt-5 text-lead ${centro ? "mx-auto max-w-[58ch]" : "max-w-[58ch]"} ${
             claro ? "text-serra-100" : "text-pedra-600"
           }`}
         >

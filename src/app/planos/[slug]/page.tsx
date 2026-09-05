@@ -89,7 +89,7 @@ export default async function Plano({ params }: PageProps<"/planos/[slug]">) {
       />
 
       <section className="malha">
-        <div className="mx-auto max-w-[76rem] px-5 py-16 md:py-20">
+        <div className="mx-auto max-w-[76rem] px-5 py-14 md:py-18">
           <Link href="/planos" className="link-texto text-[0.9375rem] font-semibold text-serra-600">
             Todos os planos
           </Link>
@@ -136,7 +136,7 @@ export default async function Plano({ params }: PageProps<"/planos/[slug]">) {
         </div>
       </section>
 
-      <section className="bg-white py-16 md:py-20">
+      <section className="bg-white py-14 md:py-18">
         <div className="mx-auto max-w-[76rem] px-5">
           <p className="max-w-[62ch] text-lead leading-relaxed text-corpo">{p.descricao}</p>
 
