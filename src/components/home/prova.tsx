@@ -5,6 +5,7 @@ import { UNIDADES } from "@/data/unidades";
 import { Contador } from "../contador";
 import { Titulo } from "../ui";
 import { IconeSeta } from "../icones";
+import { useArrastar } from "../movimento";
 
 /**
  * Linha do tempo da expansão, na HORIZONTAL.
@@ -48,13 +49,10 @@ const HISTORIA: { ano: number; o: string; nota?: string; marco?: boolean }[] = [
 
 /** `prefers-reduced-motion` do jeito que da para consultar antes do primeiro
  *  render, inclusive no servidor, onde nao ha matchMedia. */
-function semMovimento() {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 export function Historia() {
   const trilho = useRef<HTMLOListElement>(null);
+  useArrastar(trilho);
   /* Estado inicial IGUAL no servidor e no cliente: as tres primeiras etapas
      acesas. Quem pediu menos movimento recebe todas acesas logo em seguida,
      dentro do efeito, o que nao muda o HTML entregue. */
@@ -93,27 +91,41 @@ export function Historia() {
   useEffect(() => {
     const t = trilho.current;
     if (!t) return;
-    /* Sem movimento, todas as etapas nascem acesas: isso e decidido no valor
-       inicial do estado, nao dentro do efeito. */
-    if (semMovimento()) {
-      const q = requestAnimationFrame(() =>
-        setAtivos(new Set(HISTORIA.map((_, i) => i)))
-      );
-      return () => cancelAnimationFrame(q);
-    }
+    /* ⛔ Aqui havia um atalho para `prefers-reduced-motion`: acender os NOVE
+       anos de uma vez e nem montar o observador. Contradizia a propria regra da
+       casa, escrita em `globals.css`: reduzir movimento e tirar a ANIMACAO,
+       nunca a MUDANCA DE ESTADO. Com todos acesos de saida, quem pediu menos
+       movimento perdia a unica informacao que a linha do tempo carrega, que e
+       ate onde ja se chegou.
+
+       O observador roda para todo mundo. Quem pediu menos movimento recebe o
+       fio preenchido de estalo em vez de desenhado, e isso ja acontece sozinho:
+       `transform` esta fora da lista de propriedades que transicionam sob
+       reduced-motion. */
+    /* ⛔ LINHA DO TEMPO E CATRACA, NAO HOLOFOTE. Este observador APAGAVA o ano
+       ao sair do trilho (`else agora.delete(i)`), entao nunca havia mais de
+       dois ou tres acesos: a pessoa arrastava a historia inteira e a linha
+       continuava do mesmo tamanho. Era exatamente a queixa recebida, "ao
+       arrastar nao vai colorindo", e o defeito estava no verbo errado.
+
+       O que esta sendo desenhado e uma passagem de TEMPO. Tempo nao volta: ano
+       visitado fica aceso, e a linha se pinta inteira a medida que a historia e
+       percorrida, ate 2024. Por isso so ha `add`.
+
+       O limiar caiu de 0,65 para 0,5 porque num celular estreito cabem dois
+       cartoes por tela: com 0,65 o ano da borda so acendia depois de estar
+       quase inteiro dentro, e o acender chegava atrasado em relacao ao dedo. */
     const obs = new IntersectionObserver(
       (entradas) => {
+        const novos = entradas.filter((e) => e.isIntersecting);
+        if (novos.length === 0) return;
         setAtivos((antes) => {
           const agora = new Set(antes);
-          for (const e of entradas) {
-            const i = Number((e.target as HTMLElement).dataset.i);
-            if (e.isIntersecting) agora.add(i);
-            else agora.delete(i);
-          }
-          return agora;
+          for (const e of novos) agora.add(Number((e.target as HTMLElement).dataset.i));
+          return agora.size === antes.size ? antes : agora;
         });
       },
-      { root: t, threshold: 0.65 }
+      { root: t, threshold: 0.5 }
     );
     for (const li of t.querySelectorAll("[data-i]")) obs.observe(li);
     return () => obs.disconnect();
@@ -126,9 +138,9 @@ export function Historia() {
   };
 
   return (
-    <section className="bg-areia py-12 md:py-20" id="historia">
+    <section className="relative overflow-hidden bg-areia py-16 md:py-24" id="historia">
       <div className="mx-auto max-w-[80rem] px-5" data-revela>
-        <Titulo apoio="A empresa nasceu em Campinas e nunca saiu da região. Cada abertura é uma cidade onde passou a haver alguém do Serra por perto.">
+        <Titulo rotulo="Linha do tempo" apoio="A empresa nasceu em Campinas e nunca saiu da região. Cada abertura é uma cidade onde passou a haver alguém do Serra por perto.">
           Sempre na mesma região
         </Titulo>
 
@@ -156,7 +168,7 @@ export function Historia() {
       <div className="relative mx-auto mt-14 max-w-[80rem] px-5">
         <ol
           ref={trilho}
-          className="trilho flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4"
+          className="trilho palco3d flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4"
         >
           {HISTORIA.map((h, i) => {
             const aceso = ativos.has(i);
@@ -164,29 +176,40 @@ export function Historia() {
               <li
                 key={h.ano}
                 data-i={i}
-                className="w-[13.5rem] shrink-0 snap-start pr-6 sm:w-[15.5rem] sm:pr-8"
+                className="relevo w-[13.5rem] shrink-0 snap-start pr-6 sm:w-[15.5rem] sm:pr-8"
+                data-giro="4"
               >
-                <div className="relative pt-12">
-                  {/* segmento do fio: rola junto com o cartao */}
+                <div className={`relative pt-12 ${aceso ? "lt-aceso" : ""}`}>
+                  {/* O FIO NAO TROCA DE COR, ELE SE DESENHA. O que esta sendo
+                      mostrado e uma passagem de tempo, e tempo tem direcao: o
+                      segmento cresce da esquerda para a direita conforme o ano
+                      entra na tela, e a linha inteira se pinta enquanto a
+                      pessoa percorre a historia. Trocar de cor de uma vez
+                      diria a mesma informacao sem dizer o sentido dela. */}
                   <span
                     aria-hidden
-                    className={`absolute top-[1.55rem] right-0 left-0 h-[2px] transition-colors duration-500 ${
-                      aceso ? "bg-serra-400" : "bg-pedra-300/60"
-                    }`}
-                  />
+                    className="absolute top-[1.55rem] right-0 left-0 h-[2px] overflow-hidden bg-pedra-300/60"
+                  >
+                    <span className="lt-fio" />
+                  </span>
                   <span
                     aria-hidden
-                    className={`absolute top-[0.95rem] left-0 rounded-full ring-4 ring-areia transition-all duration-500 ${
+                    style={{
+                      ["--halo" as string]: h.marco
+                        ? "rgba(201,177,103,0.55)"
+                        : "rgba(0,105,163,0.45)",
+                    }}
+                    className={`lt-halo absolute top-[0.95rem] left-0 rounded-full ring-4 ring-areia transition-all duration-500 ${
                       aceso
                         ? h.marco
-                          ? "size-5 -translate-x-px bg-dourado shadow-[0_0_0_6px_rgba(201,177,103,0.28)]"
-                          : "size-4 bg-serra-500 shadow-[0_0_0_6px_rgba(0,105,163,0.16)]"
+                          ? "size-5 -translate-x-px bg-dourado"
+                          : "size-4 bg-serra-500"
                         : "size-3 bg-pedra-300"
                     }`}
                   />
 
                   <p
-                    className={`numerais font-display text-[2rem] leading-none font-extrabold tracking-tight transition-colors duration-500 sm:text-[2.25rem] ${
+                    className={`numerais relevo-frente font-display text-[2rem] leading-none font-extrabold tracking-tight transition-colors duration-500 sm:text-[2.25rem] ${
                       aceso ? (h.marco ? "text-dourado-forte" : "text-serra-600") : "text-pedra-400"
                     }`}
                   >

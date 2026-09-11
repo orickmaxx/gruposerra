@@ -1,6 +1,8 @@
 import { FAQ } from "@/data/planos";
 import { SITE } from "@/lib/site";
-import { Botao, Faixa, Titulo } from "../ui";
+import Image from "next/image";
+import { Botao, Faixa, Rotulo, Titulo, TituloCine } from "../ui";
+import { Paralaxe } from "../movimento";
 import { IconeTelefone, IconeWhatsApp } from "../icones";
 
 /**
@@ -31,8 +33,8 @@ import { IconeTelefone, IconeWhatsApp } from "../icones";
 export function Duvidas() {
   return (
     <Faixa fundo="papel" id="duvidas">
-      <Titulo centro apoio="As perguntas que mais chegam na central, respondidas sem rodeio.">
-        Dúvidas frequentes
+      <Titulo centro rotulo="Dúvidas" apoio="As perguntas que mais chegam na central, respondidas sem rodeio.">
+        O que as famílias mais perguntam
       </Titulo>
 
       <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1.6fr_1fr] lg:gap-12">
@@ -96,26 +98,55 @@ export function Duvidas() {
   );
 }
 
+/**
+ * Fechamento.
+ *
+ * A ultima coisa que a pagina diz, e a unica secao em que ela pode se dar ao
+ * luxo de nao vender nada. Depois de dezessete secoes, quem chegou aqui ou vai
+ * ligar ou vai fechar a aba.
+ *
+ * Por isso o fecho e o ESPELHO do herói: a mesma linguagem de fotografia real
+ * tratada na cor da marca, o mesmo tipo de manchete em mascara, o mesmo
+ * telefone. A pagina abre e fecha no mesmo acorde, e o meio dela e o argumento.
+ * A foto aqui e a sala de atendimento, nao a de velorio: o fecho e sobre
+ * conversar antes, nao sobre o dia.
+ */
 export function Fechamento() {
   return (
-    <Faixa fundo="escuro">
-      <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+    <section className="grao vinheta relative isolate overflow-hidden bg-serra-900 text-white">
+      <Paralaxe fator={0.12} className="absolute inset-0 -z-10">
+        <div className="foto-marca-veu absolute inset-[-8%]">
+          <Image
+            src="/fotos/memorial-atendimento.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            aria-hidden
+            className="kenburns foto-marca object-cover object-[35%_center]"
+          />
+        </div>
+      </Paralaxe>
+
+      <div
+        className="relative z-10 mx-auto grid max-w-[76rem] items-center gap-12 px-5 py-20 md:py-28 lg:grid-cols-[1.15fr_1fr] lg:gap-16"
+        data-revela
+      >
         <div>
-          <p className="text-[0.875rem] font-bold tracking-[0.14em] text-serra-300 uppercase">
-            Plantão 24 horas
-          </p>
-          <h2 className="mt-4 max-w-[16ch] text-t1 text-white">
-            Aconteceu agora? É só ligar.
-          </h2>
-          <p className="mt-5 max-w-[54ch] text-lead text-serra-100">
+          <Rotulo claro>Plantão 24 horas</Rotulo>
+          <TituloCine
+            className="max-w-[15ch] text-t1 text-white"
+            linhas={["Aconteceu agora?", "É só ligar."]}
+          />
+          <p className="mt-6 max-w-[52ch] text-lead text-white/80">
             Alguém atende a qualquer hora, todos os dias, e conduz tudo a partir
             daí. Você não precisa ter documento em mãos nem saber o que dizer.
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Botao
               href={`tel:${SITE.emergencia.tel}`}
               externo
+              ima
               tom="claro"
               icone={<IconeTelefone className="size-5 shrink-0" />}
             >
@@ -124,27 +155,31 @@ export function Fechamento() {
             <Botao
               href={`tel:${SITE.emergenciaAlt.tel}`}
               externo
-              tom="claro"
+              tom="vidro"
               icone={<IconeTelefone className="size-5 shrink-0" />}
             >
               {SITE.emergenciaAlt.rotulo}
             </Botao>
           </div>
+
+          <p className="mt-7 text-[0.9375rem] text-white/60">
+            Os dois números atendem óbito 24 horas, inclusive no feriado.
+          </p>
         </div>
 
-        <div className="rounded-serra-lg border border-white/15 bg-white/[0.06] p-7">
-          <h3 className="font-display text-[1.25rem] font-semibold text-white">
+        <div className="holofote holofote-escuro rounded-serra-lg border border-white/20 bg-[#04202f]/70 p-7 shadow-cine backdrop-blur-xl md:p-8">
+          <h3 className="font-display text-[1.375rem] leading-tight font-bold text-white">
             Ainda dá tempo de planejar
           </h3>
-          <p className="mt-3 leading-relaxed text-serra-100">
+          <p className="mt-4 leading-relaxed text-white/75">
             Contratar antes é o que evita que a família tenha que decidir preço
             no pior dia. Fale com a equipe e monte a cobertura com calma.
           </p>
-          <div className="mt-6">
+          <div className="mt-7">
             <Botao
               href={SITE.whatsapp.link}
               externo
-              tom="claro"
+              tom="zap"
               className="w-full"
               icone={<IconeWhatsApp className="size-5 shrink-0" />}
             >
@@ -153,6 +188,6 @@ export function Fechamento() {
           </div>
         </div>
       </div>
-    </Faixa>
+    </section>
   );
 }

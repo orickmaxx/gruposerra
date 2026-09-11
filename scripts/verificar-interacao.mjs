@@ -9,14 +9,8 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.BASE ?? "http://127.0.0.1:4330";
+const BASE = process.env.BASE ?? "http://127.0.0.1:4400";
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
-
-const ativo = (p) =>
-  p.evaluate(() => {
-    const ds = [...document.querySelectorAll('[role="tab"]')];
-    return ds.findIndex((d) => d.getAttribute("aria-selected") === "true");
-  });
 
 /* --------------------------------------------------------------- carrossel */
 /* O carrossel mudou: sem autoplay (o dono pediu), sem botao de pausa, seta em

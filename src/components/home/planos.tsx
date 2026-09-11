@@ -2,7 +2,7 @@ import { SITE } from "@/lib/site";
 import Image from "next/image";
 import { INCLUSOS, PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
 import { Contador } from "../contador";
-import { Botao, Faixa, Titulo } from "../ui";
+import { Botao, Faixa, Titulo, TituloCine } from "../ui";
 import { IconeConfere, IconePata, IconeAmparo } from "../icones";
 
 /** Base do WhatsApp, sem texto. O numero vive em lib/site.ts. */
@@ -28,8 +28,8 @@ function zapDoPlano(nome: string) {
 export function Planos() {
   return (
     <Faixa id="planos">
-      <Titulo centro apoio="Todo plano inclui assistência 24 horas, traslado e cobertura nacional. O que muda de um para o outro é quanta gente entra e quanto da cerimônia já está pago.">
-        Planos
+      <Titulo centro rotulo="Planos e preços" apoio="Todo plano inclui assistência 24 horas, traslado e cobertura nacional. O que muda de um para o outro é quanta gente entra e quanto da cerimônia já está pago.">
+        Três planos, a mesma assistência 24 horas
       </Titulo>
 
       {/*
@@ -45,14 +45,20 @@ export function Planos() {
           return (
             <li key={p.slug} className={`flex ${destaque ? "lg:-my-4" : ""}`}>
               <article
-                className={`cartao relative flex w-full flex-col overflow-hidden rounded-serra-lg ${
+                {...(destaque ? { "data-ativo": "1" } : {})}
+                className={`cartao-cine holofote aro-luz relative flex w-full flex-col overflow-hidden rounded-serra-lg ${
                   destaque
-                    ? "mat-azul text-serra-100 shadow-alta"
+                    ? "mat-azul holofote-escuro text-serra-100 shadow-alta"
                     : "border border-linha bg-white shadow-media"
                 }`}
               >
+                {/* O aro de luz do plano recomendado fica SEMPRE aceso
+                    (`data-ativo`), e o dos outros dois so acende no ponteiro.
+                    E a mesma hierarquia da superficie azul dita outra vez, num
+                    canal diferente: quem olha de longe ve o aro antes de ler a
+                    faixa. */}
                 {destaque && (
-                  <p className="bg-white/15 py-2.5 text-center text-[0.8125rem] font-bold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
+                  <p className="relative z-[1] bg-white/15 py-2.5 text-center text-[0.8125rem] font-bold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
                     O mais escolhido
                   </p>
                 )}
@@ -213,7 +219,8 @@ const GARANTIAS = [
 
 export function Inclusos() {
   return (
-    <section className="malha-escura faixa-escura relative overflow-hidden py-20 text-serra-100 md:py-28">
+    <section className="malha-escura faixa-escura aurora mosaico grao relative isolate overflow-hidden py-20 text-serra-100 md:py-28">
+      <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
       <Image
         src="/marca/simbolo-serra-branco.png"
         alt=""
@@ -229,9 +236,9 @@ export function Inclusos() {
             <p className="font-display text-[5rem] leading-[0.85] font-extrabold tracking-tight text-white sm:text-[6rem]">
               <Contador ate={INCLUSOS.length} />
             </p>
-            <h2 className="mt-4 max-w-[16ch] text-t2 text-white">
+            <TituloCine className="mt-4 max-w-[16ch] text-t2 text-white">
               itens já pagos quando você liga
-            </h2>
+            </TituloCine>
             <p className="mt-5 max-w-[42ch] text-lead text-serra-100/85">
               Não é uma lista de vantagens escrita para o site. É o que a
               família recebe, item por item, sem nenhuma conta para acertar

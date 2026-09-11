@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UNIDADES, distanciaKm, unidadeMaisPerto, type Unidade } from "@/data/unidades";
 import { SITE } from "@/lib/site";
+import { Rotulo, TituloCine } from "../ui";
 import { IconeAbaixo, IconeLocal, IconeRelogio, IconeSeta, IconeTelefone } from "../icones";
 
 /**
@@ -30,9 +31,12 @@ export function UnidadePerto() {
   );
   const [aberto, setAberto] = useState(false);
 
-  useEffect(() => {
-    if (!("geolocation" in navigator)) setEstado("indisponivel");
-  }, []);
+  /* ⛔ Havia aqui um efeito de montagem que só fazia `setEstado("indisponivel")`
+     quando o navegador não tem geolocalização. Custava um render a mais em
+     TODO mundo para desligar um botão em quase ninguém, e desligava sem dizer
+     por quê: um botão cinza e mudo. A checagem já existe no clique, que é o
+     único momento em que a resposta importa, e agora o motivo aparece escrito
+     ao lado, como já acontecia quando a pessoa nega a permissão. */
 
   const localizar = () => {
     if (!("geolocation" in navigator)) return setEstado("indisponivel");
@@ -64,13 +68,14 @@ export function UnidadePerto() {
       : SITE.emergencia;
 
   return (
-    <section className="bg-white py-12 md:py-20" id="unidades">
+    <section className="relative overflow-hidden bg-white py-16 md:py-24" id="unidades">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
         {/* Cabeca centralizada: e uma secao de oferta, nao de narrativa. */}
         <div className="mx-auto max-w-[46rem] text-center">
-          <h2 className="text-t2">
+          <Rotulo>Unidades</Rotulo>
+          <TituloCine className="text-t2">
             {estado === "ok" ? "A unidade mais perto de você" : "Qual unidade chamar"}
-          </h2>
+          </TituloCine>
           <p className="mx-auto mt-5 max-w-[56ch] text-lead text-pedra-600">
             {estado === "ok"
               ? "Ordenamos as 8 unidades pela distância até onde você está agora. Nada disso sai do seu navegador."
@@ -90,15 +95,16 @@ export function UnidadePerto() {
           )}
         </div>
 
-        {estado === "negado" && (
+        {(estado === "negado" || estado === "indisponivel") && (
           <p className="mx-auto mt-6 max-w-[62ch] rounded-serra border border-linha bg-white px-5 py-4 text-center text-[0.9375rem] text-pedra-700">
-            Sem problema, a localização continua desligada. Abaixo está a
-            matriz, e a lista completa das 8 unidades está logo em seguida.
+            {estado === "negado"
+              ? "Sem problema, a localização continua desligada. Abaixo está a matriz, e a lista completa das 8 unidades está logo em seguida."
+              : "Este navegador não oferece localização. Abaixo está a matriz, e a lista completa das 8 unidades está logo em seguida."}
           </p>
         )}
 
         {/* --- a unidade escolhida --- */}
-        <article className="cartao mt-10 overflow-hidden rounded-serra-lg border border-serra-200 bg-white shadow-media">
+        <article className="cartao-cine holofote mt-10 overflow-hidden rounded-serra-lg border border-serra-200 bg-white shadow-media">
           <div className="grid gap-8 p-7 md:grid-cols-[1.25fr_1fr] md:p-9">
             <div>
               <p className="flex flex-wrap items-center gap-2.5">
@@ -190,7 +196,7 @@ export function UnidadePerto() {
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {outras.map((u) => (
               <li key={u.slug}>
-                <article className="cartao flex h-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa">
+                <article className="cartao-cine holofote flex h-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa">
                   <h3 className="font-display text-[1.0625rem] font-bold text-tinta">
                     {u.nome}
                   </h3>

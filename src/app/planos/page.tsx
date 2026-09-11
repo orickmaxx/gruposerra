@@ -27,7 +27,7 @@ export default function Planos() {
             <li key={p.slug} className="flex">
               <Link
                 href={`/planos/${p.slug}`}
-                className={`cartao group flex w-full flex-col rounded-serra-lg border bg-white p-7 ${
+                className={`cartao-cine holofote group flex w-full flex-col rounded-serra-lg border bg-white p-7 ${
                   p.destaque
                     ? "border-serra-400 shadow-media ring-1 ring-serra-200"
                     : "border-linha shadow-baixa"
@@ -59,7 +59,7 @@ export default function Planos() {
             <li key={p.slug} className="flex">
               <Link
                 href={`/planos/${p.slug}`}
-                className="cartao group flex w-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa"
+                className="cartao-cine holofote group flex w-full flex-col rounded-serra-lg border border-linha bg-white p-6 shadow-baixa"
               >
                 <h2 className="font-display text-[1.1875rem] font-bold text-tinta">{p.nome}</h2>
                 <p className="mt-2 flex-1 text-[0.9375rem] leading-relaxed text-corpo">

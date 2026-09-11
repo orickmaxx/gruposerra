@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PLANOS } from "@/data/planos";
 import { SITE } from "@/lib/site";
-import { IconeConfere, IconePata, IconeSeta, IconeWhatsApp } from "../icones";
+import { Rotulo, TituloCine } from "../ui";
+import { IconeAbaixo, IconeConfere, IconePata, IconeSeta, IconeWhatsApp } from "../icones";
+import { explodirEmParticulas } from "../movimento";
 
 /**
  * Comparador de planos.
@@ -103,48 +105,16 @@ export function Comparador() {
     <Secao>
       <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
         <div>
-          <h2 className="max-w-[18ch] text-t2">
+          <Rotulo>Simulador</Rotulo>
+          <TituloCine className="max-w-[18ch] text-t2">
             Qual plano faz sentido para a sua família?
-          </h2>
+          </TituloCine>
           <p className="mt-5 max-w-[54ch] text-lead text-pedra-600">
             Quatro perguntas, e o site aponta um caminho. Não precisa responder
             todas.
           </p>
 
-          <div className="mt-10 space-y-8">
-            {PERGUNTAS.map((p) => (
-              <fieldset key={p.chave}>
-                <legend className="font-display text-[1.0625rem] font-bold text-tinta">
-                  {p.titulo}
-                </legend>
-                <div className="mt-3.5 flex flex-wrap gap-2.5">
-                  {p.opcoes.map((o) => {
-                    const ativo = resp[p.chave] === o.valor;
-                    return (
-                      <button
-                        key={o.valor}
-                        type="button"
-                        aria-pressed={ativo}
-                        onClick={() =>
-                          setResp((r) => ({
-                            ...r,
-                            [p.chave]: ativo ? undefined : o.valor,
-                          }))
-                        }
-                        className={`min-h-[2.875rem] rounded-full border px-4 text-[0.9375rem] font-semibold transition-all duration-300 ${
-                          ativo
-                            ? "border-serra-500 bg-serra-500 text-white shadow-azul"
-                            : "border-linha bg-white text-pedra-700 hover:-translate-y-0.5 hover:border-serra-300 hover:text-serra-600"
-                        }`}
-                      >
-                        {o.rotulo}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            ))}
-          </div>
+          <Perguntas resp={resp} setResp={setResp} />
         </div>
 
         {/* Resultado */}
@@ -218,9 +188,164 @@ export function Comparador() {
   );
 }
 
+
+/**
+ * As perguntas, UMA DE CADA VEZ.
+ *
+ * ⛔ Antes eram quatro blocos empilhados, com treze botoes visiveis ao mesmo
+ * tempo. Tecnicamente um formulario; na pratica, uma parede. O publico deste
+ * site e idoso e le no celular, e a decisao "qual plano" ja e pesada sem
+ * precisar ser tomada de uma vez so.
+ *
+ * Uma pergunta por tela resolve tres coisas ao mesmo tempo: o alvo de toque
+ * cresce, a resposta anterior nao fica competindo com a proxima, e cada
+ * resposta vira um AVANCO visivel em vez de mais um botao aceso no meio de
+ * doze. A barra de passos em cima diz quanto falta, que e a unica coisa que se
+ * perde ao esconder o resto.
+ *
+ * ACESSIBILIDADE: continua `fieldset` e `legend`, e o foco vai para o titulo
+ * da pergunta nova a cada avanco, senao quem navega por teclado ou leitor de
+ * tela fica preso no botao que acabou de sumir. Voltar e sempre possivel.
+ */
+function Perguntas({
+  resp,
+  setResp,
+}: {
+  resp: Partial<Record<Chave, string>>;
+  setResp: React.Dispatch<React.SetStateAction<Partial<Record<Chave, string>>>>;
+}) {
+  const [passo, setPasso] = useState(0);
+  const [fase, setFase] = useState<"entra" | "sai">("entra");
+  const tela = useRef<HTMLCanvasElement>(null);
+  const caixa = useRef<HTMLDivElement>(null);
+  const tituloRef = useRef<HTMLLegendElement>(null);
+  const pergunta = PERGUNTAS[passo];
+  const ultima = passo === PERGUNTAS.length - 1;
+
+  /* O foco so muda DEPOIS da troca, e so quando a troca partiu de um gesto da
+     pessoa. Mover foco na montagem roubaria a rolagem de quem so passou por
+     aqui descendo a pagina. */
+  const partiuDeGesto = useRef(false);
+  useEffect(() => {
+    if (!partiuDeGesto.current) return;
+    tituloRef.current?.focus();
+  }, [passo]);
+
+  const trocar = useCallback(
+    (proximo: number) => {
+      if (proximo < 0 || proximo >= PERGUNTAS.length) return;
+      partiuDeGesto.current = true;
+
+      /* As opcoes da pergunta que sai viram particulas. Nao e um efeito por
+         cima da interface: as particulas nascem na BORDA de cada botao e
+         herdam a cor dele, entao e a propria pergunta se desfazendo. */
+      const opcoes = [...(caixa.current?.querySelectorAll<HTMLElement>(".opcao") ?? [])];
+      explodirEmParticulas(tela.current, opcoes);
+
+      setFase("sai");
+      window.setTimeout(() => {
+        setPasso(proximo);
+        setFase("entra");
+      }, 300);
+    },
+    []
+  );
+
+  const responder = (valor: string) => {
+    const jaEra = resp[pergunta.chave] === valor;
+    setResp((r) => ({ ...r, [pergunta.chave]: jaEra ? undefined : valor }));
+    /* Responder AVANCA sozinho. Obrigar a clicar em "próxima" depois de clicar
+       na resposta e um clique a mais para dizer a mesma coisa. Desmarcar nao
+       avanca, porque desmarcar e voltar atras. */
+    if (!jaEra && !ultima) trocar(passo + 1);
+  };
+
+  return (
+    <div className="relative mt-10" ref={caixa}>
+      <canvas ref={tela} className="particulas" aria-hidden />
+
+      {/* --- passos --- */}
+      <div className="flex items-center gap-3">
+        <div className="flex flex-1 gap-1.5" aria-hidden>
+          {PERGUNTAS.map((p, i) => (
+            <span key={p.chave} className="passo" data-feito={i <= passo ? "1" : "0"}>
+              <span />
+            </span>
+          ))}
+        </div>
+        <p className="numerais text-[0.8125rem] font-bold tracking-wide text-pedra-600">
+          {passo + 1} de {PERGUNTAS.length}
+        </p>
+      </div>
+
+      <fieldset className="pergunta mt-7 min-h-[13rem]" data-fase={fase} key={pergunta.chave}>
+        <legend
+          ref={tituloRef}
+          tabIndex={-1}
+          className="font-display text-t3 font-bold text-tinta outline-none"
+        >
+          {pergunta.titulo}
+        </legend>
+
+        <div className="mt-5 flex flex-wrap gap-2.5">
+          {pergunta.opcoes.map((o, i) => {
+            const ativo = resp[pergunta.chave] === o.valor;
+            return (
+              <button
+                key={o.valor}
+                type="button"
+                aria-pressed={ativo}
+                style={{ ["--i" as string]: i }}
+                onClick={() => responder(o.valor)}
+                className={`opcao min-h-[3rem] rounded-full border px-5 text-[0.9375rem] font-semibold transition-all duration-300 ${
+                  ativo
+                    ? "border-serra-500 bg-serra-500 text-white shadow-azul"
+                    : "border-linha bg-white text-pedra-700 hover:-translate-y-0.5 hover:border-serra-400 hover:text-serra-600 hover:shadow-media"
+                }`}
+              >
+                {o.rotulo}
+              </button>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      {/* --- navegacao --- */}
+      <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <button
+          type="button"
+          onClick={() => trocar(passo - 1)}
+          disabled={passo === 0}
+          className="group inline-flex min-h-[2.75rem] items-center gap-2 text-[0.9375rem] font-semibold text-pedra-600 transition-colors hover:text-serra-600 disabled:opacity-40 disabled:hover:text-pedra-600"
+        >
+          <IconeAbaixo className="size-5 shrink-0 rotate-90 transition-transform duration-300 group-hover:-translate-x-1" />
+          Voltar
+        </button>
+
+        {!ultima && (
+          <button
+            type="button"
+            onClick={() => trocar(passo + 1)}
+            className="group inline-flex min-h-[2.75rem] items-center gap-2 text-[0.9375rem] font-semibold text-serra-600 transition-colors hover:text-serra-700"
+          >
+            {resp[pergunta.chave] ? "Próxima" : "Pular esta"}
+            <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
+        )}
+
+        {ultima && (
+          <p className="text-[0.9375rem] text-pedra-600">
+            A sugestão está ao lado, e muda a cada resposta.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Secao({ children }: { children: React.ReactNode }) {
   return (
-    <section id="comparador" className="bg-papel py-14 md:py-20">
+    <section id="comparador" className="relative overflow-hidden bg-papel py-16 md:py-24">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
         {children}
       </div>

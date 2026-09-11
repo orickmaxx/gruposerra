@@ -64,6 +64,7 @@ const OUTROS = [
   {
     href: "/homenagens",
     Icone: IconeFolha,
+    luz: "var(--color-verde)",
     material: "mat-homenagens",
     veu: "bg-verde",
     texto: "text-verde-forte",
@@ -75,6 +76,7 @@ const OUTROS = [
   {
     href: "/contato",
     Icone: IconeAviao,
+    luz: "var(--color-serra-500)",
     material: "botao-cheio",
     veu: "bg-serra-500",
     texto: "text-serra-600",
@@ -86,6 +88,7 @@ const OUTROS = [
   {
     href: "/contato",
     Icone: IconeCama,
+    luz: "var(--color-pedra-500)",
     material: "bg-pedra-600",
     veu: "bg-pedra-500",
     texto: "text-pedra-700",
@@ -98,9 +101,9 @@ const OUTROS = [
 
 export function Servicos() {
   return (
-    <section className="mat-memorial-fundo overflow-hidden py-12 md:py-20" id="servicos">
+    <section className="mat-memorial-fundo relative overflow-hidden py-16 md:py-24" id="servicos">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
-        <Titulo centro apoio="O plano cobre a cerimônia. Estes são os serviços em volta dela, alguns inclusos, outros contratados à parte.">
+        <Titulo centro rotulo="Serviços" cor="var(--color-memorial)" apoio="O plano cobre a cerimônia. Estes são os serviços em volta dela, alguns inclusos, outros contratados à parte.">
           Além do plano
         </Titulo>
 
@@ -108,14 +111,15 @@ export function Servicos() {
         <SerraPet />
 
         <ul className="trilho mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible">
-          {OUTROS.map(({ href, Icone, material, veu, texto, borda, titulo, resumo }) => (
+          {OUTROS.map(({ href, Icone, luz, material, veu, texto, borda, titulo, resumo }) => (
             <li key={titulo} className="flex w-[78%] shrink-0 snap-start sm:w-[55%] md:w-auto md:shrink">
               <Link
                 href={href}
-                className={`cartao group flex w-full flex-col rounded-serra-lg border border-white bg-white/85 p-7 shadow-media backdrop-blur-sm ${borda}`}
+                style={{ ["--luz" as string]: luz }}
+                className={`cartao-cine holofote group flex w-full flex-col rounded-serra-lg border border-white bg-white/85 p-7 shadow-media backdrop-blur-sm ${borda}`}
               >
                 <span
-                  className={`inline-flex size-12 items-center justify-center rounded-serra text-white ${material}`}
+                  className={`selo-icone inline-flex size-12 items-center justify-center rounded-serra text-white ${material}`}
                 >
                   <Icone className="size-6" />
                 </span>
@@ -146,7 +150,10 @@ export function Servicos() {
  */
 function Cremacao() {
   return (
-    <article className="mt-12 overflow-hidden rounded-serra-xl shadow-alta">
+    <article
+      data-revela
+      className="revela-escala mt-12 overflow-hidden rounded-serra-xl shadow-alta"
+    >
       <div className="grid lg:grid-cols-[1.02fr_1fr]">
         {/* --- painel de marca, na terracota do Memorial --- */}
         <div className="mat-memorial-escuro relative p-8 md:p-11">
@@ -211,10 +218,11 @@ function Cremacao() {
             sobrava um retangulo vazio embaixo, que e o tipo de buraco que
             entrega montagem. */}
         <div className="grid grid-cols-2 grid-rows-2 gap-px bg-dourado/25 lg:h-full">
-          {ESTRUTURA_FOTOS.map((f) => (
+          {ESTRUTURA_FOTOS.map((f, i) => (
             <figure
               key={f.src}
-              className="group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[13rem]"
+              style={{ ["--i" as string]: i }}
+              className="cortina group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[13rem]"
             >
               <Image
                 src={f.src}
@@ -222,6 +230,14 @@ function Cremacao() {
                 fill
                 sizes="(min-width: 1024px) 18rem, 50vw"
                 className={`object-cover ${f.objeto} transition-transform duration-700 group-hover:scale-[1.05]`}
+              />
+              {/* A foto e DESCOBERTA por uma cortina que sobe, uma depois da
+                  outra. Numa grade de quatro, revelar as quatro de uma vez le
+                  como imagem que demorou a carregar; em sequencia, le como
+                  quem esta mostrando o lugar. */}
+              <span
+                aria-hidden
+                className="cortina-veu pointer-events-none absolute inset-0 z-[2] origin-bottom bg-memorial"
               />
               <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-memorial/90 via-memorial/40 to-transparent px-4 pt-12 pb-3 text-[0.8125rem] font-semibold text-white">
                 {f.legenda}
@@ -243,7 +259,7 @@ function SerraPet() {
        cartao em vez de flutuar num quadradinho. Antes ficava com 17rem, presa
        numa coluna estreita e com o corte visivel na barriga do cachorro.
        Agora ocupa a altura toda do bloco e o cartao cresce junto. */
-    <article className="mat-pet-fundo cartao relative mt-6 overflow-hidden rounded-serra-xl border border-pet/25 shadow-media">
+    <article className="mat-pet-fundo cartao-cine holofote relative mt-6 overflow-hidden rounded-serra-xl border border-pet/25 shadow-media">
       <div className="relative grid items-end gap-2 p-7 pb-0 md:grid-cols-[1.05fr_minmax(0,26rem)] md:gap-4 md:p-11 md:pb-0">
         <div className="pb-2 md:pb-11">
           <span className="mat-pet inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[0.8125rem] font-bold tracking-wide text-white uppercase">

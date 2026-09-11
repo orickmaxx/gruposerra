@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV, SITE } from "@/lib/site";
 import { IconeBoleto, IconeFechar, IconeMenu, IconeTelefone, IconeWhatsApp } from "./icones";
@@ -27,6 +28,23 @@ import { IconeBoleto, IconeFechar, IconeMenu, IconeTelefone, IconeWhatsApp } fro
 export function Cabecalho() {
   const [aberto, setAberto] = useState(false);
   const [rolou, setRolou] = useState(false);
+  const rota = usePathname();
+
+  /**
+   * Modo transparente.
+   *
+   * Na home o herói e uma fotografia em tela cheia, e uma barra branca opaca
+   * por cima dela corta o plano no primeiro terco. Enquanto a pagina esta no
+   * topo o cabecalho some dentro da foto, com o logotipo na versao branca que
+   * o proprio cliente entrega. Ao primeiro gesto de rolagem ele volta a ser o
+   * cabecalho solido de sempre, porque a partir dai o fundo e claro e a
+   * navegacao precisa de contraste.
+   *
+   * ⚠ So vale onde EXISTE herói escuro. Em qualquer outra rota o cabecalho
+   * branco continua como estava: cabecalho transparente sobre fundo branco e
+   * texto branco invisivel, que e o defeito classico desse padrao.
+   */
+  const sobreHeroi = rota === "/" && !rolou;
 
   useEffect(() => {
     document.body.style.overflow = aberto ? "hidden" : "";
@@ -52,10 +70,12 @@ export function Cabecalho() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 border-b transition-all duration-300 ${
+        className={`sticky top-0 z-40 border-b transition-all duration-500 ${
           rolou
             ? "vidro border-linha shadow-[0_10px_30px_-24px_rgba(9,55,80,0.55)]"
-            : "border-transparent bg-white"
+            : sobreHeroi
+              ? "border-white/10 bg-transparent"
+              : "border-transparent bg-white"
         }`}
       >
         <div className="mx-auto flex max-w-[80rem] items-center gap-8 px-5 py-4 lg:py-5">
@@ -65,7 +85,11 @@ export function Cabecalho() {
             aria-label={`${SITE.nomeCompleto}, ir para a página inicial`}
           >
             <Image
-              src="/marca/logo-grupo-serra.png"
+              src={
+                sobreHeroi
+                  ? "/marca/logo-grupo-serra-branco.png"
+                  : "/marca/logo-grupo-serra.png"
+              }
               alt=""
               width={1400}
               height={376}
@@ -80,7 +104,11 @@ export function Cabecalho() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="relative block rounded-serra px-3.5 py-2.5 text-[0.9375rem] font-semibold text-pedra-700 transition-colors after:absolute after:inset-x-3.5 after:bottom-1.5 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:bg-serra-500 after:transition-transform after:duration-300 hover:text-serra-600 hover:after:scale-x-100"
+                    className={`relative block rounded-serra px-3.5 py-2.5 text-[0.9375rem] font-semibold transition-colors after:absolute after:inset-x-3.5 after:bottom-1.5 after:h-[2px] after:origin-left after:scale-x-0 after:rounded-full after:transition-transform after:duration-300 hover:after:scale-x-100 ${
+                      sobreHeroi
+                        ? "text-white/85 after:bg-white hover:text-white"
+                        : "text-pedra-700 after:bg-serra-500 hover:text-serra-600"
+                    }`}
                   >
                     {l.rotulo}
                   </Link>
@@ -104,7 +132,11 @@ export function Cabecalho() {
               onClick={() => setAberto(true)}
               aria-expanded={aberto}
               aria-controls="menu-celular"
-              className="inline-flex size-12 items-center justify-center rounded-serra border border-linha text-tinta transition-colors hover:border-serra-400 hover:text-serra-600 lg:hidden"
+              className={`inline-flex size-12 items-center justify-center rounded-serra border transition-colors lg:hidden ${
+                sobreHeroi
+                  ? "border-white/30 text-white hover:border-white/70"
+                  : "border-linha text-tinta hover:border-serra-400 hover:text-serra-600"
+              }`}
             >
               <IconeMenu titulo="Abrir menu" />
             </button>

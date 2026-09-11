@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DEPOIMENTOS, type Depoimento } from "@/data/depoimentos";
+import { Rotulo, TituloCine } from "../ui";
 import { IconeGoogle, IconeSeta } from "../icones";
+import { useArrastar } from "../movimento";
 
 /**
  * Depoimentos reais do Google.
@@ -25,6 +27,7 @@ import { IconeGoogle, IconeSeta } from "../icones";
  */
 export function Depoimentos() {
   const trilho = useRef<HTMLUListElement>(null);
+  useArrastar(trilho);
   const [pagina, setPagina] = useState(0);
   const [paginas, setPaginas] = useState(1);
 
@@ -61,7 +64,8 @@ export function Depoimentos() {
   };
 
   return (
-    <section id="depoimentos" className="palco relative overflow-hidden py-12 md:py-20">
+    <section id="depoimentos" className="palco aurora mosaico grao relative isolate overflow-hidden py-20 md:py-28">
+      <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
       {/*
         MARCA D'AGUA. Antes era o LOGOTIPO INTEIRO, girado 8 graus no canto
         superior esquerdo, com a palavra "Grupo Serra Funerarias" legivel e
@@ -81,13 +85,13 @@ export function Depoimentos() {
       />
 
       <div className="relative mx-auto max-w-[76rem] px-5 text-center" data-revela>
-        <p className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-[0.875rem] font-semibold text-serra-100 backdrop-blur-sm">
+        <Rotulo claro>
           <IconeGoogle className="size-4 shrink-0" />
           Avaliações públicas no Google
-        </p>
-        <h2 className="mx-auto mt-5 max-w-[20ch] text-t2 text-white">
+        </Rotulo>
+        <TituloCine className="mx-auto max-w-[20ch] text-t2 text-white">
           Quem já passou por isso conta melhor
-        </h2>
+        </TituloCine>
         <p className="mx-auto mt-5 max-w-[58ch] text-lead text-serra-100">
           Copiadas na íntegra, sem corte e sem retoque. Quase todas fazem
           questão de dizer o nome de quem atendeu.
@@ -106,15 +110,20 @@ export function Depoimentos() {
           <IconeSeta className="size-5 rotate-180" />
         </button>
 
+        {/* A perspectiva mora no TRILHO, nao em cada cartao: assim os tres
+            visiveis dividem o mesmo ponto de fuga e leem como uma prateleira.
+            Com `perspective` por cartao, cada um vira o proprio mundo e a
+            fileira inteira fica torta. */}
         <ul
           ref={trilho}
-          className="trilho grid snap-x snap-mandatory grid-flow-col gap-5 overflow-x-auto pb-2 [grid-auto-columns:100%] sm:[grid-auto-columns:calc(50%-0.625rem)] lg:[grid-auto-columns:calc(33.333%-0.834rem)]"
+          className="trilho palco3d grid snap-x snap-mandatory grid-flow-col gap-5 overflow-x-auto pt-2 pb-4 [grid-auto-columns:100%] sm:[grid-auto-columns:calc(50%-0.625rem)] lg:[grid-auto-columns:calc(33.333%-0.834rem)]"
           aria-label="Depoimentos de clientes no Google"
         >
           {DEPOIMENTOS.map((d, i) => (
             <li
               key={d.slug}
-              className="depo-entra flex snap-start"
+              className="depo-entra relevo flex snap-start"
+              data-giro="5"
               style={{ ["--i" as string]: i % 3 }}
             >
               <Cartao d={d} />
@@ -161,6 +170,9 @@ function Cartao({ d }: { d: Depoimento }) {
     >
       {/* Fio de cor que corre no topo do cartao ao passar o ponteiro. */}
       <span aria-hidden className="depo-fio" />
+      {/* Brilho especular que corre com a inclinacao. E o que diz "isto tem
+          superficie" em vez de "isto girou". */}
+      <span aria-hidden className="relevo-luz" />
       {/* O depoimento mais longo tem 3x o tamanho do mais curto e esticava os
           tres cartoes da pagina. O corte deixa os curtos inteiros e so encurta
           os dois maiores, que continuam abrindo completos no Google. */}
@@ -168,7 +180,9 @@ function Cartao({ d }: { d: Depoimento }) {
         {d.texto}
       </p>
 
-      <div className="relative mt-6 flex items-center gap-3.5 border-t border-linha pt-5">
+      {/* A assinatura sobe no eixo Z: e o pedaco que precisa saltar quando o
+          cartao inclina, porque e nele que mora a prova (nome, nota, Google). */}
+      <div className="relevo-frente relative mt-6 flex items-center gap-3.5 border-t border-linha pt-5">
         <Image
           src={d.foto}
           alt=""

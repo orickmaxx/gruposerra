@@ -11,7 +11,7 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.BASE ?? "http://127.0.0.1:4320";
+const BASE = process.env.BASE ?? "http://127.0.0.1:4400";
 const navegador = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
 
 function tx(el) {

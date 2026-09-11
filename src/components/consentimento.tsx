@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Script from "next/script";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import {
   CHAVE_CONSENTIMENTO,
   MEDICAO,
@@ -35,30 +35,75 @@ declare global {
  *    rodapé pode oferecer "rever minha escolha" a qualquer momento;
  *  - as tags só são montadas na página DEPOIS do aceite.
  */
+/* =========================================================================
+   A ESCOLHA MORA NO `localStorage`, ENTÃO ELA É UMA LOJA EXTERNA.
+
+   ⛔ A versão anterior lia o `localStorage` dentro de um `useEffect` e chamava
+   `setEscolha` ali mesmo. Funcionava e tinha três defeitos:
+
+     1. um render em cascata em toda visita, só para descobrir o que já estava
+        decidido antes de a página abrir;
+     2. duas abas do site discordavam entre si. Aceitar numa não fechava o
+        banner na outra, e a segunda continuava com as tags desligadas;
+     3. era exatamente o padrão que o `react-hooks/set-state-in-effect` acusa,
+        o único erro vermelho que sobrava no repositório.
+
+   `useSyncExternalStore` é a ferramenta feita para isto. O `subscribe` ouve o
+   evento `storage` (que é o que atravessa abas) mais um evento próprio para a
+   aba que fez a escolha, já que `storage` não dispara em quem escreveu.
+
+   Os TRÊS valores são distintos de propósito:
+     `undefined` .. ainda não se sabe (é o que o servidor devolve)
+     `null` ....... sabe-se que não há escolha guardada, então o banner abre
+     "aceito" / "recusado" .. a escolha da pessoa
+
+   Se `undefined` e `null` fossem a mesma coisa, o HTML do servidor traria o
+   banner para todo mundo, inclusive para quem já aceitou meses atrás.
+   ========================================================================= */
+
+const EVENTO = "serra:consentimento";
+
+function assinar(aoMudar: () => void) {
+  window.addEventListener("storage", aoMudar);
+  window.addEventListener(EVENTO, aoMudar);
+  return () => {
+    window.removeEventListener("storage", aoMudar);
+    window.removeEventListener(EVENTO, aoMudar);
+  };
+}
+
+/* Devolve string ou `null`, nunca um objeto novo: `useSyncExternalStore`
+   compara por identidade e um valor recriado a cada leitura entra em laço. */
+function lerEscolha(): Consentimento | null {
+  try {
+    const v = localStorage.getItem(CHAVE_CONSENTIMENTO);
+    return v === "aceito" || v === "recusado" ? v : null;
+  } catch {
+    /* navegação privada: trata como sem escolha */
+    return null;
+  }
+}
+
 export function Consentimento() {
-  const [escolha, setEscolha] = useState<Consentimento | null>(null);
-  const [aberto, setAberto] = useState(false);
-  const [montado, setMontado] = useState(false);
+  const escolha = useSyncExternalStore(assinar, lerEscolha, () => undefined);
+  const [reaberto, setReaberto] = useState(false);
+  const [fechado, setFechado] = useState(false);
+
+  /* O banner abre quando o cliente JÁ SABE que não há escolha guardada, ou
+     quando alguém pede para rever. Derivado, nunca sincronizado por efeito. */
+  const aberto = reaberto || (escolha === null && !fechado);
 
   useEffect(() => {
-    setMontado(true);
-    let guardado: string | null = null;
-    try {
-      guardado = localStorage.getItem(CHAVE_CONSENTIMENTO);
-    } catch {
-      /* navegação privada: trata como sem escolha */
-    }
-    if (guardado === "aceito" || guardado === "recusado") {
-      setEscolha(guardado);
-    } else {
-      setAberto(true);
-    }
-
+    /* Único efeito que sobrou, e ele faz o que efeito serve para fazer:
+       assinar um sistema externo. Qualquer elemento com `data-cookies-abrir`
+       reabre as preferências, então o rodapé pode oferecer isso a qualquer
+       momento sem conhecer este componente. */
     const reabrir = (e: Event) => {
       const alvo = e.target as HTMLElement | null;
       if (alvo?.closest("[data-cookies-abrir]")) {
         e.preventDefault();
-        setAberto(true);
+        setFechado(false);
+        setReaberto(true);
       }
     };
     document.addEventListener("click", reabrir);
@@ -73,7 +118,6 @@ export function Consentimento() {
     }
     const estado = valor === "aceito" ? "granted" : "denied";
     window.dataLayer = window.dataLayer || [];
-    // eslint-disable-next-line prefer-rest-params
     function gtag(...args: unknown[]) {
       window.dataLayer!.push(args);
     }
@@ -83,8 +127,10 @@ export function Consentimento() {
       ad_personalization: estado,
       analytics_storage: estado,
     });
-    setEscolha(valor);
-    setAberto(false);
+    setReaberto(false);
+    setFechado(true);
+    /* Avisa esta aba. As outras já ouvem o `storage` do próprio navegador. */
+    window.dispatchEvent(new Event(EVENTO));
   }, []);
 
   const podeMedir = escolha === "aceito";
@@ -92,7 +138,7 @@ export function Consentimento() {
   return (
     <>
       {/* As tags só existem na página depois do aceite. */}
-      {montado && podeMedir && TEM_MEDICAO && (
+      {podeMedir && TEM_MEDICAO && (
         <>
           {MEDICAO.gtm && (
             <Script id="gtm" strategy="afterInteractive">

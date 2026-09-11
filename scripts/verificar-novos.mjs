@@ -4,7 +4,7 @@
  */
 import { chromium } from "playwright";
 
-const BASE = process.env.BASE ?? "http://127.0.0.1:4360";
+const BASE = process.env.BASE ?? "http://127.0.0.1:4400";
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
 const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
 
@@ -48,7 +48,11 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
   // reabrir pelo rodape
   await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await p.waitForTimeout(400);
-  await p.getByRole("button", { name: /Rever minha escolha/i }).click();
+  /* O rotulo no rodape mudou de "Rever minha escolha de cookies" para
+     "Preferencias de cookies" numa rodada anterior e este teste ficou para
+     tras, falhando por 30s de timeout. Teste quebrado no repositorio e pior
+     que teste nenhum: ensina a ignorar o vermelho. */
+  await p.getByRole("button", { name: /Prefer[eê]ncias de cookies/i }).click();
   await p.waitForTimeout(400);
   const reabriu = await p.getByRole("dialog").isVisible().catch(() => false);
   console.log(`reabre no rodape  ${ok(reabriu)}`);
@@ -62,6 +66,35 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
   });
   console.log(
     `aceite atualiza   analytics=${update?.analytics_storage}   ${ok(update?.analytics_storage === "granted")}`
+  );
+  await ctx.close();
+}
+
+/* -------------------------------------------- consentimento em duas abas */
+{
+  /* ⛔ Este teste precisa de um contexto NOVO. A primeira tentativa foi
+     pendurada no bloco de LGPD acima, que a essa altura ja tinha gravado
+     "recusado": a segunda aba abria sem banner com toda razao, e o teste
+     acusava falha de uma coisa que estava certa. Teste que depende do estado
+     deixado por outro teste mede o outro teste. */
+  const ctx = await nav.newContext({ viewport: { width: 1440, height: 900 }, locale: "pt-BR" });
+  const a = await ctx.newPage();
+  const b = await ctx.newPage();
+  await a.goto(BASE + "/", { waitUntil: "networkidle" });
+  await b.goto(BASE + "/", { waitUntil: "networkidle" });
+  await b.waitForTimeout(700);
+
+  const abertoNaB = await b.getByRole("dialog").isVisible().catch(() => false);
+
+  await a.bringToFront();
+  await a.getByRole("button", { name: "Aceitar", exact: true }).click();
+  await b.waitForTimeout(1000);
+  const aindaNaB = await b.getByRole("dialog").isVisible().catch(() => false);
+
+  console.log(
+    `duas abas         banner na 2a=${abertoNaB}, fechou sozinho=${!aindaNaB}   ${ok(
+      abertoNaB && !aindaNaB
+    )}  (a versao antiga lia o localStorage uma vez so, no efeito de montagem)`
   );
   await ctx.close();
 }

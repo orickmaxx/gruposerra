@@ -23,7 +23,7 @@
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
-const BASE = process.env.BASE ?? "http://127.0.0.1:4313";
+const BASE = process.env.BASE ?? "http://127.0.0.1:4400";
 const SAIDA = process.argv[2] ?? "../.impeccable/review";
 const TETO_SEGMENTO = 7800; // folga confortavel abaixo do teto do Chrome
 const SOBREPOSICAO = 120; // nada pode cair na emenda

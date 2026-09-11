@@ -8,6 +8,7 @@ import { BarraEmergencia } from "@/components/barra-emergencia";
 import { Revelacao } from "@/components/revelacao";
 import { Consentimento } from "@/components/consentimento";
 import { VoltarAoTopo } from "@/components/voltar-ao-topo";
+import { FocoNoCelular, PonteiroVivo, TrilhoProgresso } from "@/components/movimento";
 import { SCRIPT_PADRAO_NEGADO } from "@/lib/medicao";
 
 const display = Manrope({
@@ -119,6 +120,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Pular para o conteúdo
         </a>
         <Revelacao />
+        <TrilhoProgresso />
+        <PonteiroVivo />
+        <FocoNoCelular />
         <BarraEmergencia />
         <Cabecalho />
         <main id="conteudo" className="flex-1">

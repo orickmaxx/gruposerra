@@ -6,6 +6,8 @@ import {
   TOTAL_BENEFICIOS,
   VITRINES,
 } from "@/data/beneficios";
+import { Rotulo, TituloCine } from "../ui";
+import { Esteira } from "../movimento";
 import { IconeSeta } from "../icones";
 
 /**
@@ -26,13 +28,13 @@ import { IconeSeta } from "../icones";
  */
 export function Clube() {
   return (
-    <section className="mat-clube-fundo overflow-hidden py-12 md:py-20" id="beneficios">
+    <section className="mat-clube-fundo relative overflow-hidden py-16 md:py-24" id="beneficios">
       <div className="mx-auto max-w-[80rem] px-5" data-revela>
         <div className="mx-auto max-w-[46rem] text-center">
-          <p className="text-[0.875rem] font-bold tracking-[0.14em] text-clube-forte uppercase">
-            Clube de Benefícios
-          </p>
-          <h2 className="mt-4 text-t2">Ser associado dá desconto na vida toda</h2>
+          <Rotulo cor="var(--color-clube-forte)">Clube de Benefícios</Rotulo>
+          <TituloCine className="text-t2">
+            Ser associado dá desconto na vida toda
+          </TituloCine>
           <p className="mx-auto mt-5 max-w-[56ch] text-lead text-pedra-600">
             Quem tem plano no Grupo Serra entra numa rede de{" "}
             <strong className="font-bold text-tinta">
@@ -47,7 +49,7 @@ export function Clube() {
         <ul className="trilho mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible">
           {VITRINES.map((v) => (
             <li key={v.slug} className="flex w-[85%] shrink-0 snap-start sm:w-[62%] lg:w-auto lg:shrink">
-              <article className="cartao flex w-full flex-col rounded-serra-lg border border-clube/25 bg-white/90 p-7 shadow-media backdrop-blur-sm">
+              <article className="cartao-cine holofote flex w-full flex-col rounded-serra-lg border border-clube/25 bg-white/90 p-7 shadow-media backdrop-blur-sm">
                 <h3 className="font-display text-[1.25rem] font-bold text-tinta">
                   {v.titulo}
                 </h3>
@@ -98,21 +100,20 @@ export function Clube() {
           <p className="text-center text-[0.875rem] font-semibold text-pedra-600">
             E mais {TOTAL_BENEFICIOS - 9} benefícios com marcas como
           </p>
-          <div className="esteira mt-6" aria-hidden>
-            <ul className="esteira-fita">
-              {[...MARCAS_PARCEIRAS, ...MARCAS_PARCEIRAS].map((m, i) => (
-                <li key={`${m.nome}-${i}`} className="shrink-0 px-7">
-                  <Image
-                    src={m.logo}
-                    alt=""
-                    width={160}
-                    height={70}
-                    className="h-10 w-auto object-contain opacity-80 grayscale-[0.35] transition duration-300 hover:opacity-100 hover:grayscale-0"
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
+          <Esteira>
+            {[...MARCAS_PARCEIRAS, ...MARCAS_PARCEIRAS].map((m, i) => (
+              <li key={`${m.nome}-${i}`} className="shrink-0 px-7">
+                <Image
+                  src={m.logo}
+                  alt=""
+                  width={160}
+                  height={70}
+                  draggable={false}
+                  className="h-10 w-auto object-contain opacity-80 grayscale-[0.35] transition duration-300 hover:opacity-100 hover:grayscale-0"
+                />
+              </li>
+            ))}
+          </Esteira>
           <p className="sr-only">
             Outras marcas parceiras: {MARCAS_PARCEIRAS.map((m) => m.nome).join(", ")}.
           </p>

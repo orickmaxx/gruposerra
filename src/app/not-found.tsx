@@ -54,7 +54,7 @@ export default function NaoEncontrada() {
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="cartao group flex h-full flex-col rounded-serra-lg border border-linha bg-white p-5 shadow-baixa"
+                className="cartao-cine holofote group flex h-full flex-col rounded-serra-lg border border-linha bg-white p-5 shadow-baixa"
               >
                 <span className="inline-flex items-center gap-1.5 font-display font-bold text-tinta">
                   {l.rotulo}

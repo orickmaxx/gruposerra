@@ -1,6 +1,7 @@
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
 import { MolduraFoto } from "../moldura-foto";
+import { Rotulo, TituloCine } from "../ui";
 import { IconeCoracao } from "../icones";
 
 /**
@@ -19,19 +20,19 @@ import { IconeCoracao } from "../icones";
 
 export function Sobre() {
   return (
-    <section id="sobre" className="bg-papel py-12 md:py-20">
+    <section id="sobre" className="relative overflow-hidden bg-papel py-16 md:py-24">
       <div className="mx-auto max-w-[76rem] px-5">
         {/* --- historia --- */}
         <div className="grid items-center gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16" data-revela>
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full bg-serra-500/10 px-4 py-2 text-[0.875rem] font-semibold text-serra-600">
+            <Rotulo>
               <IconeCoracao className="size-4 shrink-0" />
               Nossa história
-            </p>
+            </Rotulo>
 
-            <h2 className="mt-5 max-w-[20ch] text-t2">
+            <TituloCine className="max-w-[20ch] text-t2">
               Uma família cuidando de outra, {SITE.idadeTexto}
-            </h2>
+            </TituloCine>
 
             <div className="mt-6 max-w-[58ch] space-y-4 text-lead leading-relaxed text-corpo">
               <p>

@@ -4,6 +4,7 @@ import { useActionState, useId, useState } from "react";
 import { enviarLead, type EstadoLead } from "@/app/acoes";
 import { UNIDADES } from "@/data/unidades";
 import { SITE } from "@/lib/site";
+import { Rotulo, TituloCine } from "../ui";
 import { IconeConfere, IconeSeta, IconeTelefone, IconeWhatsApp } from "../icones";
 
 /**
@@ -44,7 +45,7 @@ export function Formulario() {
 
   if (estado.estado === "ok") {
     return (
-      <section id="contato" className="bg-white py-12 md:py-20">
+      <section id="contato" className="relative overflow-hidden bg-white py-16 md:py-24">
         <div className="mx-auto max-w-[46rem] px-5 text-center" data-revela>
           <span className="mx-auto inline-flex size-16 items-center justify-center rounded-full bg-verde/15 text-verde-forte">
             <IconeConfere className="size-8" />
@@ -78,13 +79,14 @@ export function Formulario() {
   }
 
   return (
-    <section id="contato" className="bg-white py-12 md:py-20">
+    <section id="contato" className="relative overflow-hidden bg-white py-16 md:py-24">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
         <div className="grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <div>
-            <h2 className="max-w-[18ch] text-t2">
+            <Rotulo>Contato</Rotulo>
+            <TituloCine className="max-w-[18ch] text-t2">
               Prefere que a gente ligue para você?
-            </h2>
+            </TituloCine>
             <p className="mt-5 max-w-[52ch] text-lead text-pedra-600">
               Deixe o contato e alguém da unidade mais perto fala com você, sem
               compromisso e sem script de venda.

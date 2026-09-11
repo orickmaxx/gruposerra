@@ -26,7 +26,7 @@ export default function Blog() {
             <li key={a.slug} className="flex">
               <Link
                 href={`/blog/${a.slug}`}
-                className="cartao group flex h-full flex-col rounded-serra-lg border border-linha bg-white p-7 shadow-baixa"
+                className="cartao-cine holofote group flex h-full flex-col rounded-serra-lg border border-linha bg-white p-7 shadow-baixa"
               >
                 <p className="flex items-center gap-3 text-[0.8125rem] font-semibold text-serra-600">
                   <span className="rounded-full bg-serra-500/10 px-3 py-1">{a.categoria}</span>

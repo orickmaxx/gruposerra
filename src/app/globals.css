@@ -115,7 +115,10 @@
   --text-t3: clamp(1.3125rem, 1.16rem + 0.6vw, 1.625rem);
   --text-t2: clamp(1.875rem, 1.45rem + 1.9vw, 3rem);
   --text-t1: clamp(2.125rem, 1.6rem + 2.4vw, 3.5rem);
-  --text-hero: clamp(2.625rem, 1.75rem + 3.9vw, 4.75rem);
+  /* O herói ficou maior de proposito. Uma manchete que ocupa a tela e a
+     diferenca entre "pagina de empresa" e "peca". A escala minima continua
+     legivel em 320px de largura. */
+  --text-hero: clamp(2.75rem, 1.6rem + 4.7vw, 5.375rem);
 
   /* Raio grande: e metade do que separa "moderno" de "institucional" */
   --radius-serra: 14px;
@@ -130,6 +133,20 @@
 
   --ease-serra: cubic-bezier(0.16, 0.84, 0.3, 1);
   --ease-suave: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Curvas do registro cinematografico. `cine` e uma saida longa, quase sem
+     freio, que e o que faz um movimento parecer filmado em vez de programado.
+     `mola` passa 2% do alvo e volta: e para o que precisa parecer fisico
+     (icone que salta, marcador que encaixa). */
+  --ease-cine: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Luz da marca: o azul virando ciano. Usado em fio, aro e realce sobre
+     escuro. Nunca em texto corrido. */
+  --luz-serra: linear-gradient(100deg, #0069a3, #22b8d4 55%, #7fd8ea);
+
+  --shadow-cine: 0 2px 6px rgba(6, 30, 44, 0.18), 0 40px 90px -30px rgba(6, 30, 44, 0.55);
+  --shadow-luz: 0 0 0 1px rgba(34, 184, 212, 0.25), 0 18px 50px -14px rgba(34, 184, 212, 0.45);
 }
 
 /* =========================================================================
@@ -147,6 +164,26 @@
   *::before,
   *::after {
     box-sizing: border-box;
+  }
+
+  /* Altura real do cabecalho, por faixa de largura. Existe para UMA coisa: o
+     herói da home sobe por baixo dele (`margin-top` negativo) e devolve o
+     mesmo tanto em `padding-top`, para a fotografia comecar no topo da janela
+     sem que o conteudo fique escondido atras da barra. Numero chutado aqui
+     vira texto cortado, entao ele sai da conta: py + altura do logotipo + 1px
+     de borda. */
+  :root {
+    --alt-cabecalho: 77px;
+  }
+  @media (min-width: 640px) {
+    :root {
+      --alt-cabecalho: 81px;
+    }
+  }
+  @media (min-width: 1024px) {
+    :root {
+      --alt-cabecalho: 97px;
+    }
   }
 
   html {
@@ -215,24 +252,26 @@
   :root {
     caret-color: var(--color-serra-500);
     accent-color: var(--color-serra-500);
-    scrollbar-color: var(--color-pedra-300) var(--color-papel);
+    scrollbar-color: color-mix(in srgb, var(--color-pedra-400) 55%, transparent) transparent;
     scrollbar-width: thin;
   }
 
+  /* 11px de largura com 3px de borda era uma barra GORDA, e barra de rolagem
+     e cromo do navegador: quanto menos ela ocupa, mais sobra para a pagina.
+     6px continua sendo alvo de mouse aceitavel e some do caminho. */
   ::-webkit-scrollbar {
-    width: 11px;
-    height: 11px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-papel);
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-pedra-300);
-    border: 3px solid var(--color-papel);
+    background: color-mix(in srgb, var(--color-pedra-400) 55%, transparent);
     border-radius: 99px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-pedra-400);
+    background: var(--color-pedra-500);
   }
 
   :focus-visible {
@@ -389,50 +428,6 @@
   .js-revela [data-revela][data-visivel="1"] .item-cascata {
     opacity: 1;
     transform: none;
-    animation: none;
-  }
-}
-
-/* =========================================================================
-   Esteira de marcas parceiras
-
-   A lista duplicada anda 50% e reinicia, entao a emenda e invisivel. A mascara
-   nas bordas evita o corte seco, que e o detalhe que separa esteira feita de
-   esteira colada. Para no ponteiro, para quem quiser ler um logotipo, e nao
-   anda sozinha em prefers-reduced-motion.
-   ========================================================================= */
-
-.esteira {
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-
-.esteira-fita {
-  display: flex;
-  align-items: center;
-  width: max-content;
-  animation: esteira-anda 38s linear infinite;
-}
-
-.esteira:hover .esteira-fita {
-  animation-play-state: paused;
-}
-
-@keyframes esteira-anda {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .esteira {
-    overflow-x: auto;
-  }
-  .esteira-fita {
     animation: none;
   }
 }
@@ -637,6 +632,22 @@
   animation-delay: calc(var(--i, 0) * 90ms);
 }
 
+/* Entrada escalonada de um elemento SOLTO do primeiro viewport, sem depender
+   de um pai `.revela` e sem esperar o JavaScript. O herói usa isto porque o
+   conteudo dele vive em duas colunas de uma grade: envolver tudo num pai so
+   para animar quebraria o layout. `both` segura o estado inicial desde o
+   primeiro quadro, entao nao ha piscada. */
+.revela-texto {
+  animation: serra-sobe 820ms var(--ease-cine) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 140ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revela-texto {
+    animation: none;
+  }
+}
+
 /* Revelacao no scroll. O estado inicial so e aplicado quando o JS confirma que
    vai observar (html.js-revela), para nao esconder conteudo em pagina sem JS. */
 .js-revela [data-revela] {
@@ -760,12 +771,43 @@
   .cartao:hover {
     transform: none;
   }
+
+  /* =======================================================================
+     ⛔ ESTA REGRA ESTAVA LARGA DEMAIS, E O DEFEITO ERA VISIVEL.
+
+     Era `*{ transition-duration: 1ms !important }`. Isso nao reduz MOVIMENTO,
+     apaga FEEDBACK: com o ajuste do sistema ligado, o site perdia junto toda
+     transicao de cor, de fundo, de borda e de opacidade. O botao trocava de
+     cor de estalo, o cartao aceso e o apagado viravam a mesma coisa, e a linha
+     do tempo deixava de "ir colorindo". Nada disso faz ninguem passar mal.
+
+     `prefers-reduced-motion` pede menos MOVIMENTO. O que enjoa e deslocamento,
+     escala, rotacao, paralaxe e zoom, nao um fade de 200ms. Entao a lista de
+     propriedades passa a ser branca: tudo que NAO desloca continua animando, e
+     `transform` simplesmente sai da lista, o que mata toda translacao, giro e
+     escala da pagina de uma vez, sem precisar caca-las uma a uma.
+
+     A regra de ouro que sai disto e mais importante que a lista:
+     REDUZIR MOVIMENTO É TIRAR A ANIMAÇÃO, NUNCA A MUDANÇA DE ESTADO. O ano
+     aceso continua aceso, o cartao ativo continua marcado, a resposta escolhida
+     continua azul. So nao ha percurso entre um estado e o outro.
+     ======================================================================= */
   *,
   *::before,
   *::after {
-    transition-duration: 1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
+    transition-property:
+      opacity, color, background-color, background-image, border-color, box-shadow, fill,
+      stroke, text-decoration-color, filter !important;
+    transition-duration: 200ms !important;
+  }
+
+  /* O trilho de progresso e a unica excecao, e ela se justifica: ele nao anima
+     sozinho, ele ESPELHA a rolagem que a propria pessoa esta fazendo, igual a
+     barra de rolagem do navegador, que ninguem desliga por enjoo. */
+  .progresso {
+    transition: none !important;
   }
 }
 
@@ -821,5 +863,962 @@ details.faq[open]::before {
   details.faq > .faq-corpo,
   details.faq::before {
     transition: none;
+  }
+}
+
+/* =========================================================================
+   CINEMA
+
+   A camada que separa "site institucional bem feito" de "peca que prende".
+   Tudo aqui obedece a tres regras, e a terceira e a que costuma ser quebrada:
+
+   1. Todo movimento carrega SIGNIFICADO. Nada se mexe por enfeite.
+   2. Toda superficie tem FONTE DE LUZ. Sombra cinza e sombra de template;
+      sombra tingida com a cor da propria superficie e sombra de objeto.
+   3. Nada aqui pode esconder conteudo se o JavaScript nao rodar. O estado
+      inicial escondido so existe sob `html.js-revela`, que so o componente de
+      revelacao liga. Quem abre este site pode estar de madrugada, em conexao
+      ruim, no pior dia da vida. Pagina em branco nao e opcao estetica.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   GRAO DE FILME
+
+   Uma foto de funeraria em tela cheia, escurecida por gradiente, vira uma
+   mancha lisa e digital. O grao devolve materia: e o que faz o olho ler
+   "fotografia" em vez de "fundo". Turbulencia SVG inline, nenhum arquivo,
+   nenhuma requisicao, cerca de 400 bytes.
+
+   `mix-blend-mode: overlay` mantem o grao dentro do contraste da foto: ele
+   escurece o claro e clareia o escuro, em vez de jogar uma neblina cinza por
+   cima de tudo, que e o erro classico de grao feito com PNG.
+   ------------------------------------------------------------------------- */
+.grao::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.3;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22140%22%20height%3D%22140%22%3E%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%223%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22140%22%20height%3D%22140%22%20filter%3D%22url(%23g)%22%20opacity%3D%220.55%22%2F%3E%3C%2Fsvg%3E");
+}
+
+/* -------------------------------------------------------------------------
+   VINHETA
+
+   Escurece as quinas e nao o centro. E o gesto mais antigo do cinema e serve
+   aqui para a mesma coisa de sempre: prender o olho no meio do quadro, que e
+   onde estao o titulo e o telefone.
+   ------------------------------------------------------------------------- */
+.vinheta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(118% 88% at 50% 40%, transparent 34%, rgba(4, 20, 30, 0.55) 100%),
+    linear-gradient(180deg, rgba(4, 20, 30, 0.5) 0%, transparent 26%);
+}
+
+/* -------------------------------------------------------------------------
+   FOTO EM AZUL DA MARCA
+
+   As fotos reais do cliente sao boas, mas sao BEGE: parede creme, piso creme,
+   madeira clara. Postas cruas atras de texto branco elas brigam com o azul da
+   marca e derrubam o contraste. O tratamento resolve os dois problemas de uma
+   vez: dessatura, escurece e joga o azul institucional por cima em multiply.
+   A foto continua sendo a foto do lugar, e passa a pertencer a marca.
+   ------------------------------------------------------------------------- */
+.foto-marca {
+  filter: saturate(0.62) contrast(1.06) brightness(0.86);
+}
+
+/* ⛔ Primeira tentativa usou `mix-blend-mode: multiply` e o resultado foi
+   CINZA, nao azul: multiply sobre uma foto ja escurecida multiplica escuro por
+   escuro e a cor morre no caminho. O veu certo e opaco e empilhado: um
+   gradiente vertical que segura topo e base, e um horizontal que carrega o
+   azul da marca do lado onde o texto vive. */
+.foto-marca-veu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      100deg,
+      rgba(4, 26, 40, 0.95) 0%,
+      rgba(6, 45, 70, 0.86) 34%,
+      rgba(0, 78, 122, 0.62) 62%,
+      rgba(0, 105, 163, 0.42) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(5, 26, 39, 0.62) 0%,
+      transparent 26%,
+      transparent 62%,
+      rgba(4, 22, 33, 0.9) 100%
+    );
+}
+
+/* -------------------------------------------------------------------------
+   KEN BURNS
+
+   Zoom lentissimo e continuo na foto de fundo. 30 segundos por ciclo, escala
+   de 1 a 1.085: e devagar o suficiente para ninguem CONSEGUIR apontar o que
+   esta se mexendo, e vivo o suficiente para o quadro nunca parecer morto.
+   Esse e exatamente o efeito procurado. Movimento que se nota vira distracao.
+   ------------------------------------------------------------------------- */
+@keyframes serra-kenburns {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.085) translate3d(-1.2%, -1.6%, 0);
+  }
+}
+.kenburns {
+  animation: serra-kenburns 30s var(--ease-suave) infinite alternate;
+  will-change: transform;
+}
+
+/* -------------------------------------------------------------------------
+   AURORA
+
+   Ler a proibicao antes de mexer: TRES MANCHAS RADIAIS COLORIDAS num fundo
+   claro sao a assinatura visual de fundo gerado por IA, e o dono reprovou na
+   hora. Isto aqui NAO e aquilo, e a diferenca e de principio:
+
+     - vive so em superficie ESCURA, nunca sobre branco;
+     - e um tom so, o azul da marca virando ciano, nunca tres cores;
+     - anda. Mancha parada e adesivo; luz que se desloca em 22s le como facho.
+
+   O que ela faz de verdade e dar uma FONTE DE LUZ a secao escura, para a
+   sombra dos cartoes cair num sentido coerente em vez de flutuar no vazio.
+   ------------------------------------------------------------------------- */
+@keyframes serra-aurora {
+  0% {
+    transform: translate3d(-6%, 0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(6%, -3%, 0) scale(1.15);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-6%, 0, 0) scale(1);
+    opacity: 0.5;
+  }
+}
+.aurora {
+  position: relative;
+  isolation: isolate;
+}
+.aurora::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10% auto -10%;
+  height: 95%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    58% 62% at 50% 40%,
+    rgba(34, 184, 212, 0.32) 0%,
+    rgba(0, 105, 163, 0.18) 42%,
+    transparent 72%
+  );
+  filter: blur(30px);
+  animation: serra-aurora 22s var(--ease-suave) infinite;
+  will-change: transform, opacity;
+}
+
+/* -------------------------------------------------------------------------
+   HOLOFOTE
+
+   O cartao acende SOB O PONTEIRO. As coordenadas chegam em `--mx` e `--my`
+   pelo componente `Holofote`, num unico listener delegado na secao inteira,
+   nao um por cartao: com 20 cartoes na tela, 20 listeners de mousemove sao 20
+   oportunidades de travar a rolagem no celular de quem nem tem ponteiro.
+
+   O `--luz` de cada cartao e a cor do SERVICO dele. E por isso que o holofote
+   nao e enfeite: passar o mouse no cartao de cremacao acende terracota, e no
+   de homenagens acende verde. A luz confirma o codigo de cor da casa.
+   ------------------------------------------------------------------------- */
+.holofote {
+  position: relative;
+  isolation: isolate;
+}
+.holofote::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 420ms var(--ease-serra);
+  background: radial-gradient(
+    16rem 16rem at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--luz, #0069a3) 15%, transparent),
+    transparent 72%
+  );
+}
+.holofote:hover::before,
+.holofote:focus-within::before {
+  opacity: 1;
+}
+.holofote > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Holofote sobre superficie escura: a luz precisa ser branca, senao some. */
+.holofote-escuro::before {
+  background: radial-gradient(
+    18rem 18rem at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.13),
+    transparent 70%
+  );
+}
+
+/* -------------------------------------------------------------------------
+   ARO DE LUZ
+
+   Fio de 1px em gradiente que corre a borda do cartao. Feito com duas camadas
+   de mascara e `mask-composite: exclude`, que e a unica forma de ter borda em
+   gradiente COM raio arredondado sem cortar o miolo do cartao.
+   ------------------------------------------------------------------------- */
+.aro-luz {
+  position: relative;
+}
+.aro-luz::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: var(--luz-serra);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 450ms var(--ease-serra);
+}
+.aro-luz:hover::after,
+.aro-luz:focus-within::after,
+.aro-luz[data-ativo="1"]::after {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------------------------
+   VARREDURA
+
+   Um facho diagonal atravessa o botao no ponteiro. E o gesto mais barato de
+   "material caro" que existe e o unico que nao custa legibilidade nenhuma,
+   porque acontece no fundo e dura 780ms.
+   ------------------------------------------------------------------------- */
+.varre {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.varre::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: 0;
+  width: 26%;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(-320%, 0, 0) rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: transform 780ms var(--ease-cine);
+}
+.varre:hover::after,
+.varre:focus-visible::after {
+  transform: translate3d(560%, 0, 0) rotate(18deg);
+}
+.varre > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------------------
+   IMA
+
+   O botao segue o ponteiro dentro de um raio curto, ate 7px, e volta com mola
+   quando o ponteiro sai. O deslocamento chega em `--ix` e `--iy` pelo
+   componente. Sete pixels e o limite: acima disso o alvo foge do cursor e o
+   clique erra, que e como esse efeito costuma ser feito errado.
+   ------------------------------------------------------------------------- */
+.ima {
+  transform: translate3d(var(--ix, 0px), var(--iy, 0px), 0);
+  transition: transform 520ms var(--ease-mola);
+}
+.ima[data-preso="1"] {
+  transition: transform 90ms linear;
+}
+
+/* -------------------------------------------------------------------------
+   PARALAXE
+
+   O fundo anda mais devagar que o texto conforme a pagina rola. O deslocamento
+   chega em `--par` pelo componente, ja limitado, e o transform e sempre
+   translate3d para ficar na GPU. Nunca `background-position`, que repinta.
+   ------------------------------------------------------------------------- */
+.paralaxe {
+  transform: translate3d(0, var(--par, 0px), 0);
+  will-change: transform;
+}
+
+/* -------------------------------------------------------------------------
+   TITULO CINEMATOGRAFICO
+
+   A manchete sobe POR LINHA, de dentro de uma mascara, como legenda de filme.
+   Cada linha e um `span` com `overflow: hidden` e o texto dentro comeca
+   deslocado para baixo. E o efeito de entrada mais forte que existe e ele nao
+   custa nada em acessibilidade, porque o texto continua sendo texto: um leitor
+   de tela le a frase inteira, a mascara e so pintura.
+
+   Sem JS a frase aparece pronta, porque o estado inicial vive sob `.js-revela`.
+   ------------------------------------------------------------------------- */
+.linha-mascara {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.linha-mascara > span {
+  display: block;
+}
+/* ⛔ O ESTADO ESCONDIDO EXIGE UM `[data-revela]` ACIMA. Escrito como
+   `.js-revela .titulo-cine ...`, o esconde-esconde valia para QUALQUER titulo
+   em mascara da pagina, inclusive um que nao vivesse dentro de um bloco
+   observado: esse ficaria com opacidade 0 para sempre, porque ninguem jamais
+   lhe daria `data-visivel`. Amarrar o estado inicial ao mesmo ancestral que
+   dispara a revelacao fecha a armadilha na estrutura, e nao na disciplina de
+   quem for usar o componente depois. */
+.js-revela [data-revela] .titulo-cine .linha-mascara > span {
+  transform: translate3d(0, 110%, 0);
+  opacity: 0;
+}
+.js-revela [data-revela][data-visivel="1"] .titulo-cine .linha-mascara > span,
+.js-revela [data-visivel="1"] [data-revela] .titulo-cine .linha-mascara > span {
+  animation: serra-linha-sobe 1050ms var(--ease-cine) both;
+  animation-delay: calc(var(--i, 0) * 105ms + var(--atraso-linha, 0ms));
+}
+
+/* O titulo do primeiro viewport NAO pode esperar o JavaScript.
+   `js-revela` so entra no <html> depois do primeiro paint, entao um titulo
+   herói preso a ele apareceria pronto por um quadro, sumiria e so entao
+   animaria. Piscada, nao entrada. Por isso `entra-ja` anima por CSS puro,
+   desde o primeiro quadro, com `both` segurando o estado inicial. */
+.titulo-cine.entra-ja .linha-mascara > span {
+  animation: serra-linha-sobe 1050ms var(--ease-cine) both;
+  animation-delay: calc(var(--i, 0) * 105ms + var(--atraso-linha, 0ms));
+}
+@keyframes serra-linha-sobe {
+  from {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   TRILHO DE PROGRESSO
+
+   Fio de 2px no topo da janela que mostra quanto da pagina ja passou. Numa
+   home longa como esta, e a unica pista de "quanto falta" que nao ocupa
+   espaco. Usa `animation-timeline: scroll()` onde existe, que roda fora da
+   thread principal e custa zero JavaScript.
+   ------------------------------------------------------------------------- */
+.progresso {
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background-image: var(--luz-serra);
+}
+@supports (animation-timeline: scroll()) {
+  .progresso {
+    animation: serra-progresso linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes serra-progresso {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   SUBLINHADO QUE SE DESENHA
+
+   Cresce da esquerda no ponteiro e recolhe pela direita na saida. Dois
+   `transform-origin` diferentes: e o detalhe que faz o gesto parecer desenhado
+   a mao em vez de ligado e desligado.
+   ------------------------------------------------------------------------- */
+.risco {
+  position: relative;
+}
+.risco::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.18em;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 420ms var(--ease-cine);
+}
+.risco:hover::after,
+.risco:focus-visible::after,
+.grupo-risco:hover .risco::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* -------------------------------------------------------------------------
+   CARTAO, VERSAO CINEMA
+
+   O `.cartao` original so subia 5px. Este sobe, ganha profundidade tingida na
+   cor do proprio servico e o conteudo interno responde junto. A sombra usa o
+   `--luz` do cartao, entao cada familia cromatica do site projeta a propria
+   sombra: terracota lanca sombra quente, azul lanca sombra fria.
+   ------------------------------------------------------------------------- */
+.cartao-cine {
+  position: relative;
+  transition:
+    transform 620ms var(--ease-cine),
+    box-shadow 620ms var(--ease-cine),
+    border-color 620ms var(--ease-cine);
+  will-change: transform;
+}
+.cartao-cine:hover,
+.cartao-cine:focus-within {
+  transform: translate3d(0, -8px, 0);
+  border-color: color-mix(in srgb, var(--luz, #0069a3) 40%, transparent);
+  box-shadow:
+    0 3px 10px color-mix(in srgb, var(--luz, #0069a3) 10%, transparent),
+    0 32px 64px -24px color-mix(in srgb, var(--luz, #0069a3) 45%, transparent);
+}
+
+/* O icone do cartao acompanha: sobe um fio e ganha halo. Detalhe pequeno que
+   confirma que o cartao inteiro e um alvo, nao so o link no rodape dele. */
+.selo-icone {
+  transition:
+    transform 520ms var(--ease-mola),
+    background-color 420ms var(--ease-serra),
+    color 420ms var(--ease-serra),
+    box-shadow 420ms var(--ease-serra);
+}
+.cartao-cine:hover .selo-icone,
+.cartao-cine:focus-within .selo-icone {
+  transform: translate3d(0, -3px, 0) scale(1.06);
+  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--luz, #0069a3) 70%, transparent);
+}
+
+/* -------------------------------------------------------------------------
+   NUMERO FANTASMA
+
+   O numero grande do passo, em contorno, atras do conteudo. Da escala e
+   hierarquia sem gastar uma cor nova nem uma imagem.
+   ------------------------------------------------------------------------- */
+.numero-fantasma {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--luz, #0069a3) 32%, transparent);
+  transition:
+    -webkit-text-stroke-color 520ms var(--ease-serra),
+    transform 620ms var(--ease-cine);
+}
+.cartao-cine:hover .numero-fantasma {
+  -webkit-text-stroke-color: color-mix(in srgb, var(--luz, #0069a3) 65%, transparent);
+  transform: translate3d(0, -2px, 0);
+}
+
+/* -------------------------------------------------------------------------
+   FIO DE LUZ
+
+   Fio horizontal em gradiente, com as pontas dissolvidas. Marca a costura
+   entre uma secao clara e uma escura, que e onde o olho procura a emenda.
+   ------------------------------------------------------------------------- */
+.fio-luz {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(34, 184, 212, 0.5) 22%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(34, 184, 212, 0.5) 78%,
+    transparent
+  );
+}
+
+/* -------------------------------------------------------------------------
+   PREENCHIMENTO NO PONTEIRO
+
+   O botao de contorno se enche de cor a partir da base. Alternativa ao "muda
+   de cor de uma vez", que e o padrao de template.
+   ------------------------------------------------------------------------- */
+.enche {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.enche::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(135deg, var(--color-serra-500), var(--color-serra-700));
+  transform: translate3d(0, 101%, 0);
+  transition: transform 520ms var(--ease-cine);
+}
+.enche:hover::before,
+.enche:focus-visible::before {
+  transform: none;
+}
+
+/* -------------------------------------------------------------------------
+   MOSAICO
+
+   Grade tenue de 64px, so em superficie escura. Cumpre o papel do papel
+   milimetrado do arquiteto: da escala ao vazio e denuncia que existe um
+   sistema por tras do layout. Dissolvido nas bordas por mascara radial, para
+   nunca virar quadriculado de fundo de apresentacao.
+   ------------------------------------------------------------------------- */
+.mosaico::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(80% 65% at 50% 40%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(80% 65% at 50% 40%, #000 0%, transparent 78%);
+}
+
+/* -------------------------------------------------------------------------
+   ESCALA NA REVELACAO
+
+   Variante do `[data-revela]` para bloco grande (foto, painel, tabela): alem
+   de subir, ele chega de 0.972 para 1. Em elemento pequeno isso vira tremor;
+   em bloco grande le como aproximacao de camera.
+   ------------------------------------------------------------------------- */
+.js-revela [data-revela].revela-escala {
+  transform: translate3d(0, 34px, 0) scale(0.972);
+  transition:
+    opacity 1000ms var(--ease-cine),
+    transform 1000ms var(--ease-cine);
+}
+.js-revela [data-revela].revela-escala[data-visivel="1"] {
+  transform: none;
+}
+
+/* -------------------------------------------------------------------------
+   CORTINA
+
+   A imagem e descoberta por uma faixa que desce, em vez de aparecer por
+   opacidade. Reservado para as fotos de secao: e um gesto forte e perde a
+   graca se usado em tudo.
+   ------------------------------------------------------------------------- */
+/* ⛔ O VEU COMECA ABERTO. A primeira versao deixava `scaleY(1)` como padrao e
+   so abria sob `.js-revela`: quem pede `prefers-reduced-motion` nunca recebe
+   essa classe, entao as quatro fotos do Memorial ficavam tapadas por um
+   retangulo terracota para SEMPRE. Achado forcando a deteccao, nao olhando a
+   tela. Conteudo escondido por efeito e o pior defeito desta camada inteira. */
+.cortina-veu {
+  transform: scaleY(0);
+  transform-origin: top center;
+}
+.js-revela .cortina .cortina-veu {
+  transform: scaleY(1);
+  transition: transform 1100ms var(--ease-cine) calc(140ms + var(--i, 0) * 130ms);
+}
+.js-revela [data-visivel="1"] .cortina .cortina-veu,
+.js-revela .cortina[data-visivel="1"] .cortina-veu {
+  transform: scaleY(0);
+}
+
+/* -------------------------------------------------------------------------
+   PROIBIDO ANIMAR
+
+   Uma unica regra derruba TODA a camada cinema para quem pediu ao sistema
+   operacional que as coisas parem. Se um efeito novo entrar aqui em cima, o
+   nome dele entra nesta lista. Sem excecao.
+   ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .kenburns,
+  .aurora::before,
+  .progresso {
+    animation: none !important;
+  }
+  .cartao-cine:hover,
+  .cartao-cine:focus-within,
+  .selo-icone,
+  .ima,
+  .paralaxe {
+    transform: none !important;
+  }
+  .varre::after {
+    display: none;
+  }
+  .js-revela [data-revela] .titulo-cine .linha-mascara > span,
+  .titulo-cine.entra-ja .linha-mascara > span {
+    transform: none;
+    opacity: 1;
+    animation: none;
+  }
+  .js-revela [data-revela].revela-escala {
+    transform: none;
+  }
+  .js-revela .cortina .cortina-veu {
+    transform: scaleY(0);
+    transition: none;
+  }
+}
+
+/* =========================================================================
+   RELEVO: o cartao ganha eixo Z
+
+   Perspectiva no PAI, rotacao no FILHO. Essa separacao nao e estilo, e o que
+   faz varios cartoes lado a lado compartilharem o mesmo ponto de fuga: com
+   `perspective` em cada cartao, cada um vira o proprio mundo e a fileira
+   inteira parece torta. Com a perspectiva no palco, eles pertencem a mesma
+   cena, que e o que o olho espera de uma prateleira.
+
+   ⛔ NUNCA por `.relevo` no mesmo elemento que `.cartao-cine` ou `.depo-cartao`:
+   os dois escrevem `transform` e o ultimo a ganhar apaga o outro. O relevo vive
+   no envelope (o `<li>`), o hover de elevacao vive no cartao de dentro.
+
+   Os angulos sao pequenos de proposito. Acima de uns 7 graus o texto comeca a
+   desfocar na borda de cima e a leitura paga a conta do efeito.
+   ========================================================================= */
+
+.palco3d {
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+
+.relevo {
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 700ms var(--ease-cine);
+  will-change: transform;
+}
+/* Enquanto o ponteiro esta em cima, a resposta e quase imediata; ao sair, a
+   volta e longa. E a diferenca entre objeto e elastico. */
+.relevo[data-preso="1"] {
+  transition: transform 140ms linear;
+}
+
+/* O que sobe no eixo Z para valer. So conteudo curto: texto longo flutuando
+   em Z fica com uma borda desfocada e mais perto do olho que a outra. */
+.relevo-frente {
+  transform: translateZ(42px);
+  transition: transform 700ms var(--ease-cine);
+}
+.relevo-fundo {
+  transform: translateZ(-18px);
+}
+
+/* Brilho especular que corre com a inclinacao. E o que diz "isto tem
+   superficie" em vez de "isto girou". */
+.relevo-luz {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms var(--ease-serra);
+  background: linear-gradient(
+    var(--anguloLuz, 120deg),
+    rgba(255, 255, 255, 0) 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 62%
+  );
+}
+.relevo[data-preso="1"] .relevo-luz {
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .relevo,
+  .relevo-frente,
+  .relevo-fundo {
+    transform: none !important;
+    transition: none;
+  }
+  .relevo-luz {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   ARRASTAR
+
+   Trilho que se pega com o mouse e vai junto, com inercia ao soltar. No dedo
+   isso sempre existiu, porque e rolagem nativa; no mouse, nao existia, e a
+   pessoa ficava procurando a barra que a gente escondeu de proposito.
+
+   O cursor e metade do recado: `grab` diz que da para pegar antes de qualquer
+   um tentar.
+   ========================================================================= */
+
+.arrastavel {
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+.arrastavel[data-arrastando="1"] {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  user-select: none;
+}
+/* Imagem dentro de trilho arrastavel: o navegador tenta iniciar o drag-and-drop
+   nativo dela e o arrasto morre no primeiro logotipo. */
+.arrastavel img,
+.arrastavel a {
+  -webkit-user-drag: none;
+}
+
+/* =========================================================================
+   ESTEIRA, AGORA ROLAVEL DE VERDADE
+
+   ⛔ A versao anterior era `animation: translateX(-50%)` numa fita. Bonita e
+   morta: nao dava para pegar, nao dava para rolar no dedo e o teclado nao
+   chegava nela. Agora e um container que ROLA, empurrado por um laco de
+   animacao, e por isso aceita as tres coisas de graca.
+
+   A mascara nas bordas continua: corte seco entrega esteira colada.
+   ========================================================================= */
+
+.esteira {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.esteira::-webkit-scrollbar {
+  display: none;
+}
+.esteira-fita {
+  display: flex;
+  align-items: center;
+  width: max-content;
+}
+
+/* =========================================================================
+   PARTICULAS
+
+   Tela de particulas por cima da area das perguntas. Fica em `pointer-events:
+   none` e so e pintada durante a transicao; fora disso o canvas esta vazio e
+   nao custa nada.
+   ========================================================================= */
+
+.particulas {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   PERGUNTA UMA DE CADA VEZ
+
+   A saida nao e um fade. O bloco encolhe de leve, desfoca e sobe, no mesmo
+   instante em que as particulas saem das opcoes: a pergunta nao some, ela se
+   desfaz. A entrada vem de baixo, nitida, sem desfoque, porque o que chega
+   precisa ser lido e o que sai nao.
+   ========================================================================= */
+
+@keyframes serra-pergunta-sai {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -18px, 0) scale(0.96);
+    filter: blur(7px);
+  }
+}
+@keyframes serra-pergunta-entra {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pergunta[data-fase="sai"] {
+  animation: serra-pergunta-sai 340ms var(--ease-suave) both;
+}
+.pergunta[data-fase="entra"] {
+  animation: serra-pergunta-entra 520ms var(--ease-cine) both;
+}
+/* As opcoes entram em cascata dentro da pergunta que ja chegou. */
+.pergunta[data-fase="entra"] .opcao {
+  animation: serra-sobe 460ms var(--ease-cine) both;
+  animation-delay: calc(120ms + var(--i, 0) * 55ms);
+}
+
+/* Passos da barra de progresso do simulador. */
+.passo {
+  height: 3px;
+  flex: 1;
+  border-radius: 99px;
+  background: var(--color-linha);
+  overflow: hidden;
+}
+.passo > span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background-image: var(--luz-serra);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 620ms var(--ease-cine);
+}
+.passo[data-feito="1"] > span {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pergunta[data-fase="sai"],
+  .pergunta[data-fase="entra"],
+  .pergunta[data-fase="entra"] .opcao {
+    animation: none;
+  }
+  .passo > span {
+    transition: none;
+  }
+}
+
+/* =========================================================================
+   LINHA DO TEMPO: o fio se pinta conforme a historia e percorrida
+   ========================================================================= */
+
+/* O segmento aceso cresce da esquerda, em vez de trocar de cor de uma vez.
+   O que esta sendo desenhado e uma passagem de tempo: ela tem direcao. */
+.lt-fio {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background-image: linear-gradient(90deg, var(--color-serra-400), var(--color-onda-400));
+  transition: transform 760ms var(--ease-cine);
+}
+.lt-aceso .lt-fio {
+  transform: scaleX(1);
+}
+
+/* Halo que pulsa uma vez quando o marco acende. Uma vez, nao em laco: piscar
+   sem parar e alarme, e isto e uma data. */
+@keyframes serra-marco {
+  0% {
+    box-shadow: 0 0 0 0 var(--halo, rgba(0, 105, 163, 0.45));
+  }
+  70% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.lt-aceso .lt-halo {
+  animation: serra-marco 1100ms var(--ease-suave) 120ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* ⛔ NAO forcar `scaleX(1)` aqui. Era o que estava escrito, e acendia a linha
+     INTEIRA de saida: quem pediu menos movimento perdia a informacao de ate
+     onde ja tinha chegado, que e a unica coisa que a linha do tempo comunica.
+     O fio continua preso ao estado `.lt-aceso`; o que sai e o percurso, e isso
+     ja acontece sozinho porque `transform` saiu da lista de propriedades que
+     transicionam. */
+  .lt-aceso .lt-halo {
+    animation: none;
+  }
+}
+
+/* =========================================================================
+   FOCO NO CELULAR: o hover que o dedo nunca dá
+
+   ⛔ Diagnostico que so apareceu ao testar com TOQUE de verdade: holofote, aro
+   de luz, varredura, elevacao e sublinhado sao todos acionados por `:hover`.
+   No celular nao existe hover, entao o telefone recebia a pagina com metade
+   dos efeitos desligados, sem nenhum erro e sem ninguem perceber olhando a
+   captura. Nao era "ficou ruim no celular": era "nunca rodou no celular".
+
+   O substituto natural do ponteiro numa tela de toque e a POSICAO DE LEITURA.
+   Um `IntersectionObserver` com margem negativa de 45% em cima e embaixo cria
+   uma faixa fina no meio da tela; o cartao que cruza essa faixa e o que a
+   pessoa esta lendo, e e ele que acende.
+
+   O estado e mais discreto que o de ponteiro de proposito: acende borda, aro,
+   luz e icone, mas NAO desloca o cartao. Elevar o que passa pelo meio da tela
+   faria a pagina inteira pular durante a rolagem, que e o oposto de conforto.
+   ========================================================================= */
+
+@media (hover: none) {
+  .cartao-cine[data-emfoco="1"] {
+    border-color: color-mix(in srgb, var(--luz, #0069a3) 42%, transparent);
+    box-shadow:
+      0 3px 10px color-mix(in srgb, var(--luz, #0069a3) 10%, transparent),
+      0 24px 48px -22px color-mix(in srgb, var(--luz, #0069a3) 45%, transparent);
+  }
+
+  .holofote[data-emfoco="1"]::before {
+    opacity: 1;
+    --mx: 50%;
+    --my: 42%;
+  }
+
+  .aro-luz[data-emfoco="1"]::after {
+    opacity: 1;
+  }
+
+  .cartao-cine[data-emfoco="1"] .selo-icone {
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--luz, #0069a3) 70%, transparent);
+  }
+
+  .cartao-cine[data-emfoco="1"] .numero-fantasma {
+    -webkit-text-stroke-color: color-mix(in srgb, var(--luz, #0069a3) 65%, transparent);
+  }
+
+  /* O fio do depoimento corre sozinho quando o cartao chega ao meio da tela. */
+  .depo-cartao[data-emfoco="1"] .depo-fio {
+    transform: scaleX(1);
   }
 }
