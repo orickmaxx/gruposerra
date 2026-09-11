@@ -6,6 +6,31 @@ import { chromium } from "playwright";
 
 const BASE = process.env.BASE ?? "http://127.0.0.1:4400";
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
+
+/* ⛔ TODO CONTEXTO DESTE ARQUIVO NASCE COM O MODO DE MOVIMENTO DECLARADO.
+   O juiz de desempenho em `movimento.tsx` mede os quadros reais e rebaixa para
+   "reduzido" quando o aparelho nao da conta. O Chrome headless daqui roda em
+   SOFTWARE e reprova nessa medicao: sem esta declaracao, metade da camada
+   cinema era desligada no meio da bateria e os testes acusavam falhas que nao
+   existem no navegador de ninguem. Escolha explicita vence o juiz.
+
+   O `newContext` e embrulhado em vez de cada chamada receber a linha porque
+   alguns destes arquivos abrem cinco ou seis contextos, e um esquecido volta a
+   produzir a falha intermitente que custou esta rodada. */
+{
+  const MODO = process.env.MOVIMENTO ?? "completo";
+  const criar = nav.newContext.bind(nav);
+  nav.newContext = async (opcoes) => {
+    const c = await criar(opcoes);
+    await c.addInitScript((modo) => {
+      try {
+        localStorage.setItem("serra_movimento", modo);
+      } catch {}
+    }, MODO);
+    return c;
+  };
+}
+
 const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
 
 /* --------------------------------------------------- consentimento (LGPD) */

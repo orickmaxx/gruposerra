@@ -29,8 +29,10 @@ import { useEffect, useRef, useState } from "react";
 function podeContar() {
   if (typeof window === "undefined") return false;
   if (!("IntersectionObserver" in window)) return false;
-  if (typeof window.matchMedia !== "function") return true;
-  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Quem decide se ha movimento e o atributo na raiz, escrito pelo componente
+     `Movimento`, e nao mais a media query do sistema: ver o cabecalho de
+     `movimento.tsx` para a decisao do dono e o juiz de desempenho. */
+  return document.documentElement.dataset.movimento !== "reduzido";
 }
 
 export function Contador({

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MEMORIAL } from "@/data/unidades";
-import { Titulo } from "../ui";
+import { Rotulo, Titulo, TituloCine } from "../ui";
 import {
   IconeAviao,
   IconeCama,
@@ -99,24 +99,59 @@ const OUTROS = [
   },
 ];
 
+/**
+ * ⛔ REESTRUTURADO EM 11/09/2026, a pedido do dono, e o diagnostico dele estava
+ * certo: "Além do plano" era uma seção-gaveta. Cremação, Serra Pet, homenagens,
+ * repatriação e convalescença dividiam um título só, e o efeito era que as duas
+ * MARCAS PRÓPRIAS do grupo, que têm CNPJ, paleta e site próprios, apareciam
+ * como item de lista de uma seção genérica. O Serra Pet, em particular, entrava
+ * depois da cremação e sem nenhum destaque.
+ *
+ * Agora são três seções com pesos diferentes, e o peso é a mensagem:
+ *
+ *   MEMORIAL   seção própria, superfície terracota, foto real por dentro.
+ *   SERRA PET  seção própria, superfície LARANJA CLARA em tela cheia. É a única
+ *              seção alegre que uma funerária pode ter sem soar falsa, porque o
+ *              assunto é um animal que ainda está vivo quando alguém contrata.
+ *   O RESTO    homenagens, repatriação e convalescença, que são serviços e não
+ *              marcas, continuam juntos numa faixa menor.
+ */
 export function Servicos() {
   return (
-    <section className="mat-memorial-fundo relative overflow-hidden py-16 md:py-24" id="servicos">
+    <>
+      <Cremacao />
+      <SerraPet />
+      <OutrosServicos />
+    </>
+  );
+}
+
+/**
+ * Os serviços que não são marca própria.
+ *
+ * Faixa menor de propósito: são três serviços reais, mas nenhum deles é uma
+ * empresa com paleta própria, e dar a eles o mesmo peso do Memorial seria
+ * achatar a hierarquia que as duas seções acima constroem.
+ */
+function OutrosServicos() {
+  return (
+    <section className="relative overflow-hidden bg-white py-16 md:py-24" id="servicos">
       <div className="mx-auto max-w-[76rem] px-5" data-revela>
-        <Titulo centro rotulo="Serviços" cor="var(--color-memorial)" apoio="O plano cobre a cerimônia. Estes são os serviços em volta dela, alguns inclusos, outros contratados à parte.">
-          Além do plano
+        <Titulo
+          centro
+          rotulo="Serviços"
+          apoio="O plano cobre a cerimônia. Estes são os serviços em volta dela, alguns inclusos, outros contratados à parte."
+        >
+          O que mais a equipe resolve
         </Titulo>
 
-        <Cremacao />
-        <SerraPet />
-
-        <ul className="trilho mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible">
+        <ul className="trilho mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible">
           {OUTROS.map(({ href, Icone, luz, material, veu, texto, borda, titulo, resumo }) => (
             <li key={titulo} className="flex w-[78%] shrink-0 snap-start sm:w-[55%] md:w-auto md:shrink">
               <Link
                 href={href}
                 style={{ ["--luz" as string]: luz }}
-                className={`cartao-cine holofote group flex w-full flex-col rounded-serra-lg border border-white bg-white/85 p-7 shadow-media backdrop-blur-sm ${borda}`}
+                className={`cartao-cine holofote group flex w-full flex-col rounded-serra-lg border border-linha bg-white p-7 shadow-baixa ${borda}`}
               >
                 <span
                   className={`selo-icone inline-flex size-12 items-center justify-center rounded-serra text-white ${material}`}
@@ -150,6 +185,17 @@ export function Servicos() {
  */
 function Cremacao() {
   return (
+    <section className="mat-memorial-fundo relative overflow-hidden py-16 md:py-24" id="cremacao">
+      <div className="mx-auto max-w-[76rem] px-5" data-revela>
+        <Titulo
+          centro
+          rotulo="Complexo Memorial Hortolândia"
+          cor="var(--color-memorial)"
+          apoio="Empresa do grupo, com CNPJ e marca próprios. Velório, cerimônia de despedida e cremação no mesmo endereço."
+        >
+          Cremação em crematório próprio
+        </Titulo>
+
     <article
       data-revela
       className="revela-escala mt-12 overflow-hidden rounded-serra-xl shadow-alta"
@@ -247,11 +293,20 @@ function Cremacao() {
         </div>
       </div>
     </article>
+      </div>
+    </section>
   );
 }
 
 /**
- * Serra Pet, no laranja da propria marca e com a imagem que ela ja usa.
+ * Serra Pet: SEÇÃO PRÓPRIA, em laranja claro e em tela cheia.
+ *
+ * ⛔ Era um cartão no meio de "Além do plano", depois da cremação, e o dono
+ * apontou o óbvio: a marca não tinha destaque nenhum. Virou seção, com
+ * superfície própria e o laranja oficial (#FC5C04) mandando nela inteira.
+ *
+ * É também a resposta ao "o site está muito escuro": esta é a faixa mais CLARA
+ * e mais quente da home, e ela cai exatamente entre duas zonas frias.
  */
 function SerraPet() {
   return (
@@ -259,15 +314,13 @@ function SerraPet() {
        cartao em vez de flutuar num quadradinho. Antes ficava com 17rem, presa
        numa coluna estreita e com o corte visivel na barriga do cachorro.
        Agora ocupa a altura toda do bloco e o cartao cresce junto. */
-    <article className="mat-pet-fundo cartao-cine holofote relative mt-6 overflow-hidden rounded-serra-xl border border-pet/25 shadow-media">
-      <div className="relative grid items-end gap-2 p-7 pb-0 md:grid-cols-[1.05fr_minmax(0,26rem)] md:gap-4 md:p-11 md:pb-0">
-        <div className="pb-2 md:pb-11">
-          <span className="mat-pet inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[0.8125rem] font-bold tracking-wide text-white uppercase">
-            Serra Pet
-          </span>
-          <h3 className="mt-5 max-w-[18ch] text-t2 text-pet-forte">
+    <section className="mat-pet-fundo relative overflow-hidden" id="serra-pet">
+      <div className="relative mx-auto grid max-w-[80rem] items-end gap-2 px-5 pt-16 pb-0 md:grid-cols-[1.05fr_minmax(0,28rem)] md:gap-6 md:pt-20" data-revela>
+        <div className="pb-14 md:pb-20">
+          <Rotulo cor="var(--color-pet)">Serra Pet</Rotulo>
+          <TituloCine className="max-w-[18ch] text-t2 text-pet-forte">
             O plano também cuida de quem mora com você
-          </h3>
+          </TituloCine>
           <p className="mt-5 max-w-[52ch] text-lead leading-relaxed text-pedra-700">
             Remoção 24 horas na região de Campinas, cremação individual com as
             cinzas devolvidas em urna, ou coletiva em espaço ecológico, e
@@ -287,10 +340,10 @@ function SerraPet() {
           alt="Um cachorro e um gato, as duas espécies atendidas pelo Serra Pet"
           width={760}
           height={659}
-          sizes="(min-width: 768px) 26rem, 80vw"
-          className="mx-auto -mb-px block w-[85%] max-w-[19rem] self-end sm:w-[70%] md:w-full md:max-w-none"
+          sizes="(min-width: 768px) 28rem, 80vw"
+          className="mx-auto -mb-px block w-[85%] max-w-[21rem] self-end sm:w-[70%] md:w-full md:max-w-none"
         />
       </div>
-    </article>
+    </section>
   );
 }

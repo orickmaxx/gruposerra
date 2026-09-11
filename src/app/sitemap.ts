@@ -17,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: "/serra-pet", priority: 0.6 },
     { url: "/contato", priority: 0.6 },
     { url: "/blog", priority: 0.8 },
-    { url: "/contato", priority: 0.6 },
     { url: "/privacidade", priority: 0.3 },
     { url: "/termos", priority: 0.3 },
   ];

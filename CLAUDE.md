@@ -186,6 +186,32 @@ outra coisa: um tom só, **exclusivamente sobre superfície escura**, e **em mov
 
 **⛔ Ímã com raio grande faz o botão fugir do cursor.** O teto é 7px, e o teste verifica isso.
 
+**⛔ `backdrop-filter` foi o maior custo de quadro do site inteiro: +10,3 fps ao ser desligado**, o
+dobro do segundo colocado. Um elemento com backdrop-filter obriga o navegador a re-amostrar e
+re-borrar tudo atrás dele **a cada quadro**, e havia um no cabeçalho, que é fixo. Hoje são **zero**
+no site: vidro só se justifica sobre fotografia, e ali um fundo com mais opacidade resolve igual.
+Medido por `scripts/culpado-fluidez.mjs`.
+
+**⛔ `will-change: transform` declarado estaticamente são camadas de GPU permanentes.** Eram 46, uma
+por cartão. `will-change` é para avisar o navegador **momentos antes** de animar, não um carimbo.
+Hoje são zero e o Chrome promove sozinho o que anima.
+
+**⛔ A decisão de movimento é TOMADA DEPOIS DA MONTAGEM, então não pode ser lida uma vez só.** O juiz
+de desempenho mede os quadros 1,5s após a página assentar. Componentes que liam `semMovimento()` no
+`useEffect` já tinham decidido: a esteira começava a andar e nunca mais parava, e a barra de
+progresso congelava em zero. Quem tem laço consulta a cada quadro; quem depende de CSS não bota
+`animation: none` em coisa que o JavaScript não vai reavaliar.
+
+**⛔ Teste que herda a velocidade da máquina mede a máquina.** O Chrome headless roda em software e
+reprova no juiz de desempenho, então metade da camada cinema era desligada no meio da bateria e o
+relatório acusava falhas inexistentes. Todo script de verificação **declara** o modo
+(`serra_movimento` no `localStorage`), e `MOVIMENTO=reduzido` roda a outra metade do contrato.
+
+**⛔ Oito iframes de mapa não nascem numa página.** Cada embed do Google é um documento inteiro, com
+JS, fontes, tiles e cookies de terceiro. Além do peso, carregar embed de terceiro sem gesto entrega
+o IP de quem visita sem perguntar, o que é problema de LGPD. `MapaUnidade` só troca o cartão pelo
+iframe depois do clique.
+
 **⛔ Tela pequena NÃO É CELULAR.** As capturas de celular usavam viewport de 390px e nada mais. Sem
 `hasTouch`, o Chrome continua se declarando `hover: hover` e `pointer: fine`, então toda regra escrita
 para `(hover: none)` e todo caminho de código de toque **nunca rodaram uma única vez**. O buraco durou
@@ -257,7 +283,8 @@ saturação. Foi isso que a camada cinema resolveu.
 
 | Cor | Hex | Papel |
 |---|---|---|
-| 🔵 **Azul Serra** | `#0069A3` | 71 a 75% do logo e do favicon. É A cor da marca. |
+| 🔵 **Azul Serra** | `#3B78A9` | **A cor da marca**, trazida pelo dono em 11/09/2026. É o azul que a empresa usa no site, no logotipo e no material dela. |
+| 🔵 Azul grave | `#0069A3` | O mesmo azul, mais saturado, medido pixel a pixel no PNG do logo. Virou o degrau **700**: texto sobre claro e fundo de seção. |
 | ⚫ **Cinza pedra** | `#74726C` | 13 a 22% do logo. Tipografia do logotipo. |
 
 **Cor por serviço**, com as paletas REAIS das outras marcas do grupo (não escolhidas no olho):
@@ -267,11 +294,20 @@ saturação. Foi isso que a camada cinema resolveu.
 | Azul | `#0069A3` | institucional, planos, obituário |
 | Terracota | `#6D3316` | cremação e Complexo Memorial Hortolândia |
 | Dourado | `#C9B167` | Clube de Benefícios, e o acento do Memorial |
-| Laranja | `#E75C0D` | Serra Pet |
+| Laranja | `#FC5C04` | Serra Pet, laranja oficial da marca |
 | Verde | `#5CA038` | homenagens |
 | Ciano | `#22B8D4` | luz de apoio sobre escuro: fio, aro, realce. **Nunca em texto corrido.** |
 
+Vinho `#A42C43` existe como `--color-boleto`, para a 2ª via. **O site não usa.** O próprio dono
+disse que não a defende, e vinho puxa para alarme numa página que já é delicada.
+
 Brasão institucional (`brasao_servicos.png`, três faixas iguais): `#003865` · `#006300` · `#95692F`.
+
+> ⛔ **O site já foi "morto e obscuro", e a causa era aritmética, não gosto.** Com `#0069A3` no
+> degrau 500, tudo que herdava a cor da marca puxava para o escuro, e as faixas escuras iam até um
+> quase preto (`#062533`) que lia como preto sujo, não como azul. A correção foi nos dois lados: o
+> 500 virou o azul real da marca, e os três gradientes escuros (`mat-azul`, `malha-escura`, `palco`)
+> pararam de descer até o preto. Se alguém voltar a escurecer a escala, o defeito volta junto.
 
 > ⚠️ **Contraste já corrigido, não desfazer:** `#C9B167` com texto branco dá 1,9:1. O dourado claro
 > serve para superfície decorativa; o que leva texto branco é o dourado **escuro** (`#8A6A1F`, 4,9:1).
@@ -335,6 +371,7 @@ JavaScript**.
 | `.pergunta[data-fase]` | Pergunta sai desfocando e subindo, a próxima entra nítida de baixo | simulador |
 | `.passo` | Barra de progresso do simulador, um traço por pergunta | simulador |
 | `.lt-fio` + `.lt-halo` | O fio do ano **se desenha** da esquerda, e o marco pulsa uma vez | linha do tempo |
+| `.veu-memorial` / `.veu-pet` / `.veu-verde` | Véu do herói na cor do SERVIÇO da página, no lugar do azul institucional | herói interno |
 | `[data-emfoco="1"]` | Sob `(hover: none)`, o cartão no meio da tela acende como se estivesse sob o ponteiro | todo cartão, no celular |
 | `.item-cascata` | Lista longa entra sendo CONTADA, 35ms por item | lista de 20 itens |
 

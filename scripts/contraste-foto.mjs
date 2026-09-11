@@ -21,19 +21,43 @@
 import { chromium } from "playwright";
 
 const BASE = process.env.URL ?? "http://127.0.0.1:4400/";
+
+/* Rotas internas: cada uma abre com o mesmo `HeroiPagina`, entao os seletores
+   sao os mesmos em todas. Sem isto, o veu por servico (terracota na cremacao,
+   laranja no Serra Pet, verde nas homenagens) entraria no ar sem nunca ter sido
+   medido, e "eu escolhi uma cor bonita" nao e contraste. */
+const ROTA = process.env.ROTA ?? "";
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
 const ctx = await nav.newContext({ viewport: { width: 1440, height: 950 }, locale: "pt-BR" });
 await ctx.addInitScript(() => {
   try {
     localStorage.setItem("serra_consentimento", "recusado");
   } catch {}
+  /* ⛔ O modo de movimento e DECLARADO pelo teste, nao herdado da maquina.
+     O juiz de desempenho em `movimento.tsx` mede os quadros reais e rebaixa
+     para "reduzido" quando o aparelho nao da conta. O Chrome headless daqui
+     roda em software e reprova nessa medicao, entao sem esta linha metade da
+     camada cinema era desligada no meio da bateria e os testes acusavam falhas
+     que nao existem no navegador de ninguem. Escolha explicita vence o juiz. */
+  try { localStorage.setItem("serra_movimento", "completo"); } catch {}
+
 });
 const p = await ctx.newPage();
-await p.goto(BASE, { waitUntil: "networkidle" });
+/* ⛔ `ROTA=/serra-pet` no Git Bash do Windows vira `C:/Program Files/Git/serra-pet`:
+   o MSYS converte qualquer coisa que pareça caminho absoluto. Por isso a rota é
+   passada SEM barra (`ROTA=serra-pet`) e a barra é reposta aqui. */
+const rota = ROTA ? `/${ROTA.replace(/^\/+/, "")}` : "/";
+await p.goto(BASE.replace(/\/$/, "") + rota, { waitUntil: "networkidle" });
 await p.evaluate(() => document.fonts.ready);
 await p.waitForTimeout(2000);
 
-const ALVOS = [
+const ALVOS_INTERNA = [
+  { nome: "herói: rótulo", sel: "h1 ~ *, section span.uppercase" },
+  { nome: "herói: manchete", sel: "h1 .linha-mascara" },
+  { nome: "herói: resumo", sel: "section .revela-texto" },
+];
+
+const ALVOS_HOME = [
   { nome: "herói: manchete", sel: ".titulo-cine .linha-mascara" },
   { nome: "herói: parágrafo de apoio", sel: "section p.revela-texto" },
   { nome: "herói: selo do Google", sel: ".revela-texto.group span.text-\\[0\\.9375rem\\]" },
@@ -46,6 +70,11 @@ const ALVOS = [
   { nome: "fecho: nota dos telefones", sel: 'section:last-of-type p:has-text("Os dois números")' },
   { nome: "fecho: painel de planejamento", sel: 'section:last-of-type p:has-text("Contratar antes")' },
 ];
+
+const ALVOS = ROTA ? ALVOS_INTERNA : ALVOS_HOME;
+console.log(`
+— contraste sobre fotografia, rota ${ROTA || "/"} —
+`);
 
 let falhas = 0;
 

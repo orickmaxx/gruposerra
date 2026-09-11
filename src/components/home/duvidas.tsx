@@ -167,7 +167,7 @@ export function Fechamento() {
           </p>
         </div>
 
-        <div className="holofote holofote-escuro rounded-serra-lg border border-white/20 bg-[#04202f]/70 p-7 shadow-cine backdrop-blur-xl md:p-8">
+        <div className="holofote holofote-escuro rounded-serra-lg border border-white/20 bg-[#04202f]/88 p-7 shadow-cine md:p-8">
           <h3 className="font-display text-[1.375rem] leading-tight font-bold text-white">
             Ainda dá tempo de planejar
           </h3>

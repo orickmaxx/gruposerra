@@ -9,6 +9,31 @@
 import { chromium } from "playwright";
 const BASE = process.env.URL ?? "http://127.0.0.1:4400/";
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
+
+/* ⛔ TODO CONTEXTO DESTE ARQUIVO NASCE COM O MODO DE MOVIMENTO DECLARADO.
+   O juiz de desempenho em `movimento.tsx` mede os quadros reais e rebaixa para
+   "reduzido" quando o aparelho nao da conta. O Chrome headless daqui roda em
+   SOFTWARE e reprova nessa medicao: sem esta declaracao, metade da camada
+   cinema era desligada no meio da bateria e os testes acusavam falhas que nao
+   existem no navegador de ninguem. Escolha explicita vence o juiz.
+
+   O `newContext` e embrulhado em vez de cada chamada receber a linha porque
+   alguns destes arquivos abrem cinco ou seis contextos, e um esquecido volta a
+   produzir a falha intermitente que custou esta rodada. */
+{
+  const MODO = process.env.MOVIMENTO ?? "completo";
+  const criar = nav.newContext.bind(nav);
+  nav.newContext = async (opcoes) => {
+    const c = await criar(opcoes);
+    await c.addInitScript((modo) => {
+      try {
+        localStorage.setItem("serra_movimento", modo);
+      } catch {}
+    }, MODO);
+    return c;
+  };
+}
+
 const ctx = await nav.newContext({ viewport: { width: 1440, height: 900 }, locale: "pt-BR" });
 const p = await ctx.newPage();
 const falhas = [];
@@ -242,21 +267,51 @@ const pintou = await sim.evaluate(async (raiz) => {
 });
 ok("as particulas pintam a tela de verdade", pintou > 200, `${pintou} pixels`);
 
-/* 8. reduced motion derruba a camada inteira */
+/* ====================== 8. a politica de movimento, como ela e hoje =======
+
+   ⚠️ MUDANCA DE CONTRATO, e este teste existe para deixa-la explicita em vez de
+   silenciosa. Ate 10/09/2026 a regra era "prefers-reduced-motion derruba a
+   camada inteira", e este bloco cobrava isso. O dono decidiu, e reafirmou por
+   escrito, que as animacoes devem rodar em QUALQUER aparelho, inclusive com as
+   animacoes do sistema desligadas.
+
+   Entao o teste passou a cobrar as DUAS metades da politica nova:
+
+     a) `prefers-reduced-motion` sozinho NAO desliga mais nada. Se um dia
+        alguem reintroduzir a media query sem querer, esta linha acusa.
+     b) `data-movimento="reduzido"`, que e o que o juiz de desempenho escreve
+        quando o aparelho nao da conta, continua derrubando tudo. Sem isto, o
+        pedido do dono viraria "trava e nao tem saida".
+   ========================================================================= */
 const ctx2 = await nav.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
 const p2 = await ctx2.newPage();
 await p2.goto(BASE, { waitUntil: "networkidle" });
-await p2.waitForTimeout(600);
-const anima = await p2.evaluate(() => {
+await p2.waitForTimeout(900);
+
+const comMediaQuery = await p2.evaluate(() => {
   const el = document.querySelector(".kenburns");
-  return el ? getComputedStyle(el).animationName : "sem elemento";
+  return {
+    anima: el ? getComputedStyle(el).animationName : "sem elemento",
+    atributo: document.documentElement.dataset.movimento ?? "(nenhum)",
+  };
 });
-ok("ken burns parado em prefers-reduced-motion", anima === "none", anima);
-const veu2 = await p2.evaluate(() => {
-  const el = document.querySelector(".cortina-veu");
-  return el ? new DOMMatrix(getComputedStyle(el).transform).d : -1;
+ok(
+  "prefers-reduced-motion sozinho NAO desliga a animacao (decisao do dono)",
+  comMediaQuery.anima !== "none",
+  `${comMediaQuery.anima}, data-movimento=${comMediaQuery.atributo}`
+);
+
+const comAtributo = await p2.evaluate(() => {
+  document.documentElement.dataset.movimento = "reduzido";
+  const el = document.querySelector(".kenburns");
+  const veu = document.querySelector(".cortina-veu");
+  return {
+    anima: el ? getComputedStyle(el).animationName : "sem elemento",
+    veu: veu ? new DOMMatrix(getComputedStyle(veu).transform).d : -1,
+  };
 });
-ok("cortina ja aberta em prefers-reduced-motion", veu2 <= 0.02, String(veu2));
+ok("data-movimento=reduzido derruba o ken burns", comAtributo.anima === "none", comAtributo.anima);
+ok("data-movimento=reduzido abre a cortina", comAtributo.veu <= 0.02, String(comAtributo.veu));
 
 await nav.close();
 console.log(falhas.length ? `\n${falhas.length} FALHA(S)` : "\ntudo verde");

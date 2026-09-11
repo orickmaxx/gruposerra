@@ -17,7 +17,37 @@ import { chromium, devices } from "playwright";
 const BASE = process.env.URL ?? "http://127.0.0.1:4400/";
 const REDUZIDO = process.env.REDUZIDO === "1";
 
+/* REDUZIDO=1 passa a significar `data-movimento="reduzido"`, nao mais
+   `prefers-reduced-motion`. A media query deixou de desligar movimento por
+   decisao do dono (ver `movimento.tsx`); quem desliga hoje e o atributo. */
+if (REDUZIDO) process.env.MOVIMENTO = "reduzido";
+
 const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] });
+
+/* ⛔ TODO CONTEXTO DESTE ARQUIVO NASCE COM O MODO DE MOVIMENTO DECLARADO.
+   O juiz de desempenho em `movimento.tsx` mede os quadros reais e rebaixa para
+   "reduzido" quando o aparelho nao da conta. O Chrome headless daqui roda em
+   SOFTWARE e reprova nessa medicao: sem esta declaracao, metade da camada
+   cinema era desligada no meio da bateria e os testes acusavam falhas que nao
+   existem no navegador de ninguem. Escolha explicita vence o juiz.
+
+   O `newContext` e embrulhado em vez de cada chamada receber a linha porque
+   alguns destes arquivos abrem cinco ou seis contextos, e um esquecido volta a
+   produzir a falha intermitente que custou esta rodada. */
+{
+  const MODO = process.env.MOVIMENTO ?? "completo";
+  const criar = nav.newContext.bind(nav);
+  nav.newContext = async (opcoes) => {
+    const c = await criar(opcoes);
+    await c.addInitScript((modo) => {
+      try {
+        localStorage.setItem("serra_movimento", modo);
+      } catch {}
+    }, MODO);
+    return c;
+  };
+}
+
 const ctx = await nav.newContext({
   ...devices["Pixel 7"],
   locale: "pt-BR",
@@ -144,7 +174,7 @@ ok("a pagina nao rola de lado", vaza <= 1, `${vaza}px de sobra`);
   await p.waitForTimeout(1200);
   const e2 = await esteira.evaluate((el) => el.scrollLeft);
   if (REDUZIDO) {
-    ok("esteira parada em reduced-motion", Math.abs(e2 - e1) < 2, `${e1} -> ${e2}`);
+    ok("esteira parada em movimento reduzido", Math.abs(e2 - e1) < 2, `${e1} -> ${e2}`);
   } else {
     ok("esteira anda sozinha no celular", e2 > e1, `${e1.toFixed(0)} -> ${e2.toFixed(0)}`);
   }

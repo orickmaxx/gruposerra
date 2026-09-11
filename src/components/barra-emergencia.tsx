@@ -65,7 +65,7 @@ export function BarraEmergencia() {
 
 export function BarraFixaCelular() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/12 bg-serra-800/95 backdrop-blur-md md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/12 bg-serra-800/98 md:hidden">
       <div className="grid grid-cols-2 gap-2 p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
         <a
           href={`tel:${SITE.emergencia.tel}`}

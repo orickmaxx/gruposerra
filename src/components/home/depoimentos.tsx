@@ -79,6 +79,7 @@ export function Depoimentos() {
         alt=""
         width={379}
         height={376}
+        sizes="34rem"
         aria-hidden
         priority={false}
         className="pointer-events-none absolute top-1/2 left-1/2 w-[34rem] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.045]"
@@ -188,6 +189,7 @@ function Cartao({ d }: { d: Depoimento }) {
           alt=""
           width={52}
           height={52}
+          sizes="52px"
           className="size-13 shrink-0 rounded-full bg-pedra-200 object-cover ring-2 ring-serra-100"
         />
         <div className="min-w-0 flex-1">

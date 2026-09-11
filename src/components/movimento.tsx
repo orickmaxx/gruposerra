@@ -19,9 +19,146 @@ import { useEffect, useRef, type ReactNode, type RefObject } from "react";
         mantem o trabalho no compositor: zero layout, zero repaint.
    ========================================================================= */
 
+/* =========================================================================
+   QUEM DECIDE SE HA MOVIMENTO
+
+   ⚠️ DECISAO DO DONO, tomada duas vezes e por escrito: as animacoes rodam em
+   QUALQUER aparelho, inclusive quando o sistema operacional esta com
+   "animacoes desligadas". Levantei que `prefers-reduced-motion` existe por
+   acessibilidade, ele reafirmou, e a escolha e dele. Fica registrado aqui para
+   quem abrir este arquivo daqui a um ano nao achar que foi descuido.
+
+   O que NAO foi feito, porque seria burrice: ignorar o ajuste E ignorar o
+   aparelho. A media query saiu, mas entrou um juiz melhor, que e o unico que
+   de fato importa para quem esta com o site travando na mao:
+
+     1. `saveData` ligado, ou memoria/nucleos de aparelho fraco, ja pesa contra;
+     2. o site MEDE o proprio desempenho por 800ms depois que a pagina assenta,
+        e se os quadros estiverem chegando devagar demais ele mesmo desce para o
+        modo reduzido.
+
+   Ou seja: animacao para todo mundo, MENOS para o aparelho que provou que nao
+   da conta. Isso serve ao pedido do dono e ao publico idoso ao mesmo tempo,
+   que era o unico jeito de fazer as duas coisas.
+
+   O padrao e SEM atributo, e sem atributo o CSS anima tudo. Nada pisca na
+   entrada, porque a degradacao so acontece depois, se acontecer.
+   ========================================================================= */
+
+export const CHAVE_MOVIMENTO = "serra_movimento";
+
 function semMovimento() {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (typeof document === "undefined") return false;
+  return document.documentElement.dataset.movimento === "reduzido";
+}
+
+/**
+ * Juiz de desempenho.
+ *
+ * Roda uma vez, 1,5s depois da pagina assentar, para nao medir o proprio
+ * carregamento e condenar um aparelho bom. Conta o intervalo entre quadros por
+ * 800ms e usa a MEDIANA, nao a media: um unico engasgo de 200ms puxaria a media
+ * para baixo e desligaria o site inteiro por causa de um soluco.
+ */
+export function Movimento() {
+  useEffect(() => {
+    const raiz = document.documentElement;
+
+    /* Escolha explicita de quem usa vence tudo, inclusive a medicao. */
+    let guardado: string | null = null;
+    try {
+      guardado = localStorage.getItem(CHAVE_MOVIMENTO);
+    } catch {
+      /* navegacao privada: segue no automatico */
+    }
+    if (guardado === "reduzido" || guardado === "completo") {
+      raiz.dataset.movimento = guardado;
+      return;
+    }
+
+    const nav = navigator as Navigator & {
+      deviceMemory?: number;
+      connection?: { saveData?: boolean };
+    };
+    const economizando = nav.connection?.saveData === true;
+    const fraco = (nav.hardwareConcurrency ?? 8) <= 4 && (nav.deviceMemory ?? 8) <= 4;
+
+    if (economizando) {
+      raiz.dataset.movimento = "reduzido";
+      return;
+    }
+
+    /* Aparelho fraco nao e condenado de cara: ele so precisa de um resultado
+       menos ruim para passar. 22ms por quadro sao ~45fps; 32ms sao ~31fps. */
+    const teto = fraco ? 22 : 32;
+
+    let inicio = 0;
+    let anterior = 0;
+    const intervalos: number[] = [];
+    let quadro = 0;
+
+    const medir = (agora: number) => {
+      if (!inicio) {
+        inicio = agora;
+        anterior = agora;
+        quadro = requestAnimationFrame(medir);
+        return;
+      }
+      intervalos.push(agora - anterior);
+      anterior = agora;
+      if (agora - inicio < 800) {
+        quadro = requestAnimationFrame(medir);
+        return;
+      }
+      intervalos.sort((a, b) => a - b);
+      const mediana = intervalos[Math.floor(intervalos.length / 2)] ?? 16;
+      if (mediana > teto) raiz.dataset.movimento = "reduzido";
+    };
+
+    const relogio = window.setTimeout(() => {
+      quadro = requestAnimationFrame(medir);
+    }, 1500);
+
+    return () => {
+      window.clearTimeout(relogio);
+      cancelAnimationFrame(quadro);
+    };
+  }, []);
+
+  return null;
+}
+
+/**
+ * Decoracao so pinta enquanto esta na tela.
+ *
+ * Ken Burns e aurora sao animacoes INFINITAS. Fora do quadro elas nao aparecem,
+ * mas continuam existindo como camada e continuam custando compositor. Um
+ * observador pausa as duas quando a secao sai da tela, o que numa home de
+ * dezessete secoes significa que elas rodam em talvez um decimo do tempo.
+ */
+export function DecoracaoVisivel() {
+  useEffect(() => {
+    const alvos = document.querySelectorAll<HTMLElement>(".kenburns, .aurora");
+    if (alvos.length === 0) return;
+    const obs = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          (e.target as HTMLElement).style.setProperty(
+            "animation-play-state",
+            e.isIntersecting ? "running" : "paused"
+          );
+          /* A aurora anima no ::before, que nao se alcanca por style inline:
+             uma classe no pai resolve, e o CSS faz o resto. */
+          (e.target as HTMLElement).classList.toggle("parado", !e.isIntersecting);
+        }
+      },
+      { rootMargin: "25% 0px" }
+    );
+    for (const a of alvos) obs.observe(a);
+    return () => obs.disconnect();
+  }, []);
+
+  return null;
 }
 
 function pontoFino() {
@@ -370,8 +507,14 @@ export function Esteira({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const el = raiz.current;
-    if (!el || semMovimento()) return;
+    if (!el) return;
 
+    /* ⛔ Aqui havia `if (semMovimento()) return`, lido UMA vez na montagem. O
+       juiz de desempenho so decide 1,5s depois, entao a esteira ja tinha
+       comecado a andar e nunca mais parava: a decisao chegava tarde demais para
+       quem ela deveria proteger. Custa um `dataset` por quadro consultar de
+       novo, e isso e barato ao ponto de nao medir. Decisao que pode mudar
+       precisa ser LIDA quando importa, nao guardada. */
     let quadro = 0;
     let parado = false;
     const VELOCIDADE = 0.4; /* px por quadro: ~24px/s, leitura confortavel */
@@ -400,7 +543,7 @@ export function Esteira({ children }: { children: ReactNode }) {
     document.fonts?.ready.then(remedir).catch(() => {});
 
     const passo = () => {
-      if (!parado && !el.dataset.arrastando) {
+      if (!parado && !el.dataset.arrastando && !semMovimento()) {
         pos += VELOCIDADE;
         /* A fita e duplicada: ao passar da metade, volta meia largura. O olho
            nao tem como perceber, porque o conteudo nos dois pontos e igual. */
@@ -625,7 +768,10 @@ export function TrilhoProgresso() {
        animacao de rolagem SEM que este caminho assumisse: a barra ficava
        congelada em zero para sempre. Quem pede menos movimento continua tendo
        direito a saber quanto falta da pagina. */
-    if (CSS.supports("animation-timeline: scroll()") && !semMovimento()) return;
+    /* A animacao de rolagem do CSS vale sempre, inclusive em movimento
+       reduzido, porque o trilho espelha a rolagem em vez de inventar
+       movimento. O JavaScript so entra onde `animation-timeline` nao existe. */
+    if (CSS.supports("animation-timeline: scroll()")) return;
 
     let quadro = 0;
     const calcular = () => {

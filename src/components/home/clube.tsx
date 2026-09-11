@@ -49,7 +49,7 @@ export function Clube() {
         <ul className="trilho mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible">
           {VITRINES.map((v) => (
             <li key={v.slug} className="flex w-[85%] shrink-0 snap-start sm:w-[62%] lg:w-auto lg:shrink">
-              <article className="cartao-cine holofote flex w-full flex-col rounded-serra-lg border border-clube/25 bg-white/90 p-7 shadow-media backdrop-blur-sm">
+              <article className="cartao-cine holofote flex w-full flex-col rounded-serra-lg border border-clube/25 bg-white/95 p-7 shadow-media">
                 <h3 className="font-display text-[1.25rem] font-bold text-tinta">
                   {v.titulo}
                 </h3>
@@ -66,6 +66,7 @@ export function Clube() {
                           alt={p.nome}
                           width={160}
                           height={70}
+                          sizes="120px"
                           className="h-auto max-h-9 w-auto object-contain"
                         />
                       </span>
@@ -108,6 +109,7 @@ export function Clube() {
                   alt=""
                   width={160}
                   height={70}
+                  sizes="120px"
                   draggable={false}
                   className="h-10 w-auto object-contain opacity-80 grayscale-[0.35] transition duration-300 hover:opacity-100 hover:grayscale-0"
                 />

@@ -14,16 +14,24 @@
 
 @theme {
   /* --- azul institucional: 71 a 75% do logo --- */
-  --color-serra-50: #eff7fc;
-  --color-serra-100: #d7ecf7;
-  --color-serra-200: #aed9ee;
-  --color-serra-300: #6fbbdf;
-  --color-serra-400: #2f95c8;
-  --color-serra-500: #0069a3; /* A cor da marca */
-  --color-serra-600: #005a8d;
-  --color-serra-700: #0a4668;
-  --color-serra-800: #093750;
-  --color-serra-900: #07283a;
+  /* ⛔ ESCALA REFEITA EM 11/09/2026, a pedido do dono, e a razao e boa: o azul
+     que a marca usa no site, no logotipo e no material dela e o #3B78A9, mais
+     claro e menos saturado que o #0069A3 que eu havia medido no PNG. Os dois
+     sao o mesmo azul; o medido era a versao escura. Com o #0069A3 no degrau
+     500, TUDO que herdava a cor da marca puxava para o escuro, e a soma disso
+     com as secoes escuras deixou o site "morto e obscuro", que foi a palavra
+     usada. Agora o 500 e o azul de verdade e o antigo virou o 700, que e onde
+     azul escuro serve: texto sobre claro e fundo de secao. */
+  --color-serra-50: #f3f8fc;
+  --color-serra-100: #e2eef7;
+  --color-serra-200: #c2dbee;
+  --color-serra-300: #94bedd;
+  --color-serra-400: #649cc6;
+  --color-serra-500: #3b78a9; /* A cor da marca, a que o cliente usa */
+  --color-serra-600: #2f6390;
+  --color-serra-700: #0069a3; /* o azul medido no logotipo, agora como grave */
+  --color-serra-800: #17456a;
+  --color-serra-900: #123449;
 
   /* --- ciano de apoio: da o brilho moderno sem inventar cor nova --- */
   --color-onda-400: #22b8d4;
@@ -71,10 +79,16 @@
   --color-dourado-forte: #8a6a1f; /* escurecido para texto, 4.9:1 no branco */
 
   /* --- Serra Pet --- */
-  --color-pet: #e75c0d;
-  --color-pet-claro: #f79445;
-  --color-pet-forte: #b34206; /* texto sobre branco, 4.8:1 */
-  --color-pet-veu: #fff3ea;
+  /* Laranja oficial do Serra Pet, trazido pelo dono em 11/09/2026. */
+  --color-pet: #fc5c04;
+  --color-pet-claro: #ff9350;
+  --color-pet-veu: #fff4ec;
+  --color-pet-forte: #b84100; /* escurecido para texto sobre branco, 4.7:1 */
+
+  /* 2a via de boleto. O dono trouxe a cor e disse que nao a defende muito, e
+     concordo: vinho puxa para alarme numa pagina que ja e delicada. Fica
+     declarada para quem quiser usar, e o site nao usa. */
+  --color-boleto: #a42c43;
 
   /* --- homenagens --- */
   --color-verde: #5ca038;
@@ -100,7 +114,7 @@
      verdade, e entrou uma areia quente para as zonas de marca terrosa. */
   --color-tinta: #0f1c26;
   --color-corpo: #3f4950;
-  --color-papel: #eaf1f7; /* azul-gelo, a superficie institucional */
+  --color-papel: #eef5fa; /* azul-gelo, a superficie institucional */
   --color-areia: #f9f4ec; /* areia quente, para vizinhar com terracota e ouro */
   --color-linha: #dde5ec;
 
@@ -307,26 +321,35 @@
 /* Faixa azul cheia da marca. E o degrau que faltava entre o claro e o quase
    preto: da para pintar uma secao inteira de azul sem que ela vire noite. */
 .mat-azul {
-  background-image: linear-gradient(165deg, #0a76b3 0%, var(--color-serra-500) 48%, var(--color-serra-700) 100%);
+  background-image: linear-gradient(165deg, #5b95c4 0%, var(--color-serra-500) 46%, #2a5f8a 100%);
 }
 
+/* O escuro do site nao vai mais ate o quase preto. Ele para num azul
+   noturno que ainda e AZUL: o fundo antigo (#062533) lia como preto sujo. */
 .malha-escura {
-  background-image: linear-gradient(165deg, #0b4d72 0%, #093750 55%, #062533 100%);
+  background-image: linear-gradient(165deg, #2d6490 0%, #1d4766 55%, #16354c 100%);
 }
 
 /* 0.78 de alfa deixava o rodape escuro atravessar o cabecalho e o texto do
    rodape aparecia cortado por dentro dele. Vidro so vale enquanto nao custa
    legibilidade. */
+/* ⛔ AQUI HAVIA `backdrop-filter: blur(16px)`, E ELE ERA O MAIOR CUSTO DA
+   PAGINA INTEIRA: +10,3 fps ao ser desligado, o dobro do segundo colocado
+   (`scripts/culpado-fluidez.mjs`). A razao e estrutural: um elemento com
+   backdrop-filter obriga o navegador a RE-AMOSTRAR e RE-BORRAR tudo que esta
+   atras dele a cada quadro, e este vidro estava no cabecalho, que e fixo e
+   portanto refaz essa conta durante toda a rolagem da pagina.
+
+   O que se perde: quase nada. O cabecalho flutua sobre conteudo claro, entao
+   um branco de 96% e visualmente indistinguivel de um branco de 93% borrado.
+   Vidro so se justifica sobre FOTOGRAFIA, e ali ele continua, em dois lugares
+   contados. */
 .vidro {
-  background: rgba(255, 255, 255, 0.93);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .vidro-escuro {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  background: rgba(255, 255, 255, 0.13);
 }
 
 /* Texto em gradiente e proibido no manual de craft. Aqui o gradiente vive no
@@ -342,7 +365,6 @@
     transform 420ms var(--ease-serra),
     box-shadow 420ms var(--ease-serra),
     border-color 420ms var(--ease-serra);
-  will-change: transform;
 }
 .cartao:hover {
   transform: translateY(-5px);
@@ -369,7 +391,6 @@
   transition:
     transform 480ms var(--ease-serra),
     box-shadow 480ms var(--ease-serra);
-  will-change: transform;
 }
 .depo-cartao:hover {
   transform: translateY(-8px);
@@ -394,7 +415,7 @@
   transform: scaleX(1);
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   .depo-entra {
     animation: none;
   }
@@ -423,9 +444,9 @@
   animation-delay: calc(var(--i, 0) * 35ms);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .js-revela [data-revela] .item-cascata,
-  .js-revela [data-revela][data-visivel="1"] .item-cascata {
+html[data-movimento="reduzido"] {
+  &.js-revela [data-revela] .item-cascata,
+  &.js-revela [data-revela][data-visivel="1"] .item-cascata {
     opacity: 1;
     transform: none;
     animation: none;
@@ -524,7 +545,7 @@
    e continuo, e a marca d'agua e SO O SIMBOLO, reto e centralizado, como faz
    o site do Florees. */
 .palco {
-  background-image: linear-gradient(165deg, #0c5279 0%, #093a55 52%, #061e2c 100%);
+  background-image: linear-gradient(165deg, #326a97 0%, #1f4c6e 52%, #17384f 100%);
 }
 
 /* Aspa tipografica grande atras do depoimento, como no cartao do Florees */
@@ -642,7 +663,7 @@
   animation-delay: calc(var(--i, 0) * 90ms + 140ms);
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   .revela-texto {
     animation: none;
   }
@@ -735,7 +756,7 @@
   display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   html {
     scroll-behavior: auto;
   }
@@ -750,21 +771,21 @@
   .pulso::before {
     animation: none;
   }
-  .js-revela [data-revela] {
+  &.js-revela [data-revela] {
     opacity: 1;
     transform: none;
     transition: none;
   }
-  .js-revela .linha-tempo .lt-trilho {
+  &.js-revela .linha-tempo .lt-trilho {
     transform: scaleY(1);
     transition: none;
   }
-  .js-revela .linha-tempo .lt-item {
+  &.js-revela .linha-tempo .lt-item {
     opacity: 1;
     transform: none;
     animation: none;
   }
-  .js-revela .linha-tempo .lt-ponto {
+  &.js-revela .linha-tempo .lt-ponto {
     transform: translate(-50%, 0.4rem) scale(1);
     animation: none;
   }
@@ -859,7 +880,7 @@ details.faq[open]::before {
   transform: scaleY(1);
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   details.faq > .faq-corpo,
   details.faq::before {
     transition: none;
@@ -981,7 +1002,6 @@ details.faq[open]::before {
 }
 .kenburns {
   animation: serra-kenburns 30s var(--ease-suave) infinite alternate;
-  will-change: transform;
 }
 
 /* -------------------------------------------------------------------------
@@ -1023,15 +1043,20 @@ details.faq[open]::before {
   height: 95%;
   z-index: 0;
   pointer-events: none;
+  /* ⛔ Havia um `filter: blur(30px)` aqui, segundo maior custo medido (+4,7
+     fps). Borrar em tempo de execucao um elemento que ja e um GRADIENTE RADIAL
+     e pagar duas vezes pela mesma suavidade: gradiente nao tem borda para
+     suavizar. As paradas de cor foram reescritas com transicao mais longa e o
+     resultado na tela e o mesmo, de graca. */
   background: radial-gradient(
-    58% 62% at 50% 40%,
-    rgba(34, 184, 212, 0.32) 0%,
-    rgba(0, 105, 163, 0.18) 42%,
-    transparent 72%
+    62% 66% at 50% 40%,
+    rgba(34, 184, 212, 0.3) 0%,
+    rgba(24, 150, 190, 0.22) 28%,
+    rgba(0, 105, 163, 0.13) 52%,
+    rgba(0, 105, 163, 0.05) 70%,
+    transparent 84%
   );
-  filter: blur(30px);
   animation: serra-aurora 22s var(--ease-suave) infinite;
-  will-change: transform, opacity;
 }
 
 /* -------------------------------------------------------------------------
@@ -1177,7 +1202,6 @@ details.faq[open]::before {
    ------------------------------------------------------------------------- */
 .paralaxe {
   transform: translate3d(0, var(--par, 0px), 0);
-  will-change: transform;
 }
 
 /* -------------------------------------------------------------------------
@@ -1308,7 +1332,6 @@ details.faq[open]::before {
     transform 620ms var(--ease-cine),
     box-shadow 620ms var(--ease-cine),
     border-color 620ms var(--ease-cine);
-  will-change: transform;
 }
 .cartao-cine:hover,
 .cartao-cine:focus-within {
@@ -1470,12 +1493,18 @@ details.faq[open]::before {
    operacional que as coisas parem. Se um efeito novo entrar aqui em cima, o
    nome dele entra nesta lista. Sem excecao.
    ------------------------------------------------------------------------- */
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   .kenburns,
-  .aurora::before,
-  .progresso {
+  .aurora::before {
     animation: none !important;
   }
+
+  /* ⛔ `.progresso` SAIU desta lista, e o defeito que tirou era feio: com a
+     animacao desligada por CSS e o componente ja montado, a barra congelava em
+     `scaleX(0)` para sempre, porque o caminho de JavaScript so e escolhido na
+     montagem e o juiz de desempenho decide 1,5s depois. Alem disso o trilho nao
+     e animacao gratuita: ele ESPELHA a rolagem que a propria pessoa esta
+     fazendo, igual a barra de rolagem, que ninguem desliga por enjoo. */
   .cartao-cine:hover,
   .cartao-cine:focus-within,
   .selo-icone,
@@ -1486,16 +1515,16 @@ details.faq[open]::before {
   .varre::after {
     display: none;
   }
-  .js-revela [data-revela] .titulo-cine .linha-mascara > span,
+  &.js-revela [data-revela] .titulo-cine .linha-mascara > span,
   .titulo-cine.entra-ja .linha-mascara > span {
     transform: none;
     opacity: 1;
     animation: none;
   }
-  .js-revela [data-revela].revela-escala {
+  &.js-revela [data-revela].revela-escala {
     transform: none;
   }
-  .js-revela .cortina .cortina-veu {
+  &.js-revela .cortina .cortina-veu {
     transform: scaleY(0);
     transition: none;
   }
@@ -1527,7 +1556,6 @@ details.faq[open]::before {
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   transform-style: preserve-3d;
   transition: transform 700ms var(--ease-cine);
-  will-change: transform;
 }
 /* Enquanto o ponteiro esta em cima, a resposta e quase imediata; ao sair, a
    volta e longa. E a diferenca entre objeto e elastico. */
@@ -1565,7 +1593,17 @@ details.faq[open]::before {
   opacity: 0.8;
 }
 
-@media (prefers-reduced-motion: reduce), (hover: none) {
+html[data-movimento="reduzido"] .relevo,
+html[data-movimento="reduzido"] .relevo-frente,
+html[data-movimento="reduzido"] .relevo-fundo {
+  transform: none !important;
+  transition: none;
+}
+html[data-movimento="reduzido"] .relevo-luz {
+  display: none;
+}
+
+@media (hover: none) {
   .relevo,
   .relevo-frente,
   .relevo-fundo {
@@ -1714,7 +1752,7 @@ details.faq[open]::before {
   transform: scaleX(1);
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   .pergunta[data-fase="sai"],
   .pergunta[data-fase="entra"],
   .pergunta[data-fase="entra"] .opcao {
@@ -1760,7 +1798,7 @@ details.faq[open]::before {
   animation: serra-marco 1100ms var(--ease-suave) 120ms both;
 }
 
-@media (prefers-reduced-motion: reduce) {
+html[data-movimento="reduzido"] {
   /* ⛔ NAO forcar `scaleX(1)` aqui. Era o que estava escrito, e acendia a linha
      INTEIRA de saida: quem pediu menos movimento perdia a informacao de ate
      onde ja tinha chegado, que e a unica coisa que a linha do tempo comunica.
@@ -1821,4 +1859,86 @@ details.faq[open]::before {
   .depo-cartao[data-emfoco="1"] .depo-fio {
     transform: scaleX(1);
   }
+}
+
+/* =========================================================================
+   SO PINTA O QUE ESTA NA TELA
+
+   Duas economias que nao custam um pixel de aparencia.
+
+   1. DECORACAO PAUSADA FORA DO QUADRO. Ken Burns e aurora sao animacoes
+      infinitas. Fora da tela ninguem as ve, mas elas continuam sendo camada
+      viva e continuam custando compositor a cada quadro, pela pagina inteira.
+      O componente `DecoracaoVisivel` pausa as duas quando a secao sai do
+      campo, e numa home de dezessete secoes isso significa que elas rodam em
+      talvez um decimo do tempo.
+
+   2. `content-visibility: auto` NAS SECOES. O navegador pula layout e pintura
+      de tudo que esta fora da tela. Numa pagina com 1.600 elementos, e a maior
+      economia disponivel, e ela e do proprio navegador, nao um truque.
+
+      ⚠️ `contain-intrinsic-size: auto 700px` e obrigatorio junto. Sem isso a
+      secao nao pintada vale zero de altura, a barra de rolagem pula enquanto a
+      pessoa rola e o site parece quebrado. O `auto` manda o navegador LEMBRAR
+      a altura real depois da primeira pintura; os 700px so valem ate ele ver a
+      secao pela primeira vez.
+   ========================================================================= */
+
+.parado::before {
+  animation-play-state: paused !important;
+}
+
+.secao-preguicosa {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+}
+
+/* =========================================================================
+   VEU DE MARCA POR SERVICO
+
+   O veu azul do herói da home nao serve para toda pagina. A pagina do Serra Pet
+   abre com a foto da propria marca, que tem laranja proprio; a de cremacao abre
+   com o columbario do Memorial, que tem terracota e dourado proprios. Lavar as
+   duas de azul seria dizer que a cor por servico vale no cartao e nao vale no
+   herói, que e onde ela mais pesa.
+
+   A ESTRUTURA e a mesma em todas: um gradiente na diagonal carregando a cor da
+   marca do lado onde o texto vive, e um vertical segurando topo e base. So as
+   paradas de cor mudam. Contraste medido por `contraste-foto.mjs` em todas.
+   ========================================================================= */
+
+.veu-memorial::after {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(32, 14, 6, 0.95) 0%,
+      rgba(74, 33, 14, 0.88) 34%,
+      rgba(109, 51, 22, 0.66) 62%,
+      rgba(138, 74, 37, 0.45) 100%
+    ),
+    linear-gradient(180deg, rgba(32, 14, 6, 0.6) 0%, transparent 26%, transparent 62%, rgba(28, 12, 5, 0.9) 100%);
+}
+
+.veu-pet::after {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(38, 16, 4, 0.95) 0%,
+      rgba(96, 38, 6, 0.86) 34%,
+      rgba(160, 60, 8, 0.6) 62%,
+      rgba(231, 92, 13, 0.42) 100%
+    ),
+    linear-gradient(180deg, rgba(38, 16, 4, 0.6) 0%, transparent 26%, transparent 62%, rgba(33, 14, 4, 0.9) 100%);
+}
+
+.veu-verde::after {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(10, 26, 8, 0.95) 0%,
+      rgba(24, 54, 16, 0.88) 34%,
+      rgba(48, 92, 28, 0.62) 62%,
+      rgba(92, 160, 56, 0.4) 100%
+    ),
+    linear-gradient(180deg, rgba(10, 26, 8, 0.6) 0%, transparent 26%, transparent 62%, rgba(8, 22, 6, 0.9) 100%);
 }

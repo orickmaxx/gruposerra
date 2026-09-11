@@ -82,6 +82,7 @@ export function Topo() {
           alt=""
           width={379}
           height={376}
+          sizes="(min-width: 768px) 36rem, 24rem"
           aria-hidden
           priority
           className="pointer-events-none absolute -top-28 -right-28 z-[1] w-[24rem] max-w-none opacity-[0.045] md:-right-36 md:w-[36rem]"
@@ -198,7 +199,7 @@ function SeloGoogle() {
 function ListaTelefones() {
   return (
     <div
-      className="revela-texto overflow-hidden rounded-serra-lg border border-white/20 bg-[#04202f]/72 shadow-cine backdrop-blur-xl backdrop-saturate-150"
+      className="revela-texto overflow-hidden rounded-serra-lg border border-white/20 bg-[#04202f]/88 shadow-cine"
     >
       <h2 className="flex items-center gap-2.5 border-b border-white/15 px-6 py-4 font-display text-[1.0625rem] font-bold text-white">
         <IconeTelefone className="size-[1.15rem] shrink-0 text-onda-400" />
@@ -258,7 +259,7 @@ function Numeros() {
   ];
 
   return (
-    <div className="relative z-10 border-t border-white/12 bg-black/25 backdrop-blur-sm">
+    <div className="relative z-10 border-t border-white/12 bg-black/35">
       <ul className="mx-auto grid max-w-[80rem] grid-cols-2 divide-x divide-y divide-white/12 md:grid-cols-4 md:divide-y-0">
         {itens.map(({ valor, sufixo, rotulo, Icone }) => (
           <li

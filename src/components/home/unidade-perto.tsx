@@ -4,7 +4,8 @@ import { useState } from "react";
 import { UNIDADES, distanciaKm, unidadeMaisPerto, type Unidade } from "@/data/unidades";
 import { SITE } from "@/lib/site";
 import { Rotulo, TituloCine } from "../ui";
-import { IconeAbaixo, IconeLocal, IconeRelogio, IconeSeta, IconeTelefone } from "../icones";
+import { MapaUnidade } from "../mapa-unidade";
+import { IconeAbaixo, IconeLocal, IconeRelogio, IconeTelefone } from "../icones";
 
 /**
  * "Qual unidade eu chamo?"
@@ -144,17 +145,15 @@ export function UnidadePerto() {
                 </span>
               </p>
 
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  `${escolhida.logradouro}, ${escolhida.bairro}, ${escolhida.cidade} ${escolhida.uf}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-texto mt-5 inline-flex items-center gap-2 font-semibold text-serra-600"
-              >
-                Como chegar
-                <IconeSeta className="size-4 shrink-0" />
-              </a>
+              {/* O link "Como chegar" virou mapa de verdade. O iframe só é
+                  carregado depois do clique: ver `mapa-unidade.tsx` para por
+                  que oito embeds do Google numa página não podem nascer
+                  sozinhos, nem por peso nem por LGPD. */}
+              <MapaUnidade
+                className="mt-5"
+                nome={escolhida.nome}
+                endereco={`${escolhida.logradouro}, ${escolhida.bairro}, ${escolhida.cidade}/${escolhida.uf}`}
+              />
             </div>
 
             <div className="flex flex-col gap-3 md:border-l md:border-linha md:pl-8">

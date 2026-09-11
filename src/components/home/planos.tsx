@@ -58,7 +58,7 @@ export function Planos() {
                     canal diferente: quem olha de longe ve o aro antes de ler a
                     faixa. */}
                 {destaque && (
-                  <p className="relative z-[1] bg-white/15 py-2.5 text-center text-[0.8125rem] font-bold tracking-[0.14em] text-white uppercase backdrop-blur-sm">
+                  <p className="relative z-[1] bg-white/15 py-2.5 text-center text-[0.8125rem] font-bold tracking-[0.14em] text-white uppercase">
                     O mais escolhido
                   </p>
                 )}
@@ -226,6 +226,7 @@ export function Inclusos() {
         alt=""
         width={379}
         height={376}
+        sizes="28rem"
         aria-hidden
         className="pointer-events-none absolute -right-20 -bottom-24 w-[28rem] max-w-none opacity-[0.04]"
       />

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { NAV, SITE } from "@/lib/site";
+import { NAV, ROTAS_COM_HEROI, SITE } from "@/lib/site";
 import { IconeBoleto, IconeFechar, IconeMenu, IconeTelefone, IconeWhatsApp } from "./icones";
 
 /**
@@ -40,11 +40,14 @@ export function Cabecalho() {
    * cabecalho solido de sempre, porque a partir dai o fundo e claro e a
    * navegacao precisa de contraste.
    *
-   * ⚠ So vale onde EXISTE herói escuro. Em qualquer outra rota o cabecalho
-   * branco continua como estava: cabecalho transparente sobre fundo branco e
-   * texto branco invisivel, que e o defeito classico desse padrao.
+   * ⚠ So vale onde EXISTE herói escuro, e a lista dessas rotas mora em
+   * `lib/site.ts` justamente para nao se perder: `ROTAS_COM_HEROI`. Em qualquer
+   * outra rota o cabecalho branco continua como estava, porque cabecalho
+   * transparente sobre fundo branco e texto branco invisivel, que e o defeito
+   * classico desse padrao.
    */
-  const sobreHeroi = rota === "/" && !rolou;
+  const sobreHeroi =
+    !rolou && ROTAS_COM_HEROI.includes(rota as (typeof ROTAS_COM_HEROI)[number]);
 
   useEffect(() => {
     document.body.style.overflow = aberto ? "hidden" : "";
@@ -93,6 +96,7 @@ export function Cabecalho() {
               alt=""
               width={1400}
               height={376}
+              sizes="(min-width: 1024px) 210px, 180px"
               priority
               className="h-11 w-auto sm:h-12 lg:h-14"
             />
@@ -156,6 +160,7 @@ export function Cabecalho() {
               alt=""
               width={347}
               height={93}
+              sizes="150px"
               className="h-10 w-auto"
             />
             <button

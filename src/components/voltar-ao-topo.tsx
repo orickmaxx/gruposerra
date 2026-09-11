@@ -31,7 +31,7 @@ export function VoltarAoTopo() {
       onClick={() =>
         window.scrollTo({
           top: 0,
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          behavior: document.documentElement.dataset.movimento === "reduzido"
             ? "auto"
             : "smooth",
         })

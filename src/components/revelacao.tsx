@@ -17,7 +17,7 @@ import { useEffect } from "react";
 export function Revelacao() {
   useEffect(() => {
     const raiz = document.documentElement;
-    const semMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const semMovimento = document.documentElement.dataset.movimento === "reduzido";
     if (semMovimento || !("IntersectionObserver" in window)) return;
 
     raiz.classList.add("js-revela");

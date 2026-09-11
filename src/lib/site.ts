@@ -72,6 +72,28 @@ export const SITE = {
  */
 export const INDEXAVEL = process.env.NEXT_PUBLIC_INDEXAVEL === "1";
 
+/**
+ * Rotas que abrem com HERÓI ESCURO em tela cheia.
+ *
+ * O cabeçalho some dentro da fotografia enquanto a página está no topo dessas
+ * rotas, e volta sólido ao primeiro gesto de rolagem. Fora delas ele é branco
+ * desde sempre, porque cabeçalho transparente sobre fundo claro é texto branco
+ * invisível, que é o defeito clássico desse padrão.
+ *
+ * ⚠️ Esta lista e o `HeroiPagina` precisam andar juntos: rota nova com herói
+ * escuro entra aqui no mesmo commit, senão a página nasce com uma barra branca
+ * cortando a foto no primeiro terço.
+ */
+export const ROTAS_COM_HEROI = [
+  "/",
+  "/unidades",
+  "/cremacao",
+  "/obituario",
+  "/serra-pet",
+  "/contato",
+  "/homenagens",
+] as const;
+
 export const NAV = [
   { href: "/planos", rotulo: "Planos" },
   { href: "/cremacao", rotulo: "Cremação" },

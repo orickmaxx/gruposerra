@@ -67,6 +67,7 @@ export function Rodape() {
               alt={SITE.nomeCompleto}
               width={347}
               height={93}
+              sizes="165px"
               className="h-11 w-auto"
             />
             <p className="mt-5 max-w-sm font-display text-[1.25rem] leading-snug text-white">
@@ -198,6 +199,7 @@ export function Rodape() {
               alt={SITE.nomeCompleto}
               width={347}
               height={93}
+              sizes="135px"
               className="h-9 w-auto opacity-90"
             />
             <a
@@ -211,6 +213,7 @@ export function Rodape() {
                 alt="Complexo Memorial Hortolândia, crematório"
                 width={300}
                 height={90}
+                sizes="150px"
                 className="h-11 w-auto opacity-90 transition-opacity hover:opacity-100"
               />
             </a>
@@ -220,6 +223,7 @@ export function Rodape() {
                 alt="Serra Pet, assistência funeral e cremação"
                 width={962}
                 height={237}
+                sizes="150px"
                 className="h-9 w-auto opacity-90 transition-opacity hover:opacity-100"
               />
             </Link>
