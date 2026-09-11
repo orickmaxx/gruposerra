@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 /**
@@ -15,6 +16,24 @@ import { useEffect } from "react";
  * Respeita `prefers-reduced-motion`: nesse caso nem liga a classe.
  */
 export function Revelacao() {
+/* ⛔ OS OBSERVADORES PRECISAM RENASCER A CADA ROTA.
+ *
+ * Estes componentes vivem no LAYOUT, que o App Router NÃO remonta quando a
+ * pessoa navega por um link: só o conteúdo do `<main>` troca. Com a lista de
+ * dependências vazia, o `querySelectorAll` rodava uma única vez, na primeira
+ * carga, e os elementos da página seguinte nunca eram observados. Resultado:
+ * quem chegava ao obituário pelo menu via metade das seções em branco, e só
+ * um F5 resolvia, porque aí o layout remontava.
+ *
+ * Era exatamente o sintoma relatado: "às vezes não carrega por completo, tem
+ * que dar F5". Não era carregamento, era observador cego.
+ *
+ * `usePathname()` na dependência faz o efeito se refazer a cada rota. O
+ * `MutationObserver` cobre o resto: conteúdo que aparece SEM mudar de rota,
+ * como a lista de unidades que expande ao clicar em "ver as outras 7".
+ */
+  const rota = usePathname();
+
   useEffect(() => {
     const raiz = document.documentElement;
     const semMovimento = document.documentElement.dataset.movimento === "reduzido";
@@ -58,29 +77,102 @@ export function Revelacao() {
       observador.observe(alvo);
     }
 
-    /* Rede de seguranca: se por qualquer motivo um bloco ficar escondido
-       (aba em segundo plano na hora do salto, observador estrangulado), ele
-       aparece assim que a rolagem para. Conteudo invisivel nunca e aceitavel. */
+    /* ⛔ REDE DE SEGURANCA QUE NAO DEPENDE DE ROLAGEM NEM DE TEMPO CERTO.
+     *
+     * O defeito relatado era "a pagina as vezes nao carrega por completo, tem
+     * que dar F5", e o caso que o reproduziu foi o BOTAO VOLTAR: ao retornar
+     * para a home, os DEZESSEIS blocos ficavam com opacidade 0. A causa e uma
+     * corrida: o App Router troca a rota (e este efeito re-executa) num
+     * instante em que o `<main>` ainda nao tem o conteudo novo, entao o
+     * `querySelectorAll` observa uma lista vazia e a restauracao de rolagem
+     * acontece depois de tudo.
+     *
+     * Tentar acertar o instante certo e perder: cada navegacao tem um timing.
+     * Entao nao se aposta em instante nenhum. Varre-se algumas vezes ao longo
+     * do primeiro segundo e meio, e tambem quando a rolagem para, quando a
+     * pagina volta do cache do navegador e quando o historico muda.
+     *
+     * Uma varredura custa um `getBoundingClientRect` por bloco pendente, e
+     * blocos ja revelados saem da conta. Ou seja: cinco varreduras de uma
+     * pagina inteira custam menos que um unico quadro de rolagem.
+     */
     const varrer = () => {
-      for (const alvo of alvos) {
-        if (alvo.dataset.visivel === "1") continue;
-        if (alvo.getBoundingClientRect().top < window.innerHeight) revelar(alvo);
+      const pendentes = document.querySelectorAll<HTMLElement>(
+        "[data-revela]:not([data-visivel])"
+      );
+      for (const alvo of pendentes) {
+        if (alvo.getBoundingClientRect().top < window.innerHeight * 0.95) {
+          revelar(alvo);
+        } else {
+          observador.observe(alvo);
+        }
       }
     };
+
+    /* A primeira varredura e imediata; as outras cobrem a restauracao de
+       rolagem, a hidratacao e o conteudo que chega depois. */
+    const relogios = [0, 120, 350, 700, 1500].map((atraso) =>
+      window.setTimeout(varrer, atraso)
+    );
+
+    /* ⛔ SEGURO DE VIDA: 2,5s DEPOIS, TUDO APARECE, DOU O QUE DER.
+     *
+     * O dono relatou que a pagina "as vezes nao carrega por completo, so
+     * algumas secoes, e precisa de F5". Nao consegui reproduzir: nem local, nem
+     * em producao com 3G lento, nem por link, ancora ou botao voltar. Em toda
+     * medicao, nada que estivesse NA TELA ficou escondido.
+     *
+     * Nao reproduzir nao e o mesmo que nao existir. E quando o efeito de um
+     * defeito e "sumiu conteudo de um site de funeraria", cacar a causa exata
+     * antes de estancar o sangramento e a ordem errada de fazer as coisas.
+     *
+     * Entao este temporizador apaga a CLASSE inteira de problema: passados
+     * 2,5s da montagem, todo bloco que ainda estiver pendente e revelado, sem
+     * olhar posicao, sem depender de observador, de rolagem ou de rota. No
+     * pior cenario imaginavel alguem perde uma animacao de entrada. Ninguem
+     * perde o telefone do plantao.
+     *
+     * Nao substitui o resto: os 2,5s sao tempo demais para ser a regra e pouco
+     * demais para atrapalhar quem esta lendo. E rede, nao cinto.
+     */
+    const seguro = window.setTimeout(() => {
+      for (const alvo of document.querySelectorAll<HTMLElement>(
+        "[data-revela]:not([data-visivel])"
+      )) {
+        alvo.dataset.visivel = "1";
+      }
+    }, 2500);
+    relogios.push(seguro);
+
     let ocioso = 0;
     const aoRolar = () => {
       window.clearTimeout(ocioso);
       ocioso = window.setTimeout(varrer, 160);
     };
     window.addEventListener("scroll", aoRolar, { passive: true });
+    window.addEventListener("pageshow", varrer);
+    window.addEventListener("popstate", varrer);
+
+    /* E o conteúdo que nasce SEM troca de rota, como a lista de unidades que
+       abre ao clicar em "ver as outras 7". O observador de mutação não decide
+       nada sozinho: ele só avisa que apareceu gente nova e manda varrer. */
+    const mutacoes = new MutationObserver(() => {
+      window.clearTimeout(ocioso);
+      ocioso = window.setTimeout(varrer, 80);
+    });
+    mutacoes.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       window.removeEventListener("scroll", aoRolar);
+      window.removeEventListener("pageshow", varrer);
+      window.removeEventListener("popstate", varrer);
       window.clearTimeout(ocioso);
+      for (const r of relogios) window.clearTimeout(r);
+      mutacoes.disconnect();
       observador.disconnect();
       raiz.classList.remove("js-revela");
     };
-  }, []);
+  }, [rota]);
 
   return null;
 }

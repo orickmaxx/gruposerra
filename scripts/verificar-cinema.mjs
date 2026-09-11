@@ -267,6 +267,41 @@ const pintou = await sim.evaluate(async (raiz) => {
 });
 ok("as particulas pintam a tela de verdade", pintou > 200, `${pintou} pixels`);
 
+/* ============ 7b. NADA FICA ESCONDIDO SEM ROLAR, EM ROTA NENHUMA ==========
+
+   O dono relatou que a pagina "as vezes nao carrega por completo, so algumas
+   secoes, precisa de F5". Nao foi possivel reproduzir, mas a classe inteira de
+   problema foi eliminada com um seguro de 2,5s em `revelacao.tsx`: passado
+   esse tempo, todo bloco pendente aparece, sem olhar posicao nem observador.
+
+   Esta checagem existe para o seguro nunca ser removido por engano. Ela abre
+   cada rota e NAO ROLA NADA, que e o pior caso possivel para uma revelacao
+   presa a rolagem, e exige zero blocos invisiveis.
+   ========================================================================= */
+{
+  const rotas = ["/", "/obituario", "/unidades", "/cremacao", "/serra-pet", "/contato"];
+  const presos = [];
+  const ctxR = await nav.newContext({ viewport: { width: 1440, height: 900 }, locale: "pt-BR" });
+  const pr = await ctxR.newPage();
+  for (const r of rotas) {
+    await pr.goto(BASE.replace(/\/$/, "") + r, { waitUntil: "networkidle" });
+    await pr.waitForTimeout(3200);
+    const n = await pr.evaluate(
+      () =>
+        [...document.querySelectorAll("[data-revela]")].filter(
+          (x) => parseFloat(getComputedStyle(x).opacity) < 0.9
+        ).length
+    );
+    if (n > 0) presos.push(`${r}: ${n}`);
+  }
+  await ctxR.close();
+  ok(
+    "nenhuma rota deixa bloco invisivel sem rolagem",
+    presos.length === 0,
+    presos.length ? presos.join(", ") : `${rotas.length} rotas limpas`
+  );
+}
+
 /* ====================== 8. a politica de movimento, como ela e hoje =======
 
    ⚠️ MUDANCA DE CONTRATO, e este teste existe para deixa-la explicita em vez de

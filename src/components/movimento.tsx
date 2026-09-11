@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 
 /* =========================================================================
@@ -137,6 +138,8 @@ export function Movimento() {
  * dezessete secoes significa que elas rodam em talvez um decimo do tempo.
  */
 export function DecoracaoVisivel() {
+  const rota = usePathname();
+
   useEffect(() => {
     const alvos = document.querySelectorAll<HTMLElement>(".kenburns, .aurora");
     if (alvos.length === 0) return;
@@ -156,7 +159,7 @@ export function DecoracaoVisivel() {
     );
     for (const a of alvos) obs.observe(a);
     return () => obs.disconnect();
-  }, []);
+  }, [rota]);
 
   return null;
 }
@@ -357,6 +360,10 @@ export function Ima({ children, className = "" }: { children: ReactNode; classNa
  * principal. Em ponteiro fino nem chega a ser montado.
  */
 export function FocoNoCelular() {
+  /* Ver a nota em `revelacao.tsx`: o layout não remonta na troca de rota, e sem
+     isto o foco por posição valia só na primeira página aberta. */
+  const rota = usePathname();
+
   useEffect(() => {
     if (typeof window.matchMedia !== "function") return;
     if (!window.matchMedia("(hover: none)").matches) return;
@@ -378,7 +385,7 @@ export function FocoNoCelular() {
     );
     for (const a of alvos) obs.observe(a);
     return () => obs.disconnect();
-  }, []);
+  }, [rota]);
 
   return null;
 }
