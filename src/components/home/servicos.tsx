@@ -484,7 +484,7 @@ function SerraPet() {
               `overflow-hidden` da secao corta ali. */}
           <div className="relative -mb-px self-end md:-mr-[max(1.25rem,calc((100vw-80rem)/2))]">
             <Image
-              src="/fotos/serra-pet-familia.webp"
+              src="/fotos/serra-pet-familia-recorte.webp"
               alt="Três gerações de uma família, um cachorro e um gato"
               width={1200}
               height={983}
