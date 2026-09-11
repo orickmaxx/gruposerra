@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { UNIDADES } from "@/data/unidades";
 import { Contador } from "../contador";
@@ -30,21 +31,98 @@ import { useArrastar } from "../movimento";
  *
  * Tudo em transform e opacity, e tudo desligado em prefers-reduced-motion.
  */
-const HISTORIA: { ano: number; o: string; nota?: string; marco?: boolean }[] = [
-  { ano: 1961, o: "Primeira unidade", nota: "Campinas, no Centro", marco: true },
-  { ano: 1988, o: "Valinhos" },
-  { ano: 1993, o: "Artur Nogueira" },
-  { ano: 1994, o: "Vinhedo" },
-  { ano: 2003, o: "Hortolândia" },
-  { ano: 2015, o: "Cosmópolis" },
-  { ano: 2019, o: "Campinas", nota: "unidade Padre Anchieta" },
+/**
+ * A HISTORIA, AGORA COM A FOTOGRAFIA DE CADA MARCO.
+ *
+ * As nove imagens sao as do proprio cliente, baixadas de
+ * `gruposerra.com.br/grupo` em 11/09/2026, que e onde elas estao publicadas
+ * hoje: a rua de Campinas com o bonde em 1961, a fachada de cada unidade na
+ * ordem em que abriram e o predio do Memorial Hortolandia em 2021. Nenhuma e
+ * banco de imagem, e e por isso que elas valem alguma coisa aqui.
+ *
+ * ⛔ AS FOTOS NAO SAO ESCONDIDAS ATRAS DO PONTEIRO. O pedido foi "ao passar o
+ * mouse mostrar as imagens cronologicas do site deles", e a leitura literal
+ * seria opacidade 0 ate o hover. Isso quebra duas regras da casa de uma vez:
+ * no celular `:hover` nunca acontece, e conteudo que so existe sob ponteiro
+ * some para metade das pessoas sem um erro no console.
+ *
+ * A foto vive SEMPRE na tela, e o que muda e a COR. Ano ainda nao percorrido
+ * fica em preto e branco; ano aceso ganha cor, na mesma catraca que ja acende
+ * o ponto e o ano. Quem arrasta a linha do tempo ve a historia sendo colorida
+ * a medida que avanca, que e a coisa certa para uma peca cujo assunto e a
+ * passagem do tempo, e o ponteiro por cima aproxima a imagem.
+ *
+ * `filter` esta na lista branca de propriedades que continuam transicionando
+ * sob `prefers-reduced-motion` (a cor entra, so nao ha percurso), e o zoom do
+ * hover e `transform`, que e desligado junto com o resto.
+ */
+const HISTORIA: {
+  ano: number;
+  o: string;
+  nota?: string;
+  marco?: boolean;
+  foto: string;
+  descricao: string;
+}[] = [
+  {
+    ano: 1961,
+    o: "Primeira unidade",
+    nota: "Campinas, no Centro",
+    marco: true,
+    foto: "/fotos/historia/1961.webp",
+    descricao: "Rua do centro de Campinas com um bonde, no ano da primeira unidade",
+  },
+  {
+    ano: 1988,
+    o: "Valinhos",
+    foto: "/fotos/historia/1988.webp",
+    descricao: "Fachada da unidade de Valinhos",
+  },
+  {
+    ano: 1993,
+    o: "Artur Nogueira",
+    foto: "/fotos/historia/1993.webp",
+    descricao: "Fachada da unidade de Artur Nogueira",
+  },
+  {
+    ano: 1994,
+    o: "Vinhedo",
+    foto: "/fotos/historia/1994.webp",
+    descricao: "Fachada da unidade de Vinhedo",
+  },
+  {
+    ano: 2003,
+    o: "Hortolândia",
+    foto: "/fotos/historia/2003.webp",
+    descricao: "Fachada da unidade de Hortolândia",
+  },
+  {
+    ano: 2015,
+    o: "Cosmópolis",
+    foto: "/fotos/historia/2015.webp",
+    descricao: "Fachada da unidade de Cosmópolis",
+  },
+  {
+    ano: 2019,
+    o: "Campinas",
+    nota: "unidade Padre Anchieta",
+    foto: "/fotos/historia/2019.webp",
+    descricao: "Fachada da unidade Padre Anchieta, em Campinas",
+  },
   {
     ano: 2021,
     o: "Crematório próprio",
     nota: "Complexo Memorial Hortolândia",
     marco: true,
+    foto: "/fotos/historia/2021.webp",
+    descricao: "Fachada do Complexo Memorial Hortolândia, com o crematório",
   },
-  { ano: 2024, o: "Sumaré" },
+  {
+    ano: 2024,
+    o: "Sumaré",
+    foto: "/fotos/historia/2024.webp",
+    descricao: "Fachada da unidade de Sumaré",
+  },
 ];
 
 /** `prefers-reduced-motion` do jeito que da para consultar antes do primeiro
@@ -184,7 +262,11 @@ export function Historia() {
                 className="relevo w-[13.5rem] shrink-0 snap-start pr-6 sm:w-[15.5rem] sm:pr-8"
                 data-giro="4"
               >
-                <div className={`relative pt-12 ${aceso ? "lt-aceso" : ""}`}>
+                <div
+                  className={`group relative flex h-full flex-col pt-12 ${
+                    aceso ? "lt-aceso" : ""
+                  }`}
+                >
                   {/* O FIO NAO TROCA DE COR, ELE SE DESENHA. O que esta sendo
                       mostrado e uma passagem de tempo, e tempo tem direcao: o
                       segmento cresce da esquerda para a direita conforme o ano
@@ -232,6 +314,30 @@ export function Historia() {
                       {h.nota}
                     </p>
                   ) : null}
+
+                  {/* A foto do marco. `mt-auto` alinha as nove pela base, senao
+                      os cartoes com nota empurram a imagem para baixo e a
+                      fileira fica em degrau. */}
+                  <div className="mt-auto pt-5">
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-serra border border-pedra-300/50 bg-pedra-200 shadow-baixa">
+                      <Image
+                        src={h.foto}
+                        alt={h.descricao}
+                        fill
+                        sizes="(min-width: 640px) 15.5rem, 13.5rem"
+                        className={`object-cover transition-[filter,transform] duration-700 group-hover:scale-[1.07] ${
+                          aceso ? "grayscale-0" : "grayscale"
+                        }`}
+                      />
+                      <span
+                        aria-hidden
+                        className={`pointer-events-none absolute inset-0 transition-opacity duration-700 ${
+                          aceso ? "opacity-0" : "opacity-100"
+                        }`}
+                        style={{ background: "rgba(249,244,236,0.35)" }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </li>
             );

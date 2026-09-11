@@ -78,6 +78,17 @@ export const IconePata = (p: Props) => (
   </Base>
 );
 
+/* Exclamacao dentro do aro que o proprio layout desenha. Usado no cartao
+   "sem plano" da comparacao: e o unico sinal de atencao do site, e ele e
+   neutro de proposito, sem triangulo e sem vermelho, porque o cartao descreve
+   TAREFA e nao perigo. */
+export const IconeAlerta = (p: Props) => (
+  <Base {...p}>
+    <path d="M12 7.2v5.4" />
+    <path d="M12 16.4h.01" />
+  </Base>
+);
+
 export const IconeAmparo = (p: Props) => (
   <Base {...p}>
     <path d="M12 21s-7.5-4.2-7.5-9.8V6.3L12 3.4l7.5 2.9v4.9C19.5 16.8 12 21 12 21Z" />

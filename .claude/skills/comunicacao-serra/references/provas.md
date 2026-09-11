@@ -58,6 +58,37 @@ aqui e no `CLAUDE.md` juntos, senão a skill começa a mentir com confiança.
 **Os 20 itens inclusos** estão em `PLANOS.INCLUSOS` (`src/data/planos.ts`) e saíram do HTML da home
 antiga do cliente. É a lista mais forte que a empresa tem e pode ser citada inteira ou em parte.
 
+### Texto institucional oficial, na íntegra
+
+Escrito pelo próprio cliente. **Pode ser citado como declaração da empresa.** Usa o vocabulário do
+setor de propósito, e isso é escolha do dono, não defeito a corrigir. Ver a parte 4.2 do `SKILL.md`.
+
+> **Missão.** "Garantir que os contratos e as cerimônias fúnebres sejam dignas, humanizadas e
+> proporcione aos clientes, familiares e amigos a tranquilidade e conforto, rompendo as barreiras
+> em um momento difícil e de dor."
+
+> **Visão.** "Ser reconhecida por nossos clientes, colaboradores e sociedade como uma empresa de
+> tradição, sólida, moderna e permanente na prestação de serviço."
+
+> **Valores.** "Nossos valores envolvem trabalhar de forma humanitária respeitando nossas
+> tradições. Presamos pela transparência nas ações e qualidade em nosso trabalho. A atenção aos
+> detalhes, respeito com as pessoas, o meio ambiente e sociedade. Procuramos constantemente a
+> excelência na execução dos nossos processos."
+
+**Slogan:** "Essencial nos momentos mais difíceis da vida."
+
+> ⚠️ **O trecho que NÃO pode sair da aspas.** O texto do cliente continua: *"Valores como
+> honestidade, ética e carinho pelas pessoas, nos transformaram na maior e mais tradicional empresa
+> do setor de planos funerários da região de Campinas-SP."* **"A maior e mais tradicional" é
+> superlativo não verificável**, e o Serra não é a maior da praça em escala (o Zelo, via Flamboyant,
+> tem cobertura nacional). Citar dentro de aspas, atribuído à empresa, é uma coisa; o site afirmar
+> isso em voz própria é outra, e essa não pode. Está na lista de perguntas ao cliente.
+
+> ⚠️ O fecho da LP antiga, *"Deus permitiu a nós sermos a ponte de conforto e consolo na maior dor
+> do ser humano"*, é do cliente e tem tom religioso explícito. **A decisão de manter isso no site
+> novo ainda não foi tomada.** Não introduza tom religioso por conta própria; se o dono pedir, ele
+> existe e é dele.
+
 ### Leis que podem ser citadas pelo número
 
 - **Lei Federal nº 13.261/16** — regulamenta os planos de assistência funerária no Brasil.

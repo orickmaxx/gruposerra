@@ -1,5 +1,5 @@
 import { Topo } from "@/components/home/topo";
-import { BarraConfianca, ComoFunciona } from "@/components/home/confianca";
+import { ComoFunciona } from "@/components/home/confianca";
 import { Depoimentos } from "@/components/home/depoimentos";
 import { Planos, Inclusos } from "@/components/home/planos";
 import { Comparador } from "@/components/home/comparador";
@@ -23,13 +23,12 @@ import { DadosEstruturados } from "@/components/dados-estruturados";
  * mais um laranja no clube, que é a única seção alegre que uma funerária tem.
  *
  *   1  Topo ................. malha clara
- *   2  Barra de confiança ... branco, fina, com a Lei 13.261/16
- *   3  Depoimentos .......... ESCURO (palco)
+ *   2  Depoimentos .......... ESCURO (palco)
  *   4  Como funciona ........ papel
  *   5  Planos ............... branco
  *   6  Comparador ........... papel
  *   7  Serviços ............. branco
- *   8  O que está incluso ... ESCURO
+ *   8  Com plano e sem plano  ESCURO
  *   9  Garantias ............ branco
  *  10  Clube ................ LARANJA
  *  11  Unidade mais perto ... branco
@@ -45,7 +44,6 @@ export default function Home() {
     <>
       <DadosEstruturados />
       <Topo />
-      <BarraConfianca />
       <Depoimentos />
       <ComoFunciona />
       <Planos />

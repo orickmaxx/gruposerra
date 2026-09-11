@@ -8,11 +8,14 @@ import { IconeLocal, IconeRelogio, IconeTelefone, IconeVela } from "@/components
 const RESUMO =
   "Local e horário do velório e da despedida. Esta página não vende nada: sem pop-up, sem banner, sem oferta.";
 
+const META =
+  "Local e horário do velório e da despedida, nas 8 unidades da região de Campinas. Esta página não vende nada: sem pop-up, sem banner, sem oferta.";
+
 export const metadata: Metadata = {
   title: "Obituário",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/obituario" },
-  openGraph: { title: "Obituário", description: RESUMO, url: "/obituario" },
+  openGraph: { title: "Obituário", description: META, url: "/obituario" },
 };
 
 /**

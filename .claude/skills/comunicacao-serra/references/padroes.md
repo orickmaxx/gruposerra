@@ -46,8 +46,8 @@ Três construções, em ordem de preferência.
 **Regra de tamanho:** manchete de herói cabe em 3 linhas curtas, de 12 a 18 caracteres cada. Manchete
 de seção cabe em 20 a 30 caracteres por linha. Se estourar, corte palavra, não aumente o bloco.
 
-⛔ **Manchete de herói e de fecho vive em `TituloCine linhas={[...]}` e cada linha menos a última
-termina em espaço.** Ver a parte 9 do `SKILL.md`.
+⛔ **Manchete de herói e de fecho vive em `TituloCine linhas={[...]}`.** Escreva as strings sem
+espaço no fim: o componente insere o separador sozinho. Ver a parte 9 do `SKILL.md`.
 
 ---
 
@@ -208,10 +208,14 @@ nobre para o que só o Serra tem: a unidade na cidade da pessoa, com telefone qu
 - [ ] Todo número e toda data têm fonte em `provas.md`?
 - [ ] Nenhuma menção a carência, limite de idade, reajuste ou "desde 1961"?
 - [ ] Nenhum travessão no meio da frase? Nenhuma exclamação?
-- [ ] Nenhuma palavra do quarteto (*humanizado, acolhimento, amparo, dignidade*) nem "ente querido"?
+- [ ] Nenhum adjetivo do quarteto (*humanizado, acolhimento, amparo, dignidade*) usado para a
+      empresa **se descrever**? (citar a missão do cliente é permitido, ver `provas.md`)
+- [ ] **Tem pelo menos uma frase escrita na direção do leitor**, que antecipe um medo concreto e o
+      tire da frente? Se só há fato verificável, o texto está correto e gelado.
 - [ ] O CTA diz o que acontece no clique?
 - [ ] Se é página de obituário ou homenagens: **nada de venda**?
 - [ ] As interpolações (`{SITE.idadeTexto}`, `{UNIDADES.length}`) continuam de pé?
-- [ ] Se mexeu em manchete de herói ou fecho: **cada linha menos a última termina em espaço**?
+- [ ] Se mexeu em manchete de herói ou fecho: conferiu o `<h1>` com `curl | sed 's/<[^>]*>//g'`?
 - [ ] O diff só tem string? Nenhuma `className`, nenhuma tag, nenhum import?
+- [ ] **Nenhum `alt`, nenhum `aria-*`?** Acessibilidade não é comunicação e não se mexe aqui.
 - [ ] `npm run build` passou?

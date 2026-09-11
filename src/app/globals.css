@@ -96,7 +96,8 @@
   --color-ouro: #e8a012; /* estrelas do Google */
 
   /* --- WhatsApp: as cores da propria marca, para o reconhecimento --- */
-  --color-zap: #25d366;
+  --color-zap: #25d366; /* o verde de tela do WhatsApp, so para icone e fio */
+  --color-zap-solido: #0d8544; /* 4,7:1 com texto branco, o que preenche botao */
   --color-zap-forte: #128c7e;
   --color-zap-fundo: #075e54;
 
@@ -455,9 +456,23 @@ html[data-movimento="reduzido"] {
 
 /* Materiais vivos por servico. Cada um tem gradiente proprio: e o que faz o
    olho separar WhatsApp de clube de beneficios de cremacao sem ler o rotulo. */
+/* ⛔ SEM GRADIENTE. O dono pediu "deixe so verde mesmo", e ele tem razao de
+   marca: o verde do WhatsApp e uma cor unica e reconhecida, e degrade-la de
+   um tom para o outro faz o botao parecer uma imitacao do botao oficial em
+   vez do botao oficial. O `background-image` tem que ser zerado junto, senao
+   ele continua pintando por cima da cor solida.
+
+   ⚠️ MAS NAO E O #25D366. O verde de tela do WhatsApp da 1,98:1 com texto
+   branco, e o botao inteiro fica ilegivel: era o gradiente que estava
+   salvando a leitura, porque a metade escura ficava embaixo das letras. Com
+   uma cor solida so, ela precisa aguentar o texto sozinha. `--color-zap-solido`
+   e o mesmo verde puxado para baixo ate 4,7:1, que passa o AA sem deixar de
+   ser reconhecido como o verde do WhatsApp. O #25D366 continua existindo para
+   icone e fio, onde o minimo e 3:1. */
 .mat-zap {
-  background-image: linear-gradient(135deg, var(--color-zap), var(--color-zap-forte));
-  box-shadow: 0 10px 30px -8px rgba(18, 140, 126, 0.55);
+  background-image: none;
+  background-color: var(--color-zap-solido);
+  box-shadow: 0 10px 30px -8px rgba(18, 140, 126, 0.45);
 }
 /* Clube de Beneficios: o dourado do Memorial. */
 /* ⚠ CONTRASTE: #C9B167 com texto branco da 1.9:1 e o botao principal do
@@ -670,13 +685,50 @@ html[data-movimento="reduzido"] {
 }
 
 /* Revelacao no scroll. O estado inicial so e aplicado quando o JS confirma que
-   vai observar (html.js-revela), para nao esconder conteudo em pagina sem JS. */
+   vai observar (html.js-revela), para nao esconder conteudo em pagina sem JS.
+
+   ⛔ ERA UM "SOBE 26px" e o dono deu o diagnostico exato: "essa de os elementos
+   subirem e cara de Canva". Ele esta certo, e o motivo e que o fade-up de
+   ~30px e literalmente o padrao de fabrica de todo construtor de site que
+   existe. Nao e feio; e ANONIMO, e uma pagina inteira feita de secoes que
+   sobem 26px nao tem autor.
+
+   O que entrou nao e outro deslocamento, e a AUSENCIA dele: a secao nao viaja
+   pela pagina, ela ASSENTA. Ela chega ligeiramente afastada no eixo Z e
+   inclinada 3,4 graus para tras, presa pela BORDA DE CIMA, e gira ate deitar
+   no plano da tela. E o gesto de uma folha sendo pousada numa mesa, ou de um
+   plano de camera acertando o foco: o topo do bloco praticamente nao anda e a
+   base percorre o caminho todo, entao o olho le "isto chegou ao lugar" em vez
+   de "isto passou por aqui".
+
+   Por que ele funciona onde o slide nao funcionava:
+
+     1. NENHUM PIXEL DE TRAVESSIA VERTICAL. Numa home de dezessete secoes, o
+        slide se repete dezessete vezes e a pagina inteira parece estar sempre
+        subindo um pouco. O assentamento acontece no lugar.
+     2. A PERSPECTIVA JA E A LINGUAGEM DA CASA. O relevo dos depoimentos, da
+        linha do tempo e agora da grade do Memorial inclinam no mesmo eixo e no
+        mesmo teto de graus. A secao inteira passou a falar a mesma lingua dos
+        cartoes dentro dela.
+     3. CUSTA O MESMO. Continua sendo uma propriedade so, `transform`, que o
+        compositor resolve sozinho: zero layout, zero repaint.
+
+   Os 3,4 graus sao metade do teto de 7 do projeto, porque aqui quem inclina e
+   um bloco de TEXTO CORRIDO e nao um cartao: acima disso a borda que se afasta
+   comeca a desfocar durante a transicao. E a duracao subiu para 1,1s com
+   `--ease-cine`, porque assentar depressa nao le como assentar, le como pular.
+
+   ⚠️ `perspective()` vai DENTRO do `transform`, e nao no pai. Com a
+   perspectiva no pai, as dezessete secoes dividiriam um ponto de fuga so e as
+   de baixo da pagina inclinariam tortas, que e exatamente a armadilha ja
+   documentada para os cartoes em `.palco3d`. */
 .js-revela [data-revela] {
   opacity: 0;
-  transform: translate3d(0, 26px, 0);
+  transform: perspective(1600px) translate3d(0, 0, -70px) rotateX(3.4deg);
+  transform-origin: 50% 0%;
   transition:
-    opacity 800ms var(--ease-serra),
-    transform 800ms var(--ease-serra);
+    opacity 820ms var(--ease-serra),
+    transform 1100ms var(--ease-cine);
   transition-delay: var(--atraso, 0ms);
 }
 .js-revela [data-revela][data-visivel="1"] {
@@ -1094,9 +1146,24 @@ html[data-movimento="reduzido"] {
 .holofote:focus-within::before {
   opacity: 1;
 }
-.holofote > * {
-  position: relative;
-  z-index: 1;
+/* ⛔ ESTA REGRA APAGAVA O `absolute` DE QUALQUER FILHO, e apagou por rodadas
+   sem ninguem ver. O motivo e o mesmo que ja custou o `p { margin: 0 }` e o
+   `a { color: inherit }` deste arquivo: CSS FORA DE `@layer` VENCE TODAS AS
+   UTILITIES DO TAILWIND v4, por mais especifica que a utility seja. O numero
+   fantasma dos cartoes pedia `absolute -right-3 -bottom-6`, recebia
+   `position: relative` daqui e ia parar no fluxo, no canto de cima e cortado
+   pela largura da tela no celular. Dentro de `@layer components` a regra
+   continua ganhando de tudo que nao e utility e perde para quem posiciona de
+   proposito, que e exatamente o comportamento que ela sempre quis ter.
+
+   O `position: relative` existe so para que o `z-index: 1` pegue em filho
+   estatico e o conteudo fique acima do facho do `::before`. Filho que ja se
+   posiciona sozinho nao precisava dele nunca. */
+@layer components {
+  .holofote > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* Holofote sobre superficie escura: a luz precisa ser branca, senao some. */
@@ -1125,7 +1192,12 @@ html[data-movimento="reduzido"] {
   border-radius: inherit;
   padding: 1px;
   pointer-events: none;
-  background: var(--luz-serra);
+  /* ⛔ O ARO ERA AZUL FIXO. `--luz` ja escolhia a cor do holofote e da sombra
+     por servico, mas o fio da borda continuava no gradiente institucional, e
+     nos cartoes do Serra Pet e na grade do Memorial isso dava um aro AZUL em
+     cima de laranja e de terracota. A variavel cai no gradiente da marca por
+     padrao, entao nenhum cartao existente muda um pixel. */
+  background: var(--aro, var(--luz-serra));
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -1172,9 +1244,11 @@ html[data-movimento="reduzido"] {
 .varre:focus-visible::after {
   transform: translate3d(560%, 0, 0) rotate(18deg);
 }
-.varre > * {
-  position: relative;
-  z-index: 1;
+@layer components {
+  .varre > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* -------------------------------------------------------------------------
@@ -1447,15 +1521,17 @@ html[data-movimento="reduzido"] {
 /* -------------------------------------------------------------------------
    ESCALA NA REVELACAO
 
-   Variante do `[data-revela]` para bloco grande (foto, painel, tabela): alem
-   de subir, ele chega de 0.972 para 1. Em elemento pequeno isso vira tremor;
-   em bloco grande le como aproximacao de camera.
+   Variante do `[data-revela]` para bloco grande (foto, painel, tabela): o
+   mesmo assentamento da secao, so que vindo de MUITO mais longe no eixo Z.
+   Em elemento pequeno isso vira tremor; em bloco grande le como a camera
+   fechando o plano.
    ------------------------------------------------------------------------- */
 .js-revela [data-revela].revela-escala {
-  transform: translate3d(0, 34px, 0) scale(0.972);
+  transform: perspective(1400px) translate3d(0, 0, -190px) rotateX(4.6deg);
+  transform-origin: 50% 0%;
   transition:
     opacity 1000ms var(--ease-cine),
-    transform 1000ms var(--ease-cine);
+    transform 1250ms var(--ease-cine);
 }
 .js-revela [data-revela].revela-escala[data-visivel="1"] {
   transform: none;

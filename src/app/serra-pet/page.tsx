@@ -16,11 +16,14 @@ import {
 const RESUMO =
   "Assistência e cremação para animais de estimação, com remoção 24 horas na região de Campinas, frota própria e certificado de cremação. Até 3 pets no mesmo plano.";
 
+const META =
+  "Cremação e assistência para animais na região de Campinas, com remoção 24 horas, frota própria e certificado. Individual ou coletiva, até 3 pets no plano.";
+
 export const metadata: Metadata = {
   title: "Serra Pet",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/serra-pet" },
-  openGraph: { title: "Serra Pet, assistência e cremação para animais", description: RESUMO, url: "/serra-pet" },
+  openGraph: { title: "Serra Pet, assistência e cremação para animais", description: META, url: "/serra-pet" },
 };
 
 /**

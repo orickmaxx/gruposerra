@@ -14,11 +14,14 @@ import {
 const RESUMO =
   "Um mural para deixar uma mensagem de carinho, com foto, e compartilhar com quem não pôde estar presente. Toda homenagem passa por aprovação antes de aparecer.";
 
+const META =
+  "Mural para deixar uma mensagem com foto e compartilhar com quem não pôde estar presente. Toda homenagem passa por aprovação antes de aparecer.";
+
 export const metadata: Metadata = {
   title: "Homenagens",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/homenagens" },
-  openGraph: { title: "Mural de Homenagens", description: RESUMO, url: "/homenagens" },
+  openGraph: { title: "Mural de Homenagens", description: META, url: "/homenagens" },
 };
 
 /**

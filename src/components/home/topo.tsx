@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
-import { Botao, TituloCine } from "../ui";
+import { Botao, Rotulo, TituloCine } from "../ui";
 import { Contador } from "../contador";
 import { Paralaxe } from "../movimento";
 import {
@@ -343,57 +343,91 @@ function Caminhos() {
       aria-label="Por onde começar"
     >
       <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
-      <ul className="relative z-[1] mx-auto grid max-w-[80rem] md:grid-cols-3">
-        {caminhos.map(({ href, externo, Icone, etiqueta, titulo, texto, acao }, i) => {
-          const miolo = (
-            <>
-              <span
-                aria-hidden
-                className="numero-fantasma absolute top-6 right-7 text-[4.5rem] opacity-70 md:right-9"
-                style={{ ["--luz" as string]: "#ffffff" }}
+
+      {/* ⛔ ESTA SECAO ERA UMA LAJE. O dono: "essa seção aqui inteira é feia e
+          fica grudada a esquerda em mobile". Os dois defeitos tinham a mesma
+          causa: nao havia conteiner. A grade ia de borda a borda da tela, cada
+          caminho era uma faixa solta de 14rem de altura separada por um fio, e
+          o texto comecava colado no canto porque o unico respiro era o `px-6`
+          do proprio link. No celular viravam tres lajes de tela cheia, e o
+          numero fantasma, ancorado na direita de um bloco de 100vw, saia da
+          tela pela esquerda e aparecia cortado.
+
+          Agora sao tres CARTOES de verdade, dentro do mesmo conteiner de 80rem
+          e do mesmo `px-5` que o resto da home, com a camada cinema completa
+          que as outras secoes ja tinham e esta nao tinha: elevacao (cartao-cine),
+          holofote na cor de apoio, aro de luz de 1px, selo de icone que
+          acompanha o hover, sublinhado que cresce na acao e entrada em cascata
+          um depois do outro. E ganhou cabeca de secao: ela era a unica faixa da
+          pagina sem rotulo nem titulo, o que e exatamente o "meio sistema
+          aplicado" que o CLAUDE.md proibe. */}
+      <div className="relative z-[1] mx-auto max-w-[80rem] px-5 py-16 md:py-20" data-revela>
+        <Rotulo claro>Por onde começar</Rotulo>
+        <TituloCine className="max-w-[24ch] text-t2 text-white">
+          O que você precisa agora?
+        </TituloCine>
+
+        <ul className="mt-10 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-5">
+          {caminhos.map(({ href, externo, Icone, etiqueta, titulo, texto, acao }, i) => {
+            const miolo = (
+              <>
+                {/* O numero vive ANCORADO NO CARTAO e e cortado pelo
+                    `overflow-hidden` dele, entao ele nunca mais depende da
+                    largura da tela para cair no lugar certo. */}
+                <span
+                  aria-hidden
+                  className="numero-fantasma pointer-events-none absolute -right-3 -bottom-6 text-[8rem] opacity-60"
+                >
+                  {i + 1}
+                </span>
+                <span className="selo-icone flex size-13 shrink-0 items-center justify-center rounded-serra bg-white/15 text-white group-hover:bg-white group-hover:text-serra-600">
+                  <Icone className="size-6" />
+                </span>
+                <span className="mt-6 block text-[0.8125rem] font-bold tracking-[0.14em] text-serra-200 uppercase">
+                  {etiqueta}
+                </span>
+                <span className="mt-2 block font-display text-[1.375rem] font-bold text-white md:text-[1.4375rem]">
+                  {titulo}
+                </span>
+                <span className="mt-2.5 block max-w-[34ch] text-[0.9375rem] leading-relaxed text-serra-100/85">
+                  {texto}
+                </span>
+                <span className="mt-auto inline-flex items-center gap-2 pt-7 font-semibold text-white">
+                  <span className="numerais risco pb-0.5">{acao}</span>
+                  <IconeSeta className="size-[1.05rem] shrink-0 transition-transform duration-300 group-hover:translate-x-1.5" />
+                </span>
+              </>
+            );
+            const classe =
+              "cartao-cine holofote holofote-escuro aro-luz grupo-risco group relative flex h-full w-full flex-col overflow-hidden rounded-serra-lg border border-white/15 bg-white/[0.07] px-6 py-8 md:px-7 md:py-9";
+            return (
+              <li
+                key={titulo}
+                className="item-cascata flex"
+                style={{ ["--i" as string]: i }}
               >
-                {i + 1}
-              </span>
-              <span className="selo-icone flex size-13 shrink-0 items-center justify-center rounded-serra bg-white/15 text-white group-hover:bg-white group-hover:text-serra-600">
-                <Icone className="size-6" />
-              </span>
-              <span className="mt-6 block text-[0.8125rem] font-bold tracking-[0.14em] text-serra-200 uppercase">
-                {etiqueta}
-              </span>
-              <span className="mt-2 block font-display text-[1.4375rem] font-bold text-white">
-                {titulo}
-              </span>
-              <span className="mt-2.5 block max-w-[34ch] flex-1 text-[0.9375rem] leading-relaxed text-serra-100/85">
-                {texto}
-              </span>
-              <span className="mt-7 inline-flex items-center gap-2 font-semibold text-white">
-                <span className="numerais risco pb-0.5">{acao}</span>
-                <IconeSeta className="size-[1.05rem] shrink-0 transition-transform duration-300 group-hover:translate-x-1.5" />
-              </span>
-            </>
-          );
-          const classe =
-            "holofote holofote-escuro grupo-risco group relative flex h-full flex-col overflow-hidden px-6 py-11 transition-colors duration-500 hover:bg-white/[0.06] md:px-9 md:py-14";
-          return (
-            <li
-              key={titulo}
-              className={`flex ${
-                i > 0 ? "border-t border-white/12 md:border-t-0 md:border-l" : ""
-              }`}
-            >
-              {externo ? (
-                <a href={href} className={classe}>
-                  {miolo}
-                </a>
-              ) : (
-                <Link href={href} className={classe}>
-                  {miolo}
-                </Link>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                {externo ? (
+                  <a
+                    href={href}
+                    className={classe}
+                    style={{ ["--luz" as string]: "var(--color-onda-400)" }}
+                  >
+                    {miolo}
+                  </a>
+                ) : (
+                  <Link
+                    href={href}
+                    className={classe}
+                    style={{ ["--luz" as string]: "var(--color-onda-400)" }}
+                  >
+                    {miolo}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </section>
   );
 }

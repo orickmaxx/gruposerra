@@ -1,9 +1,10 @@
 import { SITE } from "@/lib/site";
 import Image from "next/image";
+import Link from "next/link";
 import { INCLUSOS, PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
 import { Contador } from "../contador";
-import { Botao, Faixa, Titulo, TituloCine } from "../ui";
-import { IconeConfere, IconePata, IconeAmparo } from "../icones";
+import { Botao, Faixa, Rotulo, Titulo, TituloCine } from "../ui";
+import { IconeAlerta, IconeConfere, IconePata, IconeAmparo } from "../icones";
 
 /** Base do WhatsApp, sem texto. O numero vive em lib/site.ts. */
 const ZAP_BASE = SITE.whatsapp.link.split("?")[0];
@@ -179,47 +180,80 @@ export function Planos() {
 }
 
 /**
- * O que já está pago quando você liga.
+ * COM PLANO E SEM PLANO.
  *
- * O dono chamou a versão anterior de feia e tinha razão: era um título à
- * esquerda e vinte linhas com o mesmo ícone de check à direita, sobre azul
- * escuro. Um inventário formatado como inventário.
+ * ⛔ TERCEIRA VERSÃO, e as duas anteriores estão aqui porque as duas erraram
+ * por motivos diferentes e opostos:
  *
- * O que faz esta seção funcionar agora:
+ *   1ª  Dois cartões com cinco linhas rotuladas cada um. O dono: "extremamente
+ *       feio, genérico, sem destaque, card muito longo na vertical". Cada
+ *       célula era um bloco com ícone, rótulo em versalete e duas linhas de
+ *       texto, e a peça esticava meia tela para dizer cinco coisas.
+ *   2ª  Uma tabela de três colunas. Compacta e correta, mas tabela é peça de
+ *       ficha técnica: ela COMPARA bem e não VENDE nada. O destaque sumiu
+ *       junto com a altura.
  *
- *  1. O NÚMERO na frente. Vinte itens já pagos é o argumento, e ele estava
- *     escrito por extenso no meio de um parágrafo. Agora é um contador que
- *     sobe quando a seção entra na tela.
- *  2. ENTRADA EM CASCATA. Os vinte itens não aparecem juntos: entram em
- *     sequência, 35ms de diferença. O olho percebe a lista sendo CONTADA, que
- *     é exatamente o que se quer dizer aqui.
- *  3. Cada item tem superfície própria e responde ao ponteiro.
- *  4. As GARANTIAS foram trazidas para dentro deste bloco. Eram uma seção
- *     branca separada, também de três cartões iguais, e faziam a página perder
- *     o fôlego entre dois momentos fortes. Aqui elas fecham o argumento: isto
- *     está incluso, e isto está garantido.
+ * Esta terceira é a forma que o dono apontou com uma referência na mão, e a
+ * referência é o par de cartões "Sem planejamento / Com um plano" do Florees.
+ *
+ * ⚠️ O QUE FOI APRENDIDO ALI É A ESTRUTURA, E SÓ ELA, o que o `CLAUDE.md` 0.1
+ * permite e manda documentar onde acontece: um cartão claro e apagado à
+ * esquerda, um cartão de cor cheia à direita, uma pílula "ou" entre os dois,
+ * lista de marcadores curtos em vez de linhas rotuladas, e o preço com o botão
+ * dentro do cartão que ganha. Nenhum número, nenhuma frase e nenhum argumento
+ * deles veio junto: o conteúdo dos dois lados é fato do Grupo Serra, conferido
+ * em `data/unidades.ts` e no material do cliente.
+ *
+ * O que esta versão faz A MAIS que a referência:
+ *
+ *   SUPERFÍCIE ESCURA. Lá os dois cartões vivem numa página branca, e o
+ *   "sem planejamento" acaba tão sólido quanto o outro. Aqui a faixa é escura e
+ *   o cartão de cima da esquerda é vidro fosco: ele existe, é legível e é
+ *   nitidamente o lado apagado. O degrau de valor faz metade do argumento antes
+ *   de qualquer palavra.
+ *   LUZ DE MARCA. O cartão do plano leva o aro de 1px em gradiente do azul ao
+ *   ouro SEMPRE aceso, holofote no ponteiro e elevação. É o mesmo vocabulário
+ *   do plano recomendado lá em cima, então a página inteira diz "este é o
+ *   destaque" do mesmo jeito nas duas seções.
+ *   ENTRADA CONTADA. Os marcadores entram em cascata, 35ms cada, em vez de
+ *   aparecerem juntos.
+ *
+ * ⚠️ O NÚMERO QUE O DONO PEDIU NÃO ESTÁ AQUI, e a ausência é deliberada. O
+ * pedido original foi "com valores de custo de funeral", e não existe, em lugar
+ * nenhum do material do cliente nem em fonte pública conferida, quanto custa um
+ * funeral avulso. Publicar uma média de internet ao lado de "R$ 18,90 por mês"
+ * seria inventar justamente o lado mais forte da comparação, e em página de
+ * venda de plano funerário isso é problema de Procon, não licença criativa.
+ * O rodapé do cartão da esquerda declara a lacuna em vez de chutar, e é onde o
+ * valor entra no dia em que a empresa mandar a tabela por escrito.
+ *
+ * ⛔ SEM MEDO E SEM CULPA. O cartão da esquerda lista TAREFA, nunca tragédia:
+ * "urna, flores e ornamentação" é um item de logística, e "não deixe esse peso
+ * para sua família" seria chantagem. A regra vale principalmente aqui, que é
+ * onde o setor inteiro apela.
  */
-const GARANTIAS = [
-  {
-    titulo: "Assistência 24 horas em todos os planos",
-    texto:
-      "Não é vantagem de um plano específico. Está em todos, do mais simples ao mais completo, junto com o traslado.",
-  },
-  {
-    titulo: "Cobertura nacional",
-    texto:
-      "Se a pessoa falecer longe de casa, o traslado está previsto. Não é preciso contratar nada por fora naquele momento.",
-  },
-  {
-    titulo: "Dá para mudar de plano depois",
-    texto:
-      "Para mais cobertura ou para menos. É uma conversa com a equipe de qualquer uma das 8 unidades, sem contrato novo do zero.",
-  },
+const SEM_PLANO = [
+  "funerária e sala de velório",
+  "urna, flores e ornamentação",
+  "transporte e remoção",
+  "certidão de óbito e autorizações",
+  "cremação ou sepultamento",
+];
+
+const COM_PLANO = [
+  "Você escolhe a cobertura hoje, com calma, conversando com a equipe",
+  "20 itens já pagos, do velório à documentação",
+  "Uma ligação aciona tudo, 24 horas, todo dia, inclusive no feriado",
+  "Quem atende é a unidade da sua cidade, não uma central em outro estado",
+  "Crematório do próprio grupo em Hortolândia, e traslado incluso até 100 km",
 ];
 
 export function Inclusos() {
   return (
-    <section className="malha-escura faixa-escura aurora mosaico grao relative isolate overflow-hidden py-20 text-serra-100 md:py-28">
+    <section
+      className="malha-escura faixa-escura aurora mosaico grao relative isolate overflow-hidden py-20 text-serra-100 md:py-28"
+      id="com-plano"
+    >
       <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
       <Image
         src="/marca/simbolo-serra-branco.png"
@@ -231,71 +265,141 @@ export function Inclusos() {
         className="pointer-events-none absolute -right-20 -bottom-24 w-[28rem] max-w-none opacity-[0.04]"
       />
 
-      <div className="relative mx-auto max-w-[80rem] px-5" data-revela>
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-16">
-          <div>
-            <p className="font-display text-[5rem] leading-[0.85] font-extrabold tracking-tight text-white sm:text-[6rem]">
-              <Contador ate={INCLUSOS.length} />
-            </p>
-            <TituloCine className="mt-4 max-w-[16ch] text-t2 text-white">
-              itens já pagos quando você liga
-            </TituloCine>
-            <p className="mt-5 max-w-[42ch] text-lead text-serra-100/85">
-              Não é uma lista de vantagens escrita para o site. É o que a
-              família recebe, item por item, sem nenhuma conta para acertar
-              naquele momento.
-            </p>
-          </div>
-
-          <ul className="grid grid-cols-2 gap-2 sm:gap-2.5 xl:grid-cols-3">
-            {INCLUSOS.map(({ item, nota }, i) => (
-              <li
-                key={item}
-                className="item-cascata group flex items-start gap-2.5 rounded-serra border border-white/10 bg-white/[0.06] px-3 py-3 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.12] sm:px-4 sm:py-3.5"
-                style={{ ["--i" as string]: i }}
-              >
-                <IconeConfere className="mt-0.5 size-[1.05rem] shrink-0 text-onda-400 transition-transform duration-300 group-hover:scale-110" />
-                <span className="text-[0.875rem] leading-snug text-white sm:text-[0.9375rem]">
-                  {item}
-                  {nota ? (
-                    <span className="mt-0.5 block text-[0.8125rem] text-serra-200">
-                      {nota}
-                    </span>
-                  ) : null}
-                </span>
-              </li>
-            ))}
-          </ul>
+      <div className="relative mx-auto max-w-[76rem] px-5" data-revela>
+        <div className="mx-auto max-w-[44rem] text-center">
+          <Rotulo claro>Com plano e sem plano</Rotulo>
+          <TituloCine className="mx-auto max-w-[20ch] text-t2 text-white">
+            A diferença aparece no primeiro telefonema
+          </TituloCine>
+          <p className="mx-auto mt-5 max-w-[54ch] text-lead text-serra-100/85">
+            O plano não muda o que aconteceu. Muda quantas decisões a família
+            toma no mesmo dia, e quantas empresas ela procura sozinha.
+          </p>
         </div>
 
-        {/* --- as garantias, que eram uma seção branca solta --- */}
-        <div className="mt-16 border-t border-white/12 pt-12">
-          <h3 className="text-[0.875rem] font-bold tracking-[0.14em] text-serra-300 uppercase">
-            E o que está garantido em contrato
-          </h3>
-          <ul className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-3">
-            {GARANTIAS.map((g, i) => (
-              <li
-                key={g.titulo}
-                className="item-cascata"
-                style={{ ["--i" as string]: INCLUSOS.length + i }}
+        <div className="relative mt-12 grid items-stretch gap-5 lg:grid-cols-2 lg:gap-14">
+          {/* --- SEM PLANO: vidro fosco, deliberadamente apagado --- */}
+          <article className="holofote holofote-escuro relative flex flex-col rounded-serra-lg border border-white/12 bg-white/[0.05] p-7 md:p-9">
+            <h3 className="flex items-center gap-3 font-display text-[1.3125rem] font-bold text-serra-100/75">
+              <span
+                aria-hidden
+                className="flex size-8 shrink-0 items-center justify-center rounded-full border border-white/20 text-serra-100/50"
               >
-                <span
-                  aria-hidden
-                  className="block h-1 w-12 rounded-full bg-gradient-to-r from-onda-400 to-serra-300"
-                />
-                <h4 className="mt-5 font-display text-[1.125rem] font-bold text-white">
-                  {g.titulo}
-                </h4>
-                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-serra-100/85">
-                  {g.texto}
-                </p>
-              </li>
-            ))}
-          </ul>
+                <IconeAlerta className="size-[1.15rem]" />
+              </span>
+              Sem plano
+            </h3>
+            <p className="mt-4 text-[0.9375rem] leading-relaxed text-serra-100/55">
+              A família pode precisar resolver, tudo no mesmo dia:
+            </p>
+
+            <ul className="mt-6 space-y-3.5">
+              {SEM_PLANO.map((item, i) => (
+                <li
+                  key={item}
+                  className="item-cascata flex items-start gap-3 text-[0.9375rem] leading-snug text-serra-100/65"
+                  style={{ ["--i" as string]: i }}
+                >
+                  <span
+                    aria-hidden
+                    className="mt-[0.15rem] flex size-[1.3rem] shrink-0 items-center justify-center rounded-full border border-white/15"
+                  >
+                    <span className="h-px w-2 bg-serra-100/40" />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-7 text-[0.9375rem] leading-relaxed text-serra-100/55">
+              Tudo decidido em poucas horas, sem tempo de comparar nem de
+              pesquisar com calma.
+            </p>
+
+            <p className="mt-auto border-t border-white/10 pt-6 text-[0.8125rem] leading-relaxed text-serra-100/45">
+              <strong className="font-semibold text-serra-100/70">
+                Falta publicar aqui:
+              </strong>{" "}
+              quanto custa um funeral contratado na hora. O Grupo Serra tem essa
+              tabela e ela ainda não veio por escrito. Enquanto não vier, nenhum
+              valor é estimado nesta página.
+            </p>
+          </article>
+
+          {/* --- a pílula "ou", que separa os dois sem precisar de uma linha --- */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-1/2 left-1/2 z-[2] hidden size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-[#06263a] text-[0.8125rem] font-bold tracking-[0.12em] text-serra-100/70 uppercase lg:flex"
+          >
+            ou
+          </span>
+
+          {/* --- COM O PLANO: azul cheio, aro sempre aceso --- */}
+          <article
+            data-ativo="1"
+            style={{
+              ["--luz" as string]: "var(--color-onda-400)",
+              ["--aro" as string]:
+                "linear-gradient(100deg, #22b8d4, #7fd8ea 42%, #c9b167)",
+            }}
+            className="cartao-cine holofote holofote-escuro aro-luz mat-azul relative flex flex-col overflow-hidden rounded-serra-lg border border-onda-400/30 p-7 shadow-alta md:p-9"
+          >
+            {/* Luz propria do cartao, para ele nao ser um retangulo de cor
+                chapada. Um tom so, sobre superficie escura, como manda a regra
+                das manchas de fundo. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -top-24 -right-16 size-72 rounded-full opacity-60 blur-[70px]"
+              style={{ background: "radial-gradient(circle, rgba(34,184,212,.4), transparent 70%)" }}
+            />
+
+            <h3 className="flex items-center gap-3 font-display text-[1.3125rem] font-bold text-white">
+              <span
+                aria-hidden
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-onda-400/20 text-onda-400"
+              >
+                <IconeConfere className="size-[1.15rem]" />
+              </span>
+              Com o plano Serra
+            </h3>
+            <p className="mt-4 text-[0.9375rem] leading-relaxed text-serra-100/85">
+              Você decide antes, com calma, e no dia a família só precisa fazer
+              uma ligação.
+            </p>
+
+            <ul className="mt-6 space-y-3.5">
+              {COM_PLANO.map((item, i) => (
+                <li
+                  key={item}
+                  className="item-cascata flex items-start gap-3 text-[0.9375rem] leading-snug text-white"
+                  style={{ ["--i" as string]: i }}
+                >
+                  <IconeConfere className="mt-[0.15rem] size-[1.15rem] shrink-0 text-onda-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto border-t border-white/20 pt-7">
+              <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span className="text-[0.75rem] font-bold tracking-[0.14em] text-serra-100/70 uppercase">
+                  Planos a partir de
+                </span>
+                <span className="numerais flex items-baseline gap-1 text-white">
+                  <span className="font-display text-[1.25rem] font-medium">R$</span>
+                  <span className="font-display text-[2.5rem] leading-none font-extrabold tracking-tight">
+                    18,90
+                  </span>
+                  <span className="text-[1rem] text-serra-100/80">/mês</span>
+                </span>
+              </p>
+              <Botao href="/planos" tom="claro" className="mt-6 w-full">
+                Ver planos e preços
+              </Botao>
+            </div>
+          </article>
         </div>
       </div>
     </section>
   );
 }
-

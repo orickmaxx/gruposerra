@@ -17,11 +17,14 @@ import {
 const RESUMO =
   "São 8 unidades próprias na região metropolitana de Campinas, cada uma com equipe e telefone na própria cidade. O atendimento de óbito é 24 horas em todas, inclusive no feriado.";
 
+const META =
+  "Oito unidades próprias na região de Campinas: Valinhos, Vinhedo, Hortolândia, Artur Nogueira, Cosmópolis e Sumaré. Cada uma com telefone e equipe na cidade.";
+
 export const metadata: Metadata = {
   title: "Unidades",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/unidades" },
-  openGraph: { title: "Unidades do Grupo Serra", description: RESUMO, url: "/unidades" },
+  openGraph: { title: "Unidades do Grupo Serra", description: META, url: "/unidades" },
 };
 
 /**

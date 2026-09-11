@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { MEMORIAL } from "@/data/unidades";
 import { Rotulo, Titulo, TituloCine } from "../ui";
+import { Ima } from "../movimento";
 import {
   IconeAviao,
   IconeCama,
   IconeFolha,
+  IconePata,
   IconeSeta,
 } from "../icones";
 
@@ -58,6 +60,21 @@ const ESTRUTURA_FOTOS = [
     legenda: "Espaço de café",
     objeto: "object-center",
   },
+];
+
+/**
+ * Os tres fatos do Serra Pet, tirados de dentro do paragrafo.
+ *
+ * Estavam os quatro numa frase so ("Remocao 24 horas na regiao de Campinas,
+ * cremacao individual com as cinzas devolvidas em urna, ou coletiva em espaco
+ * ecologico, e certificado de cremacao. Ate 3 pets no mesmo plano."), que e
+ * mais informacao do que qualquer pessoa le de uma vez numa linha corrida.
+ * Fonte: material do proprio Serra Pet, CLAUDE.md parte 4.5.
+ */
+const PET_FATOS = [
+  { titulo: "Remoção 24h", detalhe: "frota própria, região de Campinas" },
+  { titulo: "Cremação individual", detalhe: "cinzas em urna, com certificado" },
+  { titulo: "Até 3 pets", detalhe: "no mesmo plano" },
 ];
 
 const OUTROS = [
@@ -250,16 +267,20 @@ function Cremacao() {
             {MEMORIAL.uf}
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/cremacao"
-              className="varre group relative inline-flex min-h-[3.25rem] items-center gap-2.5 overflow-hidden rounded-serra bg-white px-6 font-semibold text-memorial transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <span className="relative z-[1] inline-flex items-center gap-2.5">
-                Como funciona a cremação
-                <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-            </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            {/* O ima e o gesto de CTA principal do site, e esta secao era a
+                unica faixa de marca da home que nao o tinha. */}
+            <Ima>
+              <Link
+                href="/cremacao"
+                className="varre group relative inline-flex min-h-[3.25rem] items-center gap-2.5 overflow-hidden rounded-serra bg-white px-6 font-semibold text-memorial transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <span className="relative z-[1] inline-flex items-center gap-2.5">
+                  Como funciona a cremação
+                  <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </Ima>
             <a
               href={MEMORIAL.site}
               target="_blank"
@@ -271,34 +292,76 @@ function Cremacao() {
           </div>
         </div>
 
-        {/* --- a estrutura, em foto de verdade, colada na borda da tela --- */}
-        <div className="grid grid-cols-2 grid-rows-2 gap-px bg-dourado/25 lg:h-full">
-          {ESTRUTURA_FOTOS.map((f, i) => (
-            <figure
-              key={f.src}
-              style={{ ["--i" as string]: i }}
-              className="cortina group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[15rem]"
-            >
-              <Image
-                src={f.src}
-                alt={f.alt}
-                fill
-                sizes="(min-width: 1024px) 25vw, 50vw"
-                className={`object-cover ${f.objeto} transition-transform duration-700 group-hover:scale-[1.05]`}
-              />
-              {/* A foto e DESCOBERTA por uma cortina que sobe, uma depois da
-                  outra. Numa grade de quatro, revelar as quatro de uma vez le
-                  como imagem que demorou a carregar; em sequencia, le como
-                  quem esta mostrando o lugar. */}
-              <span
-                aria-hidden
-                className="cortina-veu pointer-events-none absolute inset-0 z-[2] origin-bottom bg-memorial"
-              />
-              <figcaption className="absolute inset-x-0 bottom-0 z-[3] bg-gradient-to-t from-memorial/90 via-memorial/40 to-transparent px-4 pt-12 pb-3 text-[0.8125rem] font-semibold text-white">
-                {f.legenda}
-              </figcaption>
-            </figure>
-          ))}
+        {/* --- a estrutura, em foto de verdade ---
+
+            ⛔ A grade NASCEU COLADA nas bordas da tela e com as quatro quinas
+            em angulo reto, e o dono apontou as duas coisas na mesma frase:
+            "o grid das fotos está muito ao canto, bordas todas pontudas". O
+            desenho colado era proposital e estava errado: num painel que ja e
+            uma faixa de marca inteira, a foto sem moldura le como imagem que
+            vazou do layout, nao como escolha. E no celular ela encostava nos
+            dois lados enquanto todo o resto da pagina respira 20px.
+
+            Agora a grade tem o mesmo respiro do painel de texto do outro lado,
+            canto arredondado, moldura de um fio de ouro e sombra. E ela deixou
+            de ser um mosaico parado: o conjunto inteiro e UM objeto que inclina
+            de leve seguindo o ponteiro, com o brilho especular correndo junto,
+            enquanto cada foto continua com a cortina que a descobre, o holofote
+            na cor da marca do Memorial e a legenda que sobe com um fio de ouro
+            ao passar por cima.
+
+            ⛔ SEM BRILHO ESPECULAR. O `.relevo-luz` corre um facho branco pela
+            superficie quando ela inclina, e em cartao de texto isso le como
+            vidro. Em cima de FOTOGRAFIA ele lava a imagem e some com a cor do
+            Memorial, e o dono pediu para tirar: "adorei o novo 3d, mantenha,
+            mas tire o brilho branco de quando passa o mouse". A inclinacao
+            sozinha ja diz que o bloco tem superficie.
+
+            O giro e 4 graus, metade do teto do projeto: o bloco e grande e
+            carrega fotografia, e acima disso a borda de cima comeca a desfocar.
+            `.relevo` mora no INVOLUCRO e a escala de cada foto no `<img>`, que
+            sao elementos diferentes, entao os dois `transform` nao se apagam. */}
+        <div className="palco3d px-5 pb-16 md:px-10 md:pb-24 lg:pr-[max(1.25rem,calc((100vw-76rem)/2))] lg:pl-0">
+          <div
+            data-giro="4"
+            className="relevo aro-luz relative grid grid-cols-2 grid-rows-2 gap-px overflow-hidden rounded-serra-lg bg-dourado/30 shadow-cine ring-1 ring-dourado/35 lg:h-full lg:min-h-[30rem]"
+            style={{
+              ["--luz" as string]: "var(--color-dourado)",
+              ["--aro" as string]:
+                "linear-gradient(100deg, #6d3316, #c9b167 55%, #e3d3a0)",
+            }}
+          >
+            {ESTRUTURA_FOTOS.map((f, i) => (
+              <figure
+                key={f.src}
+                style={{ ["--i" as string]: i }}
+                className="cortina holofote holofote-escuro group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[15rem]"
+              >
+                <Image
+                  src={f.src}
+                  alt={f.alt}
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  className={`object-cover ${f.objeto} transition-transform duration-700 group-hover:scale-[1.06]`}
+                />
+                {/* A foto e DESCOBERTA por uma cortina que sobe, uma depois da
+                    outra. Numa grade de quatro, revelar as quatro de uma vez le
+                    como imagem que demorou a carregar; em sequencia, le como
+                    quem esta mostrando o lugar. */}
+                <span
+                  aria-hidden
+                  className="cortina-veu pointer-events-none absolute inset-0 z-[2] origin-bottom bg-memorial"
+                />
+                <figcaption className="absolute inset-x-0 bottom-0 z-[3] bg-gradient-to-t from-memorial/95 via-memorial/45 to-transparent px-4 pt-12 pb-3.5 text-[0.8125rem] font-semibold text-white">
+                  <span
+                    aria-hidden
+                    className="mb-2 block h-px w-6 origin-left scale-x-100 bg-dourado transition-transform duration-500 group-hover:scale-x-[2.6]"
+                  />
+                  {f.legenda}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -317,39 +380,142 @@ function Cremacao() {
  */
 function SerraPet() {
   return (
-    /* A foto e um recorte com fundo transparente, entao ela ASSENTA na base do
-       cartao em vez de flutuar num quadradinho. Antes ficava com 17rem, presa
-       numa coluna estreita e com o corte visivel na barriga do cachorro.
-       Agora ocupa a altura toda do bloco e o cartao cresce junto. */
-    <section className="mat-pet-fundo relative overflow-hidden" id="serra-pet">
-      <div className="relative mx-auto grid max-w-[80rem] items-end gap-2 px-5 pt-16 pb-0 md:grid-cols-[1.05fr_minmax(0,28rem)] md:gap-6 md:pt-20" data-revela>
-        <div className="pb-14 md:pb-20">
-          <Rotulo cor="var(--color-pet)">Serra Pet</Rotulo>
-          <TituloCine className="max-w-[18ch] text-t2 text-pet-forte">
-            O plano também cuida de quem mora com você
-          </TituloCine>
-          <p className="mt-5 max-w-[52ch] text-lead leading-relaxed text-pedra-700">
-            Remoção 24 horas na região de Campinas, cremação individual com as
-            cinzas devolvidas em urna, ou coletiva em espaço ecológico, e
-            certificado de cremação. Até 3 pets no mesmo plano.
-          </p>
-          <Link
-            href="/serra-pet"
-            className="mat-pet group mt-8 inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-serra px-6 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105"
-          >
-            Conhecer o Serra Pet
-            <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+    /* ⛔ "Seção pet extremamente simples e sem vida nenhuma", e era mesmo: um
+       título, um parágrafo de cinco linhas, um botão e uma foto. Nenhum dos
+       gestos que a home usa em toda parte chegava aqui, e o parágrafo carregava
+       sozinho quatro fatos diferentes, então ninguém lia nenhum dos quatro.
+
+       O que entrou, e cada coisa resolve uma das duas queixas:
+
+       VIDA.  Grão de filme, um brilho quente atrás dos animais, a pata da marca
+              em marca d'água no canto, e a foto flutuando em paralaxe enquanto
+              a página rola. A superfície continua sendo a faixa mais clara da
+              home, que é o papel dela no ritmo.
+       PESO.  Os três fatos saíram do parágrafo e viraram cartões com elevação,
+              holofote na cor da marca e aro de luz, que é o mesmo tratamento
+              que os planos e os serviços recebem. O parágrafo que sobrou fala
+              com quem está lendo em vez de listar cobertura.
+
+       O laranja é o oficial da marca (#FC5C04), e a luz dos cartões é ele. */
+    <section className="mat-pet-fundo grao relative isolate overflow-hidden" id="serra-pet">
+      {/* ⛔ O BRILHO LARANJA SAIU DE TRAS DA FOTO. Ele era uma mancha de
+          rgba(252,92,4,.32) bem no lugar onde a imagem fica, e o dono viu o
+          efeito antes de saber a causa: "o recorte da imagem da familia ta
+          extremamente evidente pois voce aplica o efeito laranja por baixo".
+          Ele acertou. A foto e um retangulo de estudio com fundo BRANCO, e o
+          que denuncia a emenda de um branco e qualquer cor atras dele. A
+          mascara radial dissolvia a borda, mas dissolvia branco POR CIMA DE
+          LARANJA, o que so trocava um degrau seco por um degrau suave.
+
+          Agora sao duas coisas, e elas se somam: o laranja foi para tras do
+          TEXTO, onde nao ha nada para denunciar, e no lugar dele, atras da
+          foto, entrou um halo BRANCO maior que a imagem. O fundo do estudio
+          passa a assentar em cima de branco, entao nao existe mais emenda para
+          enxergar, e quem se dissolve na cor da secao e o halo, que nao tem
+          borda nenhuma. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 left-[-14%] -z-10 size-[30rem] -translate-y-1/2 rounded-full opacity-45 blur-[100px]"
+        style={{ background: "radial-gradient(circle, rgba(252,92,4,.26), transparent 70%)" }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-[-8%] bottom-0 -z-10 hidden h-[92%] w-[68%] rounded-full opacity-90 blur-[80px] md:block"
+        style={{ background: "radial-gradient(closest-side, #ffffff, rgba(255,255,255,0))" }}
+      />
+      <IconePata
+        aria-hidden
+        className="pointer-events-none absolute -bottom-16 -left-16 -z-10 size-[22rem] text-pet opacity-[0.06]"
+      />
+
+      <div
+        className="relative mx-auto max-w-[80rem] px-5 pt-16 pb-0 md:pt-20"
+        data-revela
+      >
+        <div className="grid items-end gap-4 md:grid-cols-[minmax(0,30rem)_1fr] md:gap-8">
+          <div className="pb-10 md:pb-16">
+            <Rotulo cor="var(--color-pet)">Serra Pet</Rotulo>
+            <TituloCine className="max-w-[18ch] text-t2 text-pet-forte">
+              O plano também cuida de quem mora com você
+            </TituloCine>
+            <p className="mt-5 max-w-[46ch] text-lead leading-relaxed text-pedra-700">
+              Quando o animal da casa morre, quase ninguém sabe para quem ligar,
+              e a pressa faz decidir mal. O Serra Pet atende essa hora com a
+              mesma equipe e a mesma frota do resto do grupo.
+            </p>
+
+            <Ima className="mt-8 inline-block">
+              <Link
+                href="/serra-pet"
+                className="mat-pet varre group relative inline-flex min-h-[3.25rem] items-center gap-2.5 overflow-hidden rounded-serra px-6 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <span className="relative z-[1] inline-flex items-center gap-2.5">
+                  Conhecer o Serra Pet
+                  <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </Ima>
+          </div>
+
+          {/* A FOTO DA FAMILIA, escolhida pelo dono em 11/09/2026 no lugar do
+              recorte do cachorro com o gato. A troca faz sentido alem do gosto:
+              o recorte mostrava o PRODUTO (dois bichos), e o argumento desta
+              secao nao e o bicho, e a casa. Tres geracoes e dois animais dizem
+              "quem mora com voce" melhor do que o titulo consegue sozinho.
+
+              Ela sangra ate a borda da tela a direita de proposito, e o
+              `overflow-hidden` da secao corta ali. */}
+          <div className="relative -mb-px self-end md:-mr-[max(1.25rem,calc((100vw-80rem)/2))]">
+            <Image
+              src="/fotos/serra-pet-familia.webp"
+              alt="Três gerações de uma família, um cachorro e um gato"
+              width={905}
+              height={625}
+              sizes="(min-width: 768px) 58rem, 112vw"
+              className="ml-auto block h-auto w-[112%] max-w-none md:w-full"
+              style={{
+                maskImage:
+                  "radial-gradient(92% 88% at 60% 46%, #000 50%, transparent 100%)",
+                WebkitMaskImage:
+                  "radial-gradient(92% 88% at 60% 46%, #000 50%, transparent 100%)",
+              }}
+            />
+          </div>
         </div>
 
-        <Image
-          src="/fotos/serra-pet-animais.webp"
-          alt="Um cachorro e um gato, as duas espécies atendidas pelo Serra Pet"
-          width={760}
-          height={659}
-          sizes="(min-width: 768px) 28rem, 80vw"
-          className="mx-auto -mb-px block w-[85%] max-w-[21rem] self-end sm:w-[70%] md:w-full md:max-w-none"
-        />
+        {/* ⛔ OS TRES FATOS SAIRAM DA COLUNA DE TEXTO. Enquanto moravam ao lado
+            do parágrafo, cada um tinha um terço de 26rem para existir, e o dono
+            viu o resultado: "voce expremeu eles". "Remoção 24h" quebrava em
+            duas linhas dentro de um cartão de 140px, o que é o oposto de um
+            cartão. Aqui embaixo eles têm a largura inteira da seção, ficam
+            horizontais de verdade e a coluna de texto deixa de disputar espaço
+            com a foto. */}
+        <ul className="grid gap-4 border-t border-pet/15 py-10 sm:grid-cols-3 md:gap-5 md:py-12">
+          {PET_FATOS.map(({ titulo, detalhe }, i) => (
+            <li key={titulo} className="item-cascata" style={{ ["--i" as string]: i }}>
+              <div
+                className="cartao-cine holofote aro-luz flex h-full items-start gap-4 rounded-serra-lg border border-pet/25 bg-white/80 px-5 py-5"
+                style={{
+                  ["--luz" as string]: "var(--color-pet)",
+                  ["--aro" as string]:
+                    "linear-gradient(100deg, #b84100, #fc5c04 55%, #ff9350)",
+                }}
+              >
+                <span className="selo-icone mat-pet flex size-11 shrink-0 items-center justify-center rounded-serra text-white">
+                  <IconePata className="size-[1.35rem]" />
+                </span>
+                <span>
+                  <span className="block font-display text-[1.0625rem] leading-tight font-bold text-pet-forte">
+                    {titulo}
+                  </span>
+                  <span className="mt-1.5 block text-[0.875rem] leading-snug text-pedra-600">
+                    {detalhe}
+                  </span>
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

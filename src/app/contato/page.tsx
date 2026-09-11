@@ -17,11 +17,14 @@ import {
 const RESUMO =
   "Telefone de plantão 24 horas, WhatsApp, e-mail e as oito unidades com endereço e horário. Se for urgente, ligue: o telefone resolve mais rápido que qualquer formulário.";
 
+const META =
+  "Plantão de óbito 24 horas no (19) 3775-9752, WhatsApp, e-mail e as 8 unidades da região de Campinas com endereço e horário. Se for urgente, ligue.";
+
 export const metadata: Metadata = {
   title: "Contato",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/contato" },
-  openGraph: { title: "Contato", description: RESUMO, url: "/contato" },
+  openGraph: { title: "Contato", description: META, url: "/contato" },
 };
 
 /**

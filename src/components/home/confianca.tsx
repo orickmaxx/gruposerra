@@ -1,81 +1,22 @@
 import { SITE } from "@/lib/site";
-import { UNIDADES } from "@/data/unidades";
 import { Faixa, Titulo } from "../ui";
 import {
-  IconeAmparo,
-  IconeChama,
   IconeConfere,
-  IconeLocal,
-  IconeRelogio,
   IconeTelefone,
 } from "../icones";
 
-/**
- * Barra de confiança, logo abaixo do herói.
- *
- * Copiada em ESTRUTURA do Florees, não em conteúdo: eles põem cinco selos antes
- * de qualquer venda, e um deles cita a lei federal PELO NÚMERO. Plano funerário
- * é setor regulado e citar a norma responde a desconfiança antes de ela virar
- * pergunta.
- *
- * ⛔ O que eu NÃO copiei: eles escrevem "Empresa Licenciada". Não tenho como
- * provar registro do Grupo Serra, então aqui o selo diz o que é verificável (a
- * lei que rege o contrato), não uma condição que a empresa teria.
- */
-export function BarraConfianca() {
-  return (
-    <section className="border-y border-linha bg-white">
-      <div className="mx-auto max-w-[76rem] px-5 py-7">
-        <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
-          {[
-            {
-              Icone: IconeRelogio,
-              titulo: "Plantão 24 horas",
-              texto: "Óbito atendido todo dia, inclusive feriado",
-            },
-            {
-              Icone: IconeLocal,
-              titulo: `${UNIDADES.length} unidades próprias`,
-              texto: "Equipe e telefone em cada cidade",
-            },
-            {
-              Icone: IconeChama,
-              titulo: "Crematório próprio",
-              texto: "Memorial Hortolândia, desde 2021",
-            },
-            {
-              Icone: IconeAmparo,
-              titulo: `Na região ${SITE.idadeTexto}`,
-              texto: "Sempre na mesma praça, sem mudar de dono",
-            },
-            {
-              Icone: IconeConfere,
-              titulo: "Lei Federal nº 13.261/16",
-              texto: "A norma que rege o plano de assistência funerária",
-            },
-          ].map(({ Icone, titulo, texto }) => (
-            <li
-              key={titulo}
-              className="holofote group flex gap-3.5 rounded-serra p-2 transition-colors duration-500"
-            >
-              <span className="selo-icone mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-serra bg-serra-500/10 text-serra-600 group-hover:bg-serra-500 group-hover:text-white">
-                <Icone className="size-[1.3rem]" />
-              </span>
-              <span>
-                <span className="block font-display text-[0.9375rem] leading-snug font-bold text-tinta">
-                  {titulo}
-                </span>
-                <span className="mt-1 block text-[0.8125rem] leading-relaxed text-pedra-600">
-                  {texto}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
+/* ⛔ A BARRA DE CONFIANCA SAIU EM 11/09/2026, a pedido do dono ("remova toda
+   essa parte"), e a estrutura dava razao a ele. Eram cinco selos numa faixa
+   fina logo abaixo do herói, e quatro dos cinco repetiam, com menos peso, o
+   que o proprio herói tinha acabado de dizer dois dedos acima: plantao 24
+   horas, 8 unidades proprias, crematorio proprio e a idade da empresa ja sao
+   os quatro numeros do rodape do herói. A faixa cobrava uma leitura a mais
+   para entregar a mesma informacao pela segunda vez, e ainda empurrava a
+   primeira secao de verdade para baixo da dobra.
+
+   O unico item que nao se repetia era a Lei Federal nº 13.261/16. Ele continua
+   no site, na pagina de planos e no rodape, que e onde quem procura a norma
+   vai olhar. */
 
 /**
  * Como funciona o acionamento.
@@ -158,7 +99,8 @@ export function ComoFunciona() {
           <span className="numerais">{SITE.emergencia.rotulo}</span>
         </a>
         <p className="text-[0.9375rem] text-pedra-600">
-          É o passo 1. O resto é com a gente.
+          É o passo 1. Do passo 2 em diante, ninguém da família precisa ligar
+          para mais ninguém.
         </p>
       </div>
     </Faixa>
@@ -188,9 +130,9 @@ export function Garantias() {
               "Não é vantagem de um plano específico. Está em todos, do mais simples ao mais completo, junto com o traslado.",
           },
           {
-            titulo: "Cobertura nacional",
+            titulo: "Quem atende é a unidade da sua cidade",
             texto:
-              "Se a pessoa falecer longe de casa, o traslado está previsto. Não é preciso contratar nada por fora naquele momento.",
+              "O telefone do plano leva à equipe daquela cidade, não a uma central em outro estado. E se o falecimento for longe de casa, o traslado já está previsto: a cobertura é nacional.",
           },
           {
             titulo: "Dá para mudar de plano depois",

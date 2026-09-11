@@ -17,11 +17,14 @@ import {
 const RESUMO =
   "Desde 2021 o Grupo Serra faz a cremação no próprio Complexo Memorial Hortolândia. Velório, cerimônia de despedida e cremação acontecem no mesmo lugar, e a família não se desloca entre empresas no pior dia.";
 
+const META =
+  "Crematório próprio em Hortolândia desde 2021: velório, despedida e cremação no mesmo endereço. Como funciona, o que diz a Lei 6.015/73 e o destino das cinzas.";
+
 export const metadata: Metadata = {
   title: "Cremação",
-  description: RESUMO,
+  description: META,
   alternates: { canonical: "/cremacao" },
-  openGraph: { title: "Cremação em crematório próprio", description: RESUMO, url: "/cremacao" },
+  openGraph: { title: "Cremação em crematório próprio", description: META, url: "/cremacao" },
 };
 
 /**

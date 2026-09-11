@@ -1,6 +1,6 @@
 ---
 name: comunicacao-serra
-description: Escreve e revisa QUALQUER texto que o visitante do site do Grupo Serra lê — manchete, subtítulo, rótulo de botão, texto de cartão, FAQ, meta descrição, alt, mensagem pronta de WhatsApp, artigo de blog e legenda de foto. Traz a voz da marca, o banco de fatos verificáveis, os gatilhos permitidos e proibidos, o sistema de CTA e o mapa de como os concorrentes (Zelo, Florees, Bom Pastor, Flamboyant, Parque das Flores) escrevem, para que o Serra não repita o clichê do setor e diga por que escolher esta funerária e não a outra. Use SEMPRE que a tarefa mexer em palavra visível, mesmo que o pedido pareça pequeno ("troca esse título", "melhora esse parágrafo", "reescreve essa seção", "revisa a home", "o texto está fraco"), e mesmo quando vier junto de trabalho de layout. Use também antes de escrever texto novo para página nova, descrição de plano, e-mail, anúncio ou legenda de rede social do Grupo Serra.
+description: Escreve e revisa o texto COMERCIAL e editorial do site do Grupo Serra — manchete, subtítulo, rótulo de botão, texto de cartão, FAQ, meta descrição, mensagem pronta de WhatsApp, artigo de blog e legenda de foto. Não encosta em acessibilidade: alt e aria-label ficam de fora. Traz a voz da marca, o banco de fatos verificáveis, os gatilhos permitidos e proibidos, o sistema de CTA e o mapa de como os concorrentes (Zelo, Florees, Bom Pastor, Flamboyant, Parque das Flores) escrevem, para que o Serra não repita o clichê do setor e diga por que escolher esta funerária e não a outra. Ensina onde mora o acolhimento de verdade num site de funerária: no que o texto diz sobre o leitor, não nos adjetivos que a empresa usa para se descrever. Use SEMPRE que a tarefa mexer em palavra visível, mesmo que o pedido pareça pequeno ("troca esse título", "melhora esse parágrafo", "reescreve essa seção", "revisa a home", "o texto está fraco", "deixa mais acolhedor", "está frio", "está seco"), e mesmo quando vier junto de trabalho de layout. Use também antes de escrever texto novo para página nova, descrição de plano, e-mail, anúncio ou legenda de rede social do Grupo Serra.
 ---
 
 # Comunicação do Grupo Serra
@@ -26,8 +26,16 @@ sem mexer no site.** Então o diff obedece a uma regra dura:
 > prop que não seja texto, nenhum arquivo em `src/app/globals.css`.
 
 O que pode mudar: texto dentro de JSX, valores de string em `src/data/*.ts`, `apoio=`, `rotulo=`,
-`titulo=`, `alt=`, `aria-label=`, `title`/`description` de metadata, e as mensagens prontas de
-WhatsApp em `src/lib/site.ts`.
+`titulo=`, `legenda=`, `title`/`description` de metadata, e as mensagens prontas de WhatsApp em
+`src/lib/site.ts`.
+
+> ⛔ **`alt` e `aria-label` estão FORA. Nunca toque neles.** Não são comunicação, são acessibilidade:
+> quem lê é uma pessoa cega, por leitor de tela, e o trabalho daquele texto é **descrever a imagem**,
+> não vender nada. Reescrever um `alt` com critério de marketing troca a descrição do que está na
+> foto por adjetivo de marca, e a pessoa perde a informação sem ninguém perceber. O mesmo vale para
+> `aria-label`, `aria-describedby`, `role` e qualquer atributo `aria-*`. Se o texto de acessibilidade
+> parecer ruim, **relate ao usuário e pare**: é outro trabalho, com outro critério, e provavelmente
+> outra pessoa.
 
 **Se o texto novo não couber, encurte o texto.** Não alargue o `max-w-[54ch]`, não troque
 `text-t2` por `text-t3`, não acrescente um `<br>`. O layout foi medido no pixel e o contraste foi
@@ -106,6 +114,13 @@ Levantado palavra por palavra nos sites de Zelo, Florees, Bom Pastor, Flamboyant
 Flores em 11/09/2026. Se a frase que você escreveu está aqui, ela existe idêntica em quatro
 concorrentes e não comunica nada.
 
+> ⚠️ **O que está proibido é a DIREÇÃO da frase, não a palavra.** Estas palavras viram clichê
+> quando a empresa as usa **para se descrever**: "nosso atendimento é humanizado e acolhedor" é uma
+> afirmação sobre nós, e quatro concorrentes já fizeram a mesma. As mesmas palavras são legítimas
+> em dois lugares: **citando o texto institucional da própria empresa** (missão, visão e valores,
+> ver `provas.md`) e **descrevendo o que a família recebe**, quando vier com o fato junto. Ler a
+> parte 4.1 antes de aplicar esta tabela, senão o resultado é um site correto e gelado.
+
 | Não escreva | Por quê |
 |---|---|
 | **"ente querido"** | Aparece em 100% dos sites do setor. É a expressão mais gasta que existe. |
@@ -149,6 +164,57 @@ as avaliações do Google elogiam. É ativo de marca, não estilo de redator.
   sendo verdade**. O que não se faz nunca é usar eufemismo para **esconder um fato comercial**.
 - **Números tabulares.** Telefone, preço e data usam a classe `numerais`, que já existe. Ao editar,
   não tire a classe junto.
+
+### 4.1 O calor, e onde ele mora de verdade
+
+Este site precisa ser **acolhedor**. Não é enfeite: metade de quem chega está em pânico, e a
+pergunta que essa pessoa faz não é "esta empresa é confiável", é **"vão cuidar de mim?"**. Prova
+responde à primeira. Só calor responde à segunda, e é a segunda que faz alguém ligar.
+
+O erro fácil é achar que calor mora nas palavras quentes. Não mora: o setor inteiro já gastou
+todas elas, e um site montado com *acolhimento, amparo, dignidade e humanizado* soa a folheto, não
+a cuidado. Calor mora em três lugares, e nenhum deles é adjetivo.
+
+**1. Direção.** Fale do leitor, não de si. É a regra que resolve quase tudo.
+
+| Frio, apesar de parecer quente | Quente, sem uma única palavra quente |
+|---|---|
+| "Atendimento humanizado e acolhedor." | "Você não precisa ter documento em mãos nem saber o que dizer." |
+| "Amparo em todos os momentos." | "Alguém atende e conduz o resto." |
+| "Cuidamos de cada detalhe com respeito." | "Não há conta para acertar naquele momento." |
+
+A coluna da direita é o site como ele já é nos melhores trechos. Nenhuma daquelas frases se elogia,
+e todas antecipam um medo concreto e o tiram da frente. **É isso que as avaliações do Google
+elogiam**, e é reproduzível: pense no que a pessoa está com medo de que aconteça, e diga que não vai
+acontecer.
+
+**2. Antecipação.** Nomeie o que a pessoa não sabe, antes de ela ter que admitir que não sabe.
+"Quem nunca precisou não sabe o que acontece depois da ligação. É isto, na ordem." Isso é
+hospitalidade: poupa alguém de fazer uma pergunta que envergonha. ⛔ Sem nunca soar condescendente:
+a pessoa está em luto, não é ignorante.
+
+**3. Permissão.** Diga que está tudo bem não saber, não ter decidido, não conseguir pensar agora.
+"Cremar ou sepultar quase nunca é decisão de uma pessoa só" acolhe a família inteira sem pedir nada
+em troca.
+
+**O modo de falha a evitar é a frieza.** Um texto que só enuncia fato verificável lê como planilha,
+e planilha não consola ninguém às 3 da manhã. Se ao reler a seção você não encontrar **nenhuma
+frase escrita na direção da pessoa**, o texto está incompleto, mesmo que cada linha seja verdadeira
+e nenhuma seja clichê. Prova e calor não competem por espaço: a prova sustenta, o calor recebe.
+
+### 4.2 Missão, visão e valores: texto da casa
+
+A empresa tem missão, visão e valores escritos, e eles usam o vocabulário do setor de propósito.
+**Isso não é clichê a corrigir, é a voz institucional do cliente**, e ele é o dono dela. O texto
+integral está em `provas.md`.
+
+- **Citar é permitido e recomendado** onde o gênero pede (página institucional, "sobre").
+  Quando citar, **cite como declaração da empresa**, não como afirmação sua sobre a empresa.
+- ⛔ **Não reescreva a missão para "melhorar" o vocabulário dela**, e principalmente não comente a
+  missão com ironia ou distanciamento. Já aconteceu aqui uma vez: o parágrafo virou "toda funerária
+  escreve uma missão parecida", o que rebaixa o texto do próprio cliente dentro do site dele.
+- O que você **pode** fazer é encostar prova nela: a missão diz uma coisa, e as avaliações do Google
+  contam a mesma coisa acontecendo. Declaração mais evidência vale mais que declaração sozinha.
 
 ### O slogan
 
@@ -264,11 +330,16 @@ oposto de escala.
 
 Estas já custaram rodada neste repositório. Texto encosta em todas as três.
 
-**⛔ Manchete em máscara cola as palavras.** Manchetes de herói e de fecho usam
-`<TituloCine linhas={["...", "...", "..."]} />`, uma linha por bloco. `textContent` não insere
-separador, então o `<h1>` chega ao Google como `Estamos perto,e atendemos aqualquer hora.`. **Cada
-linha, menos a última, termina em espaço** — o layout colapsa esse espaço e ninguém vê. Ao mexer
-numa manchete dessas você está mexendo nas quebras, então confira como um rastreador confere:
+**⛔ Manchete em máscara cola as palavras, e o conserto já existe.** Manchetes de herói e de fecho
+usam `<TituloCine linhas={["...", "...", "..."]} />`, uma linha por bloco. `textContent` não insere
+separador, então o `<h1>` chegava ao Google como `Estamos perto,e atendemos aqualquer hora.`.
+
+**O espaço é inserido pelo próprio componente** (`src/components/ui.tsx`, no `map`: a última linha
+vai crua, as outras vão com um espaço no fim). Então **escreva as strings do array normalmente, sem
+espaço no fim** — acrescentar à mão duplica o espaço. A armadilha está fechada na estrutura.
+
+O que continua sendo seu trabalho é **escolher as quebras**, que são decisão de ritmo e de layout, e
+conferir o resultado como um rastreador confere:
 
 ```bash
 curl -s http://127.0.0.1:4400/ | grep -o '<h1[^>]*>.*</h1>' | sed 's/<[^>]*>//g'

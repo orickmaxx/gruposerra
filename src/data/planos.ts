@@ -86,27 +86,56 @@ export const PLANOS_ESPECIAIS = [
  * quem visita o site nao ve o que compra. E o argumento de venda mais forte da
  * empresa. Trazer de volta e o item 4 do briefing (CLAUDE.md secao 10.2).
  */
-export const INCLUSOS: { item: string; nota?: string }[] = [
-  { item: "Urna mortuária" },
-  { item: "Sala de velório" },
-  { item: "Paramentação" },
-  { item: "Coroa de flores" },
-  { item: "Certidão de óbito" },
-  { item: "Transporte", nota: "gratuito até 100 km" },
-  { item: "Carro assistencial" },
-  { item: "Velas" },
-  { item: "Véu" },
-  { item: "Encomendação" },
-  { item: "Kit café" },
-  { item: "Terços" },
-  { item: "Ornamentação" },
-  { item: "Cerimonial" },
-  { item: "Músicos" },
-  { item: "Tanatopraxia" },
-  { item: "Assistência local" },
-  { item: "Assistência ao luto" },
-  { item: "Orientação jurídica" },
-  { item: "Crematório", nota: "próprio, em Hortolândia" },
+/**
+ * Os 20 itens que ja estao pagos quando a familia liga.
+ *
+ * Vieram do HTML da home antiga, onde estavam DENTRO DE UM COMENTARIO: o
+ * argumento de venda mais forte da empresa, invisivel para quem visitava o
+ * site. A lista e contrato, nao copy, entao os nomes de dentro da profissao
+ * ficam como estao e a traducao vai no `nota` ao lado.
+ *
+ * ⛔ O `grupo` nao e enfeite de layout. Vinte itens com o mesmo peso visual
+ * sao uma parede: o dono chamou a secao de "extremamente poluida, muita
+ * informacao", e estava certo, porque nada ali dizia ao olho onde uma coisa
+ * acaba e outra comeca. Agrupados por MOMENTO do que acontece, os vinte viram
+ * cinco blocos legiveis, e a ordem dos grupos e a ordem dos dois dias que a
+ * familia vai viver. Nenhum item foi cortado.
+ */
+export const GRUPOS_INCLUSOS = [
+  { chave: "preparacao", titulo: "A preparação" },
+  { chave: "velorio", titulo: "A sala de velório" },
+  { chave: "cerimonia", titulo: "A cerimônia" },
+  { chave: "transporte", titulo: "O transporte e a cremação" },
+  { chave: "papelada", titulo: "A papelada e o apoio" },
+] as const;
+
+export type GrupoIncluso = (typeof GRUPOS_INCLUSOS)[number]["chave"];
+
+export const INCLUSOS: { item: string; nota?: string; grupo: GrupoIncluso }[] = [
+  { item: "Urna mortuária", grupo: "preparacao" },
+  { item: "Paramentação", grupo: "preparacao" },
+  { item: "Tanatopraxia", nota: "preparação e conservação do corpo", grupo: "preparacao" },
+  { item: "Véu", grupo: "preparacao" },
+
+  { item: "Sala de velório", grupo: "velorio" },
+  { item: "Ornamentação", grupo: "velorio" },
+  { item: "Coroa de flores", grupo: "velorio" },
+  { item: "Velas", grupo: "velorio" },
+  { item: "Kit café", grupo: "velorio" },
+
+  { item: "Cerimonial", grupo: "cerimonia" },
+  { item: "Encomendação", nota: "cerimônia de despedida", grupo: "cerimonia" },
+  { item: "Músicos", grupo: "cerimonia" },
+  { item: "Terços", grupo: "cerimonia" },
+
+  { item: "Carro assistencial", grupo: "transporte" },
+  { item: "Transporte", nota: "gratuito até 100 km", grupo: "transporte" },
+  { item: "Crematório", nota: "próprio, em Hortolândia", grupo: "transporte" },
+
+  { item: "Certidão de óbito", grupo: "papelada" },
+  { item: "Orientação jurídica", grupo: "papelada" },
+  { item: "Assistência local", grupo: "papelada" },
+  { item: "Assistência ao luto", grupo: "papelada" },
 ];
 
 export const FAQ = [

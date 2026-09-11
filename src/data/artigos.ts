@@ -98,7 +98,7 @@ export const ARTIGOS: Artigo[] = [
       "Negação, raiva, negociação, depressão e aceitação são um mapa, não um cronograma. O que esperar de si mesmo e quando procurar ajuda.",
     atualizado: "2026-09-02",
     minutos: 7,
-    categoria: "Acolhimento",
+    categoria: "Luto",
     blocos: [
       {
         t: "p",
