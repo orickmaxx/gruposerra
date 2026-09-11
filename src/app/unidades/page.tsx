@@ -38,6 +38,14 @@ export const metadata: Metadata = {
  */
 export default function Pagina() {
   const cidades = [...new Set(UNIDADES.map((u) => u.cidade))];
+  /* Ver a nota em `home/topo.tsx`: "1 crematório" vira "Próprio", porque o
+     numero enfraquece o unico argumento que a concorrencia nao tem. */
+  const numeros: { v: number | string; s: string; r: string; I: typeof IconeLocal }[] = [
+    { v: UNIDADES.length, s: "", r: "unidades próprias", I: IconeLocal },
+    { v: cidades.length, s: "", r: "cidades atendidas", I: IconeLocal },
+    { v: 24, s: "h", r: "plantão de óbito", I: IconeRelogio },
+    { v: "Próprio", s: "", r: "crematório, em Hortolândia", I: IconeChama },
+  ];
 
   return (
     <>
@@ -66,17 +74,16 @@ export default function Pagina() {
         }
       >
         <ul className="revela-texto mt-12 grid grid-cols-2 gap-x-6 gap-y-7 border-t border-white/15 pt-9 md:grid-cols-4" style={{ ["--i" as string]: 4 }}>
-          {[
-            { v: UNIDADES.length, s: "", r: "unidades próprias", I: IconeLocal },
-            { v: cidades.length, s: "", r: "cidades atendidas", I: IconeLocal },
-            { v: 24, s: "h", r: "plantão de óbito", I: IconeRelogio },
-            { v: 1, s: "", r: "crematório do grupo", I: IconeChama },
-          ].map(({ v, s, r, I }) => (
+          {numeros.map(({ v, s, r, I }) => (
             <li key={r} className="flex items-center gap-3.5">
               <I className="size-6 shrink-0 text-onda-400/80" />
               <span>
                 <span className="block font-display text-[1.75rem] leading-none font-extrabold tracking-tight text-white">
-                  {v > 1 ? <Contador ate={v} sufixo={s} /> : <span className="numerais">{v}{s}</span>}
+                  {typeof v === "number" && v > 1 ? (
+                    <Contador ate={v} sufixo={s} />
+                  ) : (
+                    <span className="numerais">{v}{s}</span>
+                  )}
                 </span>
                 <span className="mt-1.5 block text-[0.8125rem] leading-tight text-white/60">{r}</span>
               </span>

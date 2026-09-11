@@ -251,11 +251,15 @@ function ListaTelefones() {
  * pagina de venda de plano funerario e problema de Procon, nao licenca poetica.
  */
 function Numeros() {
-  const itens = [
+  const itens: { valor: number | string; sufixo: string; rotulo: string; Icone: typeof IconeLocal }[] = [
     { valor: UNIDADES.length, sufixo: "", rotulo: "unidades próprias", Icone: IconeLocal },
     { valor: 24, sufixo: "h", rotulo: "plantão de óbito", Icone: IconeRelogio },
     { valor: 30, sufixo: "+", rotulo: "anos na mesma região", Icone: IconeAmparo },
-    { valor: 1, sufixo: "", rotulo: "crematório próprio", Icone: IconeChama },
+    /* ⛔ Era "1 · crematório próprio". O numero 1 nao impressiona ninguem e
+       ainda por cima enfraquece o argumento, porque parece pouco. O que vale e
+       a PALAVRA: crematorio proprio e a unica coisa que o Grupo Serra faz e os
+       concorrentes da praca terceirizam. */
+    { valor: "Próprio", sufixo: "", rotulo: "crematório, em Hortolândia", Icone: IconeChama },
   ];
 
   return (
@@ -271,7 +275,7 @@ function Numeros() {
               <span className="block font-display text-[1.75rem] leading-none font-extrabold tracking-tight text-white md:text-[2.125rem]">
                 {/* Contar de 0 a 1 mostraria "0 crematório próprio" por um
                     segundo, que e pior do que nao animar nada. */}
-                {valor > 1 ? (
+                {typeof valor === "number" && valor > 1 ? (
                   <Contador ate={valor} sufixo={sufixo} />
                 ) : (
                   <span className="numerais">

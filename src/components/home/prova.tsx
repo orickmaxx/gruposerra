@@ -152,11 +152,16 @@ export function Historia() {
               r: "anos de expansão",
             },
             { n: UNIDADES.length, r: "unidades próprias" },
-            { n: 1, r: "crematório do grupo" },
+            /* Ver `home/topo.tsx`: a palavra vale mais que o numero. */
+            { n: "Próprio", r: "crematório, desde 2021" },
           ].map((e) => (
             <li key={e.r}>
               <p className="font-display text-[3.25rem] leading-none font-extrabold tracking-tight text-serra-600">
-                <Contador ate={e.n} />
+                {typeof e.n === "number" ? (
+                  <Contador ate={e.n} />
+                ) : (
+                  <span className="text-[2.5rem]">{e.n}</span>
+                )}
               </p>
               <p className="mt-2 text-[0.9375rem] font-semibold text-pedra-600">{e.r}</p>
             </li>

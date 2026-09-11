@@ -35,6 +35,16 @@ const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] 
 }
 
 const ctx = await nav.newContext({ viewport: { width: 1440, height: 900 }, locale: "pt-BR" });
+/* ⛔ Dispensa o banner de cookies NESTE arquivo. Ele nao testa LGPD, e o banner
+   fica fixo no rodape cobrindo alvos: era a causa da falha intermitente do
+   holofote, que tentava passar o ponteiro num cartao tapado. O wrapper de
+   contexto nao pode fazer isso por todos, porque `verificar-novos.mjs` precisa
+   do banner aparecendo do zero. */
+await ctx.addInitScript(() => {
+  try {
+    localStorage.setItem("serra_consentimento", "recusado");
+  } catch {}
+});
 const p = await ctx.newPage();
 const falhas = [];
 const ok = (nome, cond, extra = "") => {
@@ -275,8 +285,13 @@ ok("as particulas pintam a tela de verdade", pintou > 200, `${pintou} pixels`);
    esse tempo, todo bloco pendente aparece, sem olhar posicao nem observador.
 
    Esta checagem existe para o seguro nunca ser removido por engano. Ela abre
-   cada rota e NAO ROLA NADA, que e o pior caso possivel para uma revelacao
-   presa a rolagem, e exige zero blocos invisiveis.
+   cada rota, NAO ROLA NADA, e exige que nenhum bloco DENTRO DA TELA esteja
+   invisivel.
+
+   ⚠️ O criterio e "dentro da tela", nao "zero invisiveis na pagina". Bloco la
+   embaixo esperando a rolagem e o comportamento correto: e a revelacao fazendo
+   o trabalho dela. Exigir zero na pagina inteira obrigaria o seguro a revelar
+   tudo de saida, e aí o efeito que o dono pediu deixaria de existir.
    ========================================================================= */
 {
   const rotas = ["/", "/obituario", "/unidades", "/cremacao", "/serra-pet", "/contato"];
@@ -285,18 +300,19 @@ ok("as particulas pintam a tela de verdade", pintou > 200, `${pintou} pixels`);
   const pr = await ctxR.newPage();
   for (const r of rotas) {
     await pr.goto(BASE.replace(/\/$/, "") + r, { waitUntil: "networkidle" });
-    await pr.waitForTimeout(3200);
-    const n = await pr.evaluate(
-      () =>
-        [...document.querySelectorAll("[data-revela]")].filter(
-          (x) => parseFloat(getComputedStyle(x).opacity) < 0.9
-        ).length
+    await pr.waitForTimeout(4000);
+    const n = await pr.evaluate(() =>
+      [...document.querySelectorAll("[data-revela]")].filter((x) => {
+        if (parseFloat(getComputedStyle(x).opacity) >= 0.9) return false;
+        const c = x.getBoundingClientRect();
+        return c.bottom > 0 && c.top < window.innerHeight;
+      }).length
     );
     if (n > 0) presos.push(`${r}: ${n}`);
   }
   await ctxR.close();
   ok(
-    "nenhuma rota deixa bloco invisivel sem rolagem",
+    "nenhuma rota deixa bloco INVISIVEL NA TELA sem rolagem",
     presos.length === 0,
     presos.length ? presos.join(", ") : `${rotas.length} rotas limpas`
   );

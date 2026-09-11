@@ -185,41 +185,52 @@ function OutrosServicos() {
  */
 function Cremacao() {
   return (
-    <section className="mat-memorial-fundo relative overflow-hidden py-16 md:py-24" id="cremacao">
-      <div className="mx-auto max-w-[76rem] px-5" data-revela>
-        <Titulo
-          centro
-          rotulo="Complexo Memorial Hortolândia"
-          cor="var(--color-memorial)"
-          apoio="Empresa do grupo, com CNPJ e marca próprios. Velório, cerimônia de despedida e cremação no mesmo endereço."
-        >
-          Cremação em crematório próprio
-        </Titulo>
+    /* ⛔ ISTO ERA UM CARTAO DENTRO DE UMA FAIXA, e virou a FAIXA INTEIRA a
+     * pedido do dono, com a razao dita por ele: "é um diferencial que nenhuma
+     * outra tem". Ele está certo, e a checagem da concorrência confirma:
+     * Parque das Flores, Flamboyant e Bracalente terceirizam a cremação. Ter
+     * crematório PRÓPRIO é a única coisa que o Grupo Serra faz e os vizinhos
+     * de praça não fazem, e um cartão de 76rem no meio de uma seção genérica
+     * dizia o contrário do que o fato vale.
+     *
+     * O desenho é o mesmo, e isso também foi pedido: painel de marca em
+     * terracota à esquerda, grade de quatro fotos reais à direita. O que mudou
+     * é que ele deixou de flutuar: não há mais contêiner, raio de cartão nem
+     * sombra. A seção começa na borda esquerda da tela e termina na direita.
+     */
+    <section className="mat-memorial-escuro faixa-escura relative isolate overflow-hidden" id="cremacao">
+      <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
 
-    <article
-      data-revela
-      className="revela-escala mt-12 overflow-hidden rounded-serra-xl shadow-alta"
-    >
-      <div className="grid lg:grid-cols-[1.02fr_1fr]">
-        {/* --- painel de marca, na terracota do Memorial --- */}
-        <div className="mat-memorial-escuro relative p-8 md:p-11">
+      <div className="relative z-[1] mx-auto max-w-[76rem] px-5 pt-16 text-center md:pt-24" data-revela>
+        <Rotulo claro cor="var(--color-dourado)">
+          O diferencial que nenhuma outra funerária da região tem
+        </Rotulo>
+        <TituloCine className="mx-auto max-w-[20ch] text-t2 text-white">
+          O crematório é nosso
+        </TituloCine>
+        <p className="mx-auto mt-5 max-w-[58ch] text-lead text-white/80">
+          Não terceirizamos. O Complexo Memorial Hortolândia é empresa do grupo,
+          com CNPJ e marca próprios, e velório, cerimônia de despedida e cremação
+          acontecem todos no mesmo endereço.
+        </p>
+      </div>
+
+      <div className="relative z-[1] mt-14 grid items-stretch lg:grid-cols-[1.02fr_1fr]" data-revela>
+        {/* --- painel de marca --- */}
+        <div className="relative px-5 pb-16 md:px-10 md:pb-24 lg:pl-[max(1.25rem,calc((100vw-76rem)/2))]">
           <Image
             src="/marca/logo-memorial.png"
             alt="Complexo Memorial Hortolândia, crematório"
             width={300}
             height={90}
+            sizes="220px"
             className="h-14 w-auto"
           />
 
-          <h3 className="mt-8 max-w-[16ch] text-t2 text-white">
-            Cremação em crematório próprio
-          </h3>
-
-          <p className="mt-5 max-w-[46ch] leading-relaxed text-white/85">
-            Desde {MEMORIAL.desde} o Grupo Serra faz a cremação na própria
-            estrutura. Velório, cerimônia de despedida e cremação acontecem no
-            mesmo lugar, sem a família ter que se deslocar entre empresas no
-            pior dia.
+          <p className="mt-8 max-w-[46ch] text-lead leading-relaxed text-white/85">
+            Desde {MEMORIAL.desde} a cremação é feita na própria estrutura. A
+            família chega uma vez e não precisa atravessar a cidade no meio do
+            dia, nem negociar com duas empresas no pior dia da vida dela.
           </p>
 
           <ul className="mt-8 grid gap-y-2.5 border-t border-dourado/30 pt-7 sm:grid-cols-2 sm:gap-x-6">
@@ -239,13 +250,15 @@ function Cremacao() {
             {MEMORIAL.uf}
           </p>
 
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/cremacao"
-              className="group inline-flex min-h-[3.25rem] items-center gap-2.5 rounded-serra bg-white px-6 font-semibold text-memorial transition-all duration-300 hover:-translate-y-0.5 hover:bg-dourado-claro"
+              className="varre group relative inline-flex min-h-[3.25rem] items-center gap-2.5 overflow-hidden rounded-serra bg-white px-6 font-semibold text-memorial transition-all duration-300 hover:-translate-y-0.5"
             >
-              Como funciona a cremação
-              <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+              <span className="relative z-[1] inline-flex items-center gap-2.5">
+                Como funciona a cremação
+                <IconeSeta className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
             </Link>
             <a
               href={MEMORIAL.site}
@@ -258,23 +271,19 @@ function Cremacao() {
           </div>
         </div>
 
-        {/* --- a estrutura, em foto de verdade ---
-            Grade de quatro celulas iguais que ESTICA ate a altura do painel de
-            marca ao lado. A versao anterior tinha proporcao fixa por foto e
-            sobrava um retangulo vazio embaixo, que e o tipo de buraco que
-            entrega montagem. */}
+        {/* --- a estrutura, em foto de verdade, colada na borda da tela --- */}
         <div className="grid grid-cols-2 grid-rows-2 gap-px bg-dourado/25 lg:h-full">
           {ESTRUTURA_FOTOS.map((f, i) => (
             <figure
               key={f.src}
               style={{ ["--i" as string]: i }}
-              className="cortina group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[13rem]"
+              className="cortina group relative aspect-[4/3] overflow-hidden bg-memorial lg:aspect-auto lg:min-h-[15rem]"
             >
               <Image
                 src={f.src}
                 alt={f.alt}
                 fill
-                sizes="(min-width: 1024px) 18rem, 50vw"
+                sizes="(min-width: 1024px) 25vw, 50vw"
                 className={`object-cover ${f.objeto} transition-transform duration-700 group-hover:scale-[1.05]`}
               />
               {/* A foto e DESCOBERTA por uma cortina que sobe, uma depois da
@@ -285,14 +294,12 @@ function Cremacao() {
                 aria-hidden
                 className="cortina-veu pointer-events-none absolute inset-0 z-[2] origin-bottom bg-memorial"
               />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-memorial/90 via-memorial/40 to-transparent px-4 pt-12 pb-3 text-[0.8125rem] font-semibold text-white">
+              <figcaption className="absolute inset-x-0 bottom-0 z-[3] bg-gradient-to-t from-memorial/90 via-memorial/40 to-transparent px-4 pt-12 pb-3 text-[0.8125rem] font-semibold text-white">
                 {f.legenda}
               </figcaption>
             </figure>
           ))}
         </div>
-      </div>
-    </article>
       </div>
     </section>
   );

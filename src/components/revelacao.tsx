@@ -127,19 +127,23 @@ export function Revelacao() {
      * antes de estancar o sangramento e a ordem errada de fazer as coisas.
      *
      * Entao este temporizador apaga a CLASSE inteira de problema: passados
-     * 2,5s da montagem, todo bloco que ainda estiver pendente e revelado, sem
-     * olhar posicao, sem depender de observador, de rolagem ou de rota. No
-     * pior cenario imaginavel alguem perde uma animacao de entrada. Ninguem
-     * perde o telefone do plantao.
+     * 2,5s da montagem, todo bloco pendente que esteja ATE UMA TELA E MEIA
+     * abaixo da dobra aparece, sem depender de observador, de rolagem ou de
+     * rota.
      *
-     * Nao substitui o resto: os 2,5s sao tempo demais para ser a regra e pouco
-     * demais para atrapalhar quem esta lendo. E rede, nao cinto.
+     * ⛔ A primeira versao revelava TUDO, a pagina inteira, e isso era um erro
+     * meu de projeto: em 2,5s a home inteira ficava visivel e a revelacao ao
+     * rolar deixava de existir para todo mundo. O seguro cobriria o defeito
+     * matando o efeito. A margem de uma tela e meia e o meio-termo honesto:
+     * cobre qualquer bloco que a pessoa consiga alcancar sem rolar de verdade,
+     * e deixa o resto para o observador, que e quem deve trabalhar.
      */
     const seguro = window.setTimeout(() => {
+      const limite = window.innerHeight * 1.5;
       for (const alvo of document.querySelectorAll<HTMLElement>(
         "[data-revela]:not([data-visivel])"
       )) {
-        alvo.dataset.visivel = "1";
+        if (alvo.getBoundingClientRect().top < limite) alvo.dataset.visivel = "1";
       }
     }, 2500);
     relogios.push(seguro);
