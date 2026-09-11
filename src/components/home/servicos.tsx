@@ -418,31 +418,27 @@ function SerraPet() {
         className="pointer-events-none absolute top-1/2 left-[-14%] -z-10 size-[30rem] -translate-y-1/2 rounded-full opacity-45 blur-[100px]"
         style={{ background: "radial-gradient(circle, rgba(252,92,4,.26), transparent 70%)" }}
       />
-      {/* ⛔ A FOTO E FUNDO DA SECAO, NAO UM ELEMENTO EM CIMA DELA. O dono:
-          "qual a dificuldade de colocar essa familia como background da secao
-          pra nao ficar essa merda feia com recorte". Ele esta certo e o
-          diagnostico e simples: toda mascara que recorta uma imagem cria uma
-          BORDA, e borda arredondada em cima de uma superficie de cor e
-          exatamente o "recorte" que ele esta vendo. Nenhum ajuste de raio
-          resolve isso, porque o problema e a existencia da borda.
+      {/* ⛔ A FOTO NAO TEM MAIS FUNDO. Esta secao ja tentou tres saidas para o
+          retangulo de estudio, e o dono acertou o diagnostico antes de mim:
+          "acho que o problema do recorte e o fundo da propria imagem". Era.
+          Enquanto a imagem chegava com fundo branco, qualquer coisa que a
+          encaixasse na superficie creme era disfarce: mascara radial deixava
+          borda arredondada, degrade linear deixava emenda de um lado, e a
+          lavagem branca por baixo resolvia trocando metade da faixa por branco.
 
-          A saida e nao ter borda em lado nenhum. A foto encosta no topo, na
-          base e na direita da secao, entao esses tres lados somem dentro dos
-          limites da propria faixa. Sobra UM lado, o esquerdo, e ele e um
-          degrade linear, que nao e recorte, e transicao.
+          Com o fundo entregue em #FFFFFF puro, da para tirar o fundo DE VERDADE
+          em vez de escondê-lo: o branco virou canal alfa, com uma rampa de 228
+          a 252 para a borda nao serrilhar. Agora e recorte igual ao do cachorro
+          com o gato que existia antes, a familia assenta direto na cor da secao
+          e nao ha borda em lado nenhum para enxergar. Sem mascara, sem lavagem,
+          sem degrade.
 
-          Esta lavagem branca e o que faz isso funcionar: o fundo do estudio e
-          branco puro, e branco em cima de creme sempre denuncia a emenda. Com
-          a metade direita da secao lavada de branco, a foto assenta em cima da
-          propria cor dela e quem se dissolve no creme e a lavagem, que nao tem
-          contorno nenhum. */}
+          O halo laranja volta para tras dela, que era onde ele fazia falta: sem
+          retangulo para denunciar, ele so da profundidade. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full md:w-[74%]"
-        style={{
-          background:
-            "linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 26%, #ffffff 46%)",
-        }}
+        className="pointer-events-none absolute top-1/2 right-[-6%] -z-10 size-[36rem] -translate-y-1/2 rounded-full opacity-50 blur-[100px]"
+        style={{ background: "radial-gradient(circle, rgba(252,92,4,.28), transparent 70%)" }}
       />
       <IconePata
         aria-hidden
@@ -490,18 +486,10 @@ function SerraPet() {
             <Image
               src="/fotos/serra-pet-familia.webp"
               alt="Três gerações de uma família, um cachorro e um gato"
-              width={905}
-              height={625}
-              sizes="(min-width: 768px) 58rem, 112vw"
-              className="ml-auto block h-auto w-[112%] max-w-none md:w-full"
-              style={{
-                /* So o lado esquerdo. Os outros tres encostam nos limites da
-                   secao e nao tem o que dissolver. */
-                maskImage:
-                  "linear-gradient(to right, transparent 0%, rgba(0,0,0,.55) 12%, #000 30%)",
-                WebkitMaskImage:
-                  "linear-gradient(to right, transparent 0%, rgba(0,0,0,.55) 12%, #000 30%)",
-              }}
+              width={1200}
+              height={983}
+              sizes="(min-width: 768px) 52rem, 104vw"
+              className="ml-auto block h-auto w-[104%] max-w-none md:w-full"
             />
           </div>
         </div>
