@@ -418,10 +418,31 @@ function SerraPet() {
         className="pointer-events-none absolute top-1/2 left-[-14%] -z-10 size-[30rem] -translate-y-1/2 rounded-full opacity-45 blur-[100px]"
         style={{ background: "radial-gradient(circle, rgba(252,92,4,.26), transparent 70%)" }}
       />
+      {/* ⛔ A FOTO E FUNDO DA SECAO, NAO UM ELEMENTO EM CIMA DELA. O dono:
+          "qual a dificuldade de colocar essa familia como background da secao
+          pra nao ficar essa merda feia com recorte". Ele esta certo e o
+          diagnostico e simples: toda mascara que recorta uma imagem cria uma
+          BORDA, e borda arredondada em cima de uma superficie de cor e
+          exatamente o "recorte" que ele esta vendo. Nenhum ajuste de raio
+          resolve isso, porque o problema e a existencia da borda.
+
+          A saida e nao ter borda em lado nenhum. A foto encosta no topo, na
+          base e na direita da secao, entao esses tres lados somem dentro dos
+          limites da propria faixa. Sobra UM lado, o esquerdo, e ele e um
+          degrade linear, que nao e recorte, e transicao.
+
+          Esta lavagem branca e o que faz isso funcionar: o fundo do estudio e
+          branco puro, e branco em cima de creme sempre denuncia a emenda. Com
+          a metade direita da secao lavada de branco, a foto assenta em cima da
+          propria cor dela e quem se dissolve no creme e a lavagem, que nao tem
+          contorno nenhum. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute right-[-8%] bottom-0 -z-10 hidden h-[92%] w-[68%] rounded-full opacity-90 blur-[80px] md:block"
-        style={{ background: "radial-gradient(closest-side, #ffffff, rgba(255,255,255,0))" }}
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full md:w-[74%]"
+        style={{
+          background:
+            "linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 26%, #ffffff 46%)",
+        }}
       />
       <IconePata
         aria-hidden
@@ -474,10 +495,12 @@ function SerraPet() {
               sizes="(min-width: 768px) 58rem, 112vw"
               className="ml-auto block h-auto w-[112%] max-w-none md:w-full"
               style={{
+                /* So o lado esquerdo. Os outros tres encostam nos limites da
+                   secao e nao tem o que dissolver. */
                 maskImage:
-                  "radial-gradient(92% 88% at 60% 46%, #000 50%, transparent 100%)",
+                  "linear-gradient(to right, transparent 0%, rgba(0,0,0,.55) 12%, #000 30%)",
                 WebkitMaskImage:
-                  "radial-gradient(92% 88% at 60% 46%, #000 50%, transparent 100%)",
+                  "linear-gradient(to right, transparent 0%, rgba(0,0,0,.55) 12%, #000 30%)",
               }}
             />
           </div>
