@@ -32,3 +32,6 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 .analise/
+
+# transcricoes exportadas da sessao (/export). Nao sao do projeto.
+20??-??-??-*.txt
