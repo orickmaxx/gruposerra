@@ -263,3 +263,10 @@ export const IconeSaida = (p: Props) => (
     <path d="M10 12h9.5m0 0-2.9-2.9M19.5 12l-2.9 2.9" />
   </Base>
 );
+
+export const IconeLink = (p: Props) => (
+  <Base {...p}>
+    <path d="M10.5 13.5a3.6 3.6 0 0 0 5.1 0l2.9-2.9a3.6 3.6 0 0 0-5.1-5.1l-1.3 1.3" />
+    <path d="M13.5 10.5a3.6 3.6 0 0 0-5.1 0l-2.9 2.9a3.6 3.6 0 0 0 5.1 5.1l1.3-1.3" />
+  </Base>
+);

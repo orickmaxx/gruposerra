@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { metadados } from "@/lib/metadados";
+import { URL_SITE } from "@/lib/site";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Faixa } from "@/components/ui";
 import { MapaUnidade } from "@/components/mapa-unidade";
 import { Retrato } from "@/components/obituario/retrato";
+import { Compartilhar } from "@/components/obituario/compartilhar";
 import { DadosObituario } from "@/components/dados-estruturados";
 import {
   IconeAlerta,
@@ -173,6 +175,12 @@ export default async function Despedida({ params }: PageProps<"/obituario/[slug]
             <p className="mt-3 text-center text-[0.875rem] text-pedra-600">
               A unidade que está com a família atende 24 horas, todos os dias.
             </p>
+
+            {/* Compartilhar mora DENTRO do cartão da cerimônia, e não numa seção
+                própria: o que se compartilha é exatamente este bloco de
+                informação. Uma terceira caixa de ação na página empurraria a
+                homenagem para baixo da dobra. */}
+            <Compartilhar nome={o.nome} url={`${URL_SITE}/obituario/${o.slug}`} />
           </div>
 
           {/* Homenagem: o único caminho de saída desta página, e é serviço. */}

@@ -107,14 +107,25 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
   const b = await ctx.newPage();
   await a.goto(BASE + "/", { waitUntil: "networkidle" });
   await b.goto(BASE + "/", { waitUntil: "networkidle" });
-  await b.waitForTimeout(700);
-
-  const abertoNaB = await b.getByRole("dialog").isVisible().catch(() => false);
+  /* ⛔ ESPERA A CONDICAO, NAO UM TEMPO. Aqui havia `waitForTimeout(700)` e o
+     teste falhava de forma intermitente: o banner so aparece depois da
+     hidratacao, e 700ms deixaram de bastar quando a maquina ja tinha rodado as
+     outras cinco baterias. Palpite de tempo num teste de interface e uma falha
+     intermitente esperando a hora, e intermitente e pior que vermelho fixo. */
+  const bannerB = b.getByRole("dialog");
+  const abertoNaB = await bannerB
+    .waitFor({ state: "visible", timeout: 8000 })
+    .then(() => true)
+    .catch(() => false);
 
   await a.bringToFront();
   await a.getByRole("button", { name: "Aceitar", exact: true }).click();
-  await b.waitForTimeout(1000);
-  const aindaNaB = await b.getByRole("dialog").isVisible().catch(() => false);
+  /* O fechamento na OUTRA aba depende do evento `storage`, que so chega depois
+     do clique. Esperar o sumico e o que se quer provar. */
+  const aindaNaB = await bannerB
+    .waitFor({ state: "hidden", timeout: 8000 })
+    .then(() => false)
+    .catch(() => true);
 
   console.log(
     `duas abas         banner na 2a=${abertoNaB}, fechou sozinho=${!aindaNaB}   ${ok(
@@ -135,8 +146,23 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
 
    De quebra, IPs distintos provam uma coisa que interessa: o balde e POR IP, e
    nao um teto global que derrubaria o formulario para o site inteiro. */
-const ipFalso = () =>
-  `198.51.100.${Math.floor(Math.random() * 200) + 20}`; /* faixa TEST-NET-2, RFC 5737 */
+/* ⛔ IP UNICO POR CHAMADA, E NAO SORTEADO. A primeira versao sorteava dentro de
+   198.51.100.0/24, uma faixa de ~200 enderecos. Em rodadas seguidas dentro da
+   janela de 10 minutos do balde, o "outro IP" caia num endereco que a rodada
+   ANTERIOR ja tinha esgotado, e a checagem falhava intermitentemente: 1 em cada
+   2 ou 3 execucoes. Falha intermitente e pior que vermelho fixo, porque ensina
+   a ignorar o relatorio.
+
+   Agora o endereco vem de um contador sobre 198.18.0.0/15, a faixa de teste de
+   benchmarking da RFC 2544: sao 131 mil enderecos, e a semente em segundos
+   garante que duas execucoes seguidas nunca dividam o mesmo. */
+let contadorIp = 0;
+const sementeIp = Math.floor(Date.now() / 1000);
+const ipFalso = () => {
+  contadorIp += 1;
+  const n = (sementeIp * 8 + contadorIp) % 65536;
+  return `198.18.${Math.floor(n / 256)}.${n % 256}`;
+};
 
 {
   const ctx = await nav.newContext({
