@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import { Painel } from "@/components/painel/painel";
 
 /**
@@ -13,11 +14,16 @@ import { Painel } from "@/components/painel/painel";
  * A trava que não depende de ninguém lembrar é `scripts/sem-exemplo.mjs`, que
  * quebra o build se esta rota existir com a indexação ligada.
  */
-export const metadata: Metadata = {
-  title: "Painel de publicação",
-  robots: { index: false, follow: false, nocache: true },
-  alternates: { canonical: "/painel" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Painel de publicação",
+  descricao:
+    "Maquete do painel onde a equipe do Grupo Serra publica obituários, aprova homenagens e ajusta o horário das unidades.",
+  caminho: "/painel",
+  /* `foraDoIndice` INCONDICIONAL: esta rota sai com noindex mesmo depois de o
+     site inteiro virar indexável, porque painel de mentira indexado no nome da
+     empresa é pior do que painel nenhum. */
+  foraDoIndice: true,
+});
 
 export default function Pagina() {
   return <Painel />;

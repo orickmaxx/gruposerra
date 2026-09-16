@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Faixa, Titulo } from "@/components/ui";
 import { ListaObituarios } from "@/components/obituario/lista";
@@ -12,12 +13,11 @@ const RESUMO =
 const META =
   "Local e horário do velório e da despedida, nas 8 unidades da região de Campinas. Esta página não vende nada: sem pop-up, sem banner, sem oferta.";
 
-export const metadata: Metadata = {
-  title: "Obituário",
-  description: META,
-  alternates: { canonical: "/obituario" },
-  openGraph: { title: "Obituário", description: META, url: "/obituario" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Obituário",
+  descricao: META,
+  caminho: "/obituario",
+});
 
 /**
  * Obituário.

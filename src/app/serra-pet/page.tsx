@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Image from "next/image";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
@@ -19,12 +20,12 @@ const RESUMO =
 const META =
   "Cremação e assistência para animais na região de Campinas, com remoção 24 horas, frota própria e certificado. Individual ou coletiva, até 3 pets no plano.";
 
-export const metadata: Metadata = {
-  title: "Serra Pet",
-  description: META,
-  alternates: { canonical: "/serra-pet" },
-  openGraph: { title: "Serra Pet, assistência e cremação para animais", description: META, url: "/serra-pet" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Serra Pet",
+  tituloSocial: "Serra Pet, assistência e cremação para animais",
+  descricao: META,
+  caminho: "/serra-pet",
+});
 
 /**
  * Serra Pet.

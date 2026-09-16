@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeroiPagina } from "@/components/heroi-pagina";
@@ -49,16 +50,12 @@ export async function generateMetadata({
   const titulo = `Funerária em ${u.cidade}`;
   const descricao = `Unidade ${u.nome} do Grupo Serra: ${u.logradouro}, ${u.bairro}, ${u.cidade}/${u.uf}. Telefone ${u.telefone}. Atendimento de óbito 24 horas, todos os dias.`;
 
-  return {
-    title: titulo,
-    description: descricao,
-    alternates: { canonical: `/unidades/${u.slug}` },
-    openGraph: {
-      title: `${titulo} · ${SITE.nome}`,
-      description: descricao,
-      url: `/unidades/${u.slug}`,
-    },
-  };
+  return metadados({
+    titulo,
+    tituloSocial: `${titulo} · ${SITE.nome}`,
+    descricao,
+    caminho: `/unidades/${u.slug}`,
+  });
 }
 
 export default async function Unidade({ params }: PageProps<"/unidades/[slug]">) {

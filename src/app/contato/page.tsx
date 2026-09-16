@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
 import { Formulario } from "@/components/home/formulario";
@@ -20,12 +21,11 @@ const RESUMO =
 const META =
   "Plantão de óbito 24 horas no (19) 3775-9752, WhatsApp, e-mail e as 8 unidades da região de Campinas com endereço e horário. Se for urgente, ligue.";
 
-export const metadata: Metadata = {
-  title: "Contato",
-  description: META,
-  alternates: { canonical: "/contato" },
-  openGraph: { title: "Contato", description: META, url: "/contato" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Contato",
+  descricao: META,
+  caminho: "/contato",
+});
 
 /**
  * Contato.

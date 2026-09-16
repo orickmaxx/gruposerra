@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { Lista, PaginaLegal, Secao } from "@/components/pagina-legal";
 import { Pendencia } from "@/components/ui";
 
-export const metadata: Metadata = {
-  title: "Termos de uso",
-  description:
+export const metadata: Metadata = metadados({
+  titulo: "Termos de uso",
+  descricao:
     "As regras de uso do site do Grupo Serra: o que a informação publicada aqui significa, o que ela não substitui e a quem recorrer.",
-  alternates: { canonical: "/termos" },
-};
+  caminho: "/termos",
+});
 
 /**
  * Termos de uso.

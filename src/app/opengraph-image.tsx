@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
+import { SELO_DEMO, ESTILO_SELO } from "@/lib/metadados";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -20,6 +21,8 @@ export default function OG() {
         style={{
           width: "100%",
           height: "100%",
+          /* `relative` ancora o selo de demonstração do rodapé. */
+          position: "relative",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -82,6 +85,14 @@ export default function OG() {
             {UNIDADES.length} unidades · região de Campinas
           </div>
         </div>
+
+        {/* ⛔ O SELO DE DEMONSTRAÇÃO VAI TAMBÉM NA IMAGEM PADRÃO, e não só na do
+            obituário. Esta é a imagem de `/`, `/planos`, `/unidades/[slug]` e de
+            todas as outras: é o cartão que representa a MARCA do cliente numa
+            conversa. Enquanto o site é homologação, ele precisa dizer isso, ou
+            um print do cartão circula como se fosse o site no ar.
+            Some sozinho quando `NEXT_PUBLIC_INDEXAVEL=1` for ligada. */}
+        {SELO_DEMO ? <div style={ESTILO_SELO}>{SELO_DEMO}</div> : null}
       </div>
     ),
     size

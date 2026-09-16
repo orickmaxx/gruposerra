@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { Lista, PaginaLegal, Secao } from "@/components/pagina-legal";
 import { Pendencia } from "@/components/ui";
 
-export const metadata: Metadata = {
-  title: "Política de privacidade",
-  description:
+export const metadata: Metadata = metadados({
+  titulo: "Política de privacidade",
+  descricao:
     "Como o Grupo Serra trata os dados pessoais de quem usa este site, segundo a LGPD: o que é coletado, para quê, por quanto tempo e como pedir a exclusão.",
-  alternates: { canonical: "/privacidade" },
-  robots: { index: true, follow: true },
-};
+  caminho: "/privacidade",
+});
 
 /**
  * Política de privacidade.

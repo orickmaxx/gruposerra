@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ARTIGOS, artigoPor } from "@/data/artigos";
@@ -16,18 +17,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const a = artigoPor(slug);
   if (!a) return {};
-  return {
-    title: a.titulo,
-    description: a.resumo,
-    alternates: { canonical: `/blog/${a.slug}` },
-    openGraph: {
-      type: "article",
-      title: a.titulo,
-      description: a.resumo,
-      url: `/blog/${a.slug}`,
-      publishedTime: a.atualizado,
-    },
-  };
+  return metadados({
+    titulo: a.titulo,
+    descricao: a.resumo,
+    caminho: `/blog/${a.slug}`,
+    tipo: "article",
+    extraOg: { publishedTime: a.atualizado },
+  });
 }
 
 export default async function Artigo({ params }: PageProps<"/blog/[slug]">) {

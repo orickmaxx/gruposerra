@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { INCLUSOS, PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
@@ -45,16 +46,12 @@ export async function generateMetadata({
         minimumFractionDigits: 2,
       })} por mês, com assistência 24 horas e traslado. ${p.descricao}`
     : `${p.nome}. ${p.descricao}`;
-  return {
-    title: p.nome,
-    description: desc.slice(0, 175),
-    alternates: { canonical: `/planos/${p.slug}` },
-    openGraph: {
-      title: `${p.nome} · Grupo Serra`,
-      description: desc.slice(0, 175),
-      url: `/planos/${p.slug}`,
-    },
-  };
+  return metadados({
+    titulo: p.nome,
+    tituloSocial: `${p.nome} · Grupo Serra`,
+    descricao: desc.slice(0, 175),
+    caminho: `/planos/${p.slug}`,
+  });
 }
 
 export default async function Plano({ params }: PageProps<"/planos/[slug]">) {

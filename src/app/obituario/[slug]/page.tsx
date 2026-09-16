@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeroiPagina } from "@/components/heroi-pagina";
@@ -61,22 +62,21 @@ export async function generateMetadata({
     o.horaTermino
   }, na unidade ${u.nome} do Grupo Serra. ${u.logradouro}, ${u.bairro}, ${u.cidade}.`;
 
-  return {
-    title: titulo,
-    description: descricao,
-    alternates: { canonical: `/obituario/${o.slug}` },
-    openGraph: {
-      type: "profile",
-      title: titulo,
-      description: descricao,
-      url: `/obituario/${o.slug}`,
-    },
-    twitter: { card: "summary_large_image", title: titulo, description: descricao },
+  return metadados({
+    titulo,
+    descricao,
+    caminho: `/obituario/${o.slug}`,
+    tipo: "profile",
+    /* `imagemPropria`: este segmento tem `opengraph-image.tsx`, e o arquivo do
+       segmento manda. Declarar `images` aqui substituiria o cartão do falecido
+       pelo cartão genérico da marca, que é o oposto do que esta rota existe
+       para fazer. */
+    imagemPropria: true,
     /* Registro de demonstração nunca é indexável, mesmo que o site inteiro
        esteja. A trava real é `scripts/sem-exemplo.mjs`, no build; isto aqui é o
        cinto por cima do suspensório. */
-    ...(o.ehExemplo ? { robots: { index: false, follow: false } } : {}),
-  };
+    foraDoIndice: o.ehExemplo,
+  });
 }
 
 export default async function Despedida({ params }: PageProps<"/obituario/[slug]">) {

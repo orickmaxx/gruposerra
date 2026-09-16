@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
-import { SITE, INDEXAVEL } from "@/lib/site";
+import { SITE, URL_SITE } from "@/lib/site";
+import { metadados } from "@/lib/metadados";
 import { Cabecalho } from "@/components/cabecalho";
 import { Rodape } from "@/components/rodape";
 import { BarraEmergencia } from "@/components/barra-emergencia";
@@ -36,14 +37,35 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const TITULO_PADRAO = `${SITE.nomeCompleto} · Plano funerário e atendimento 24h em Campinas`;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.nomeCompleto} · Plano funerário e atendimento 24h em Campinas`,
-    template: `%s · ${SITE.nome}`,
-  },
-  description:
-    "Atendimento de óbito 24 horas em 8 unidades da região de Campinas. Plano funerário a partir de R$ 18,90 por mês, cremação em crematório próprio, Serra Pet e segunda via de boleto online.",
+  /* ⛔ `URL_SITE`, NUNCA um literal. Ver a nota longa em `lib/site.ts`: com o
+     domínio do cliente aqui, toda `og:url` e toda `og:image` do site apontavam
+     para o site ANTIGO, e o crawler do WhatsApp obedecia a essa canônica, ia
+     buscar lá e voltava sem nenhuma tag. Era a causa da prévia chegar seca. */
+  metadataBase: new URL(URL_SITE),
+
+  /* ⛔ `openGraph`, `twitter`, `alternates` e `robots` vêm de `metadados()`, e
+     isso não é estilo. Esses campos SUBSTITUEM inteiros os do pai quando um
+     filho os declara (merge raso, ver `lib/metadados.ts`), então montá-los num
+     lugar só é o que garante que as 36 rotas saiam com o conjunto completo em
+     vez de com o pedaço que cada página lembrou de escrever. */
+  ...metadados({
+    titulo: TITULO_PADRAO,
+    tituloSocial: `${SITE.nomeCompleto} · ${SITE.slogan}`,
+    descricao:
+      "Atendimento de óbito 24 horas em 8 unidades da região de Campinas. Plano funerário a partir de R$ 18,90 por mês, cremação em crematório próprio, Serra Pet e segunda via de boleto online.",
+    caminho: "/",
+    /* A raiz tem `app/opengraph-image.tsx`, e o arquivo do segmento manda. */
+    imagemPropria: true,
+  }),
+
+  /* Depois do spread, de propósito: `metadados()` devolve `title` como string,
+     e é aqui que ele volta a ser o objeto com `template`. Sem isso as rotas
+     filhas perdem o sufixo "· Grupo Serra" do `<title>`. */
+  title: { default: TITULO_PADRAO, template: `%s · ${SITE.nome}` },
+
   applicationName: SITE.nomeCompleto,
   authors: [{ name: SITE.nomeCompleto }],
   generator: "Next.js",
@@ -54,27 +76,6 @@ export const metadata: Metadata = {
     "assistência funeral 24 horas",
     "Grupo Serra",
   ],
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: SITE.url,
-    siteName: SITE.nomeCompleto,
-    title: `${SITE.nomeCompleto} · ${SITE.slogan}`,
-    description:
-      "8 unidades na região de Campinas, atendimento de óbito 24 horas, plano funerário a partir de R$ 18,90 por mês.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE.nomeCompleto} · ${SITE.slogan}`,
-    description:
-      "8 unidades na região de Campinas, atendimento de óbito 24 horas.",
-  },
-  /* Enquanto NEXT_PUBLIC_INDEXAVEL nao for "1", toda pagina sai com noindex.
-     robots.txt sozinho nao basta: buscador que ja conhece a URL ignora. */
-  robots: INDEXAVEL
-    ? { index: true, follow: true }
-    : { index: false, follow: false, nocache: true },
   category: "Serviços funerários",
   formatDetection: { telephone: true, address: true },
 };

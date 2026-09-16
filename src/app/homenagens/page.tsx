@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
 import { SITE } from "@/lib/site";
@@ -17,12 +18,12 @@ const RESUMO =
 const META =
   "Mural para deixar uma mensagem com foto e compartilhar com quem não pôde estar presente. Toda homenagem passa por aprovação antes de aparecer.";
 
-export const metadata: Metadata = {
-  title: "Homenagens",
-  description: META,
-  alternates: { canonical: "/homenagens" },
-  openGraph: { title: "Mural de Homenagens", description: META, url: "/homenagens" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Homenagens",
+  tituloSocial: "Mural de Homenagens",
+  descricao: META,
+  caminho: "/homenagens",
+});
 
 /**
  * Mural de homenagens.

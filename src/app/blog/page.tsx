@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { ARTIGOS } from "@/data/artigos";
 import { Faixa, Titulo } from "@/components/ui";
 import { IconeRelogio, IconeSeta } from "@/components/icones";
 import { BarraFixaCelular } from "@/components/barra-emergencia";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description:
-    "Textos práticos sobre o que fazer quando alguém morre, sobre luto e sobre planejamento funerário. Escritos pelo Grupo Serra, sem enrolação.",
-  alternates: { canonical: "/blog" },
-  openGraph: { title: "Blog do Grupo Serra", url: "/blog" },
-};
+
+const META =
+  "Textos práticos sobre o que fazer quando alguém morre, sobre luto e sobre planejamento funerário. Escritos pelo Grupo Serra, sem enrolação.";
+
+export const metadata: Metadata = metadados({
+  titulo: "Blog",
+  tituloSocial: "Blog do Grupo Serra",
+  descricao: META,
+  caminho: "/blog",
+});
 
 export default function Blog() {
   return (

@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/site";
+import { SELO_DEMO, ESTILO_SELO } from "@/lib/metadados";
 import {
   OBITUARIOS,
   dataPorExtenso,
@@ -70,6 +71,10 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
         style={{
           width: "100%",
           height: "100%",
+          /* `relative` existe para o selo de demonstração lá embaixo se
+             ancorar aqui. Sem isto ele se posiciona contra a raiz e sai da
+             imagem. */
+          position: "relative",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -160,6 +165,15 @@ export default async function OG({ params }: { params: Promise<{ slug: string }>
             <div style={{ display: "flex", fontSize: 34, marginTop: 6 }}>{u.telefone}</div>
           </div>
         </div>
+
+        {/* O selo de demonstração, na mesma posição e no mesmo tom da imagem
+            padrão do site. Some sozinho quando `NEXT_PUBLIC_INDEXAVEL=1` for
+            ligada. Ver a nota em `lib/metadados.ts`: o cartão viaja sozinho. */}
+        {SELO_DEMO || o.ehExemplo ? (
+          <div style={ESTILO_SELO}>
+            {o.ehExemplo ? "Demonstração · registro fictício" : SELO_DEMO}
+          </div>
+        ) : null}
       </div>
     ),
     size

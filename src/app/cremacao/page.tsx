@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Image from "next/image";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
@@ -20,12 +21,12 @@ const RESUMO =
 const META =
   "Crematório próprio em Hortolândia desde 2021: velório, despedida e cremação no mesmo endereço. Como funciona, o que diz a Lei 6.015/73 e o destino das cinzas.";
 
-export const metadata: Metadata = {
-  title: "Cremação",
-  description: META,
-  alternates: { canonical: "/cremacao" },
-  openGraph: { title: "Cremação em crematório próprio", description: META, url: "/cremacao" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Cremação",
+  tituloSocial: "Cremação em crematório próprio",
+  descricao: META,
+  caminho: "/cremacao",
+});
 
 /**
  * Cremação.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { metadados } from "@/lib/metadados";
 import type { Metadata } from "next";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
@@ -21,12 +22,12 @@ const RESUMO =
 const META =
   "Oito unidades próprias na região de Campinas: Valinhos, Vinhedo, Hortolândia, Artur Nogueira, Cosmópolis e Sumaré. Cada uma com telefone e equipe na cidade.";
 
-export const metadata: Metadata = {
-  title: "Unidades",
-  description: META,
-  alternates: { canonical: "/unidades" },
-  openGraph: { title: "Unidades do Grupo Serra", description: META, url: "/unidades" },
-};
+export const metadata: Metadata = metadados({
+  titulo: "Unidades",
+  tituloSocial: "Unidades do Grupo Serra",
+  descricao: META,
+  caminho: "/unidades",
+});
 
 /**
  * Unidades.

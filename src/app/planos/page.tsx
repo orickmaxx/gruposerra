@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { metadados } from "@/lib/metadados";
 import Link from "next/link";
 import { INCLUSOS, PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
 import { SITE } from "@/lib/site";
@@ -6,13 +7,15 @@ import { Faixa, Pendencia, Titulo } from "@/components/ui";
 import { BarraFixaCelular } from "@/components/barra-emergencia";
 import { IconeConfere, IconeSeta } from "@/components/icones";
 
-export const metadata: Metadata = {
-  title: "Planos e preços",
-  description:
-    "Serra Essencial a partir de R$ 18,90, Pérola R$ 97,90 e Total R$ 132,90 por mês. Todos com assistência 24 horas, traslado e cobertura nacional, mais os 20 itens inclusos.",
-  alternates: { canonical: "/planos" },
-  openGraph: { title: "Planos e preços · Grupo Serra", url: "/planos" },
-};
+const META =
+  "Serra Essencial a partir de R$ 18,90, Pérola R$ 97,90 e Total R$ 132,90 por mês. Todos com assistência 24 horas, traslado e cobertura nacional, mais os 20 itens inclusos.";
+
+export const metadata: Metadata = metadados({
+  titulo: "Planos e preços",
+  tituloSocial: "Planos e preços · Grupo Serra",
+  descricao: META,
+  caminho: "/planos",
+});
 
 export default function Planos() {
   return (

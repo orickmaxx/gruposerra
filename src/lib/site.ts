@@ -4,13 +4,58 @@
  * cliente. Ver ../../../CLAUDE.md. Nada de numero novo sem passar por la.
  */
 
+/**
+ * ⛔ A FONTE UNICA DE TODA URL ABSOLUTA DO SITE. Nao existe segunda.
+ *
+ * Alimenta, sem excecao: `metadataBase`, `alternates.canonical`, todo `og:url`
+ * e `og:image`, `sitemap.ts`, `robots.ts` e os `@id` e `url` dos 12 tipos de
+ * JSON-LD em `components/dados-estruturados.tsx`. Sao 41 pontos de emissao em
+ * 6 arquivos, e todos leem daqui.
+ *
+ * ⛔ POR QUE ISTO VIROU UMA VARIAVEL, EM 16/09/2026. O valor era o literal
+ * `https://www.gruposerra.com.br`, escrito no codigo. Esse e o dominio de MARCA
+ * do cliente, que hoje ainda serve o site ANTIGO em OctoberCMS. Entao todo
+ * deploy de homologacao saia anunciando:
+ *
+ *   og:url    https://www.gruposerra.com.br/obituario/<slug>
+ *   og:image  https://www.gruposerra.com.br/obituario/<slug>/opengraph-image
+ *
+ * O crawler do WhatsApp lia a NOSSA pagina, obedecia ao `og:url` como canonica,
+ * ia buscar o site antigo e voltava de maos vazias, porque o antigo nao tem
+ * nenhuma tag Open Graph. A imagem, pelo mesmo caminho, dava 404. Medido:
+ * `og:image` no dominio do cliente devolvia HTTP 404; a mesma rota no deploy
+ * devolvia 200 image/png de 54,8 KB.
+ *
+ * As tags estavam certas e apontavam para o lugar errado. E o jeito mais
+ * silencioso de este defeito acontecer: nenhum erro, nenhum log, e a prevalencia
+ * so aparece quando alguem manda o link para si mesmo.
+ *
+ * Ordem de resolucao:
+ *   1. `NEXT_PUBLIC_SITE_URL`, quando declarada. E o que se liga no dia do
+ *      lancamento, com o dominio definitivo;
+ *   2. o dominio de homologacao, que e onde este projeto vive ate a assinatura.
+ *
+ * ⚠️ O prefixo `NEXT_PUBLIC_` e obrigatorio e NAO e descuido: o valor precisa
+ * ser o mesmo no servidor e no navegador, senao qualquer componente client que
+ * o use hidrata divergente.
+ *
+ * ⚠️ E NAO REPONHA O LITERAL. Se alguem voltar a escrever o dominio do cliente
+ * aqui antes de o site estar de fato nele, a previa quebra de novo e o sitemap
+ * passa a anunciar paginas que moram em outro servidor.
+ * `scripts/verificar-previa.mjs` falha quando isso acontece.
+ */
+export const URL_SITE = (
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://gruposerra.vercel.app"
+).replace(/\/+$/, "");
+
 export const SITE = {
   nome: "Grupo Serra",
   nomeCompleto: "Grupo Serra Funerárias",
   razaoSocial: "Empresa Funerária e Plano Assistencial Serra Ltda",
   cnpj: "68.932.722/0001-18",
   slogan: "Essencial nos momentos mais difíceis da vida.",
-  url: "https://www.gruposerra.com.br",
+  /** ⛔ Sempre `URL_SITE`. Ver a nota acima: literal aqui quebra a previa. */
+  url: URL_SITE,
 
   /** O numero que precisa estar sempre ao alcance do polegar. */
   emergencia: { rotulo: "(19) 3775-9752", tel: "+551937759752" },

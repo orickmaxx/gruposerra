@@ -1,11 +1,18 @@
 import type { MetadataRoute } from "next";
-import { SITE } from "@/lib/site";
+import { URL_SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
 import { ARTIGOS } from "@/data/artigos";
 import { PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
 import { OBITUARIOS } from "@/data/obituarios";
 
-/** O site atual do cliente nao tem sitemap.xml (HTTP 404). Ver CLAUDE.md 9.1. */
+/**
+ * O site atual do cliente nao tem sitemap.xml (HTTP 404). Ver CLAUDE.md 5.1.
+ *
+ * ⛔ `URL_SITE`, NAO `SITE.url`. Um sitemap servido de `gruposerra.vercel.app`
+ * listando URLs de `www.gruposerra.com.br` esta declarando ao buscador um
+ * conjunto de paginas que ele vai buscar no site ANTIGO. Mesma raiz do defeito
+ * da previa do WhatsApp: endereco certo, dominio errado. Ver `lib/site.ts`.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
   const agora = new Date();
   const fixas = [
@@ -24,25 +31,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...fixas.map((f) => ({
-      url: `${SITE.url}${f.url}`,
+      url: `${URL_SITE}${f.url}`,
       lastModified: agora,
       changeFrequency: "monthly" as const,
       priority: f.priority,
     })),
     ...ARTIGOS.map((a) => ({
-      url: `${SITE.url}/blog/${a.slug}`,
+      url: `${URL_SITE}/blog/${a.slug}`,
       lastModified: new Date(a.atualizado),
       changeFrequency: "yearly" as const,
       priority: 0.7,
     })),
     ...[...PLANOS, ...PLANOS_ESPECIAIS].map((p) => ({
-      url: `${SITE.url}/planos/${p.slug}`,
+      url: `${URL_SITE}/planos/${p.slug}`,
       lastModified: agora,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
     ...UNIDADES.map((u) => ({
-      url: `${SITE.url}/unidades/${u.slug}`,
+      url: `${URL_SITE}/unidades/${u.slug}`,
       lastModified: agora,
       changeFrequency: "yearly" as const,
       priority: 0.6,
@@ -53,7 +60,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
        lista vazia, e é a resposta certa: quando o sistema real entrar, os
        obituários de verdade passam a aparecer aqui sozinhos. */
     ...OBITUARIOS.filter((o) => !o.ehExemplo).map((o) => ({
-      url: `${SITE.url}/obituario/${o.slug}`,
+      url: `${URL_SITE}/obituario/${o.slug}`,
       lastModified: new Date(`${o.dataFalecimento}T12:00:00`),
       changeFrequency: "yearly" as const,
       priority: 0.7,
