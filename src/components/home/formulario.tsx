@@ -219,10 +219,34 @@ export function Formulario() {
               />
             </div>
 
+            {/* ⛔ ERRO SEM SAÍDA É PIOR QUE ERRO. `acoes.ts` diz, em comentário,
+                que quando a gravação falha "a interface manda a pessoa para o
+                WhatsApp, que é o caminho que sempre funciona". A interface não
+                mandava: exibia o texto e deixava a pessoa parada diante de um
+                formulário que acabou de recusá-la. Agora os dois caminhos que
+                nunca dependem do nosso servidor ficam no próprio bloco de erro. */}
             {estado.estado === "erro" && estado.mensagem && (
-              <p className="mt-5 rounded-serra border border-red-200 bg-red-50 px-4 py-3 text-[0.9375rem] text-red-800">
-                {estado.mensagem}
-              </p>
+              <div className="mt-5 rounded-serra border border-red-200 bg-red-50 px-4 py-4">
+                <p className="text-[0.9375rem] leading-relaxed text-red-800">{estado.mensagem}</p>
+                <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+                  <a
+                    href={SITE.whatsapp.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mat-zap inline-flex min-h-[3.25rem] flex-1 items-center justify-center gap-2.5 rounded-serra px-5 text-[0.9375rem] font-semibold text-white transition-[filter] hover:brightness-105"
+                  >
+                    <IconeWhatsApp className="size-5 shrink-0" />
+                    Falar no WhatsApp
+                  </a>
+                  <a
+                    href={`tel:${SITE.emergencia.tel}`}
+                    className="numerais inline-flex min-h-[3.25rem] flex-1 items-center justify-center gap-2.5 rounded-serra border border-serra-300 bg-white px-5 text-[0.9375rem] font-semibold text-serra-700 transition-colors hover:border-serra-500"
+                  >
+                    <IconeTelefone className="size-5 shrink-0" />
+                    {SITE.emergencia.rotulo}
+                  </a>
+                </div>
+              </div>
             )}
 
             <button

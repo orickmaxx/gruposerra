@@ -2,6 +2,7 @@
 
 import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
+import { headers } from "next/headers";
 import { UNIDADES } from "@/data/unidades";
 
 /**
@@ -24,6 +25,60 @@ export type EstadoLead =
   | { estado: "erro"; campos?: Record<string, string>; mensagem?: string };
 
 const APENAS_DIGITOS = /\D+/g;
+
+/* ── Limite de envios por IP ──────────────────────────────────────────────
+ *
+ * ⛔ O QUE ISTO RESOLVE, E O QUE NÃO RESOLVE. Uma Server Action é um endpoint
+ * público: qualquer um monta um POST e chama. Sem limite, um laço de shell
+ * enche o CRM do cliente com milhares de leads falsos em minutos, e quem
+ * descobre é a atendente que abre a fila na segunda-feira. O honeypot pega
+ * robô burro de formulário; não pega quem chama a action direto.
+ *
+ * Isto é um balde em MEMÓRIA DO PROCESSO, e a limitação é honesta: na Vercel
+ * cada instância tem o próprio balde, então o teto real é
+ * `TETO × instâncias ativas`, e um ataque distribuído de muitos IPs passa. Para
+ * um site de funerária regional, isso segura o flood que acontece de verdade.
+ * Limite sério é Upstash, KV ou o WAF na frente, e nenhum dos três cabe aqui
+ * sem dependência nova ou conta que o cliente ainda não tem.
+ *
+ * A troca deliberada: preferimos deixar passar um lead legítimo repetido a
+ * derrubar o formulário inteiro. Por isso a janela é curta e o teto é alto o
+ * bastante para uma pessoa que errou o telefone e reenviou quatro vezes.
+ */
+const JANELA_MS = 10 * 60 * 1000;
+const TETO = 5;
+/** Trava o crescimento do Map: sem isto, o próprio limitador vira o vazamento. */
+const MAX_IPS = 5000;
+const balde = new Map<string, number[]>();
+
+async function ipDeQuemChamou() {
+  const h = await headers();
+  /* `x-forwarded-for` é uma lista; o primeiro é o cliente. Em desenvolvimento
+     nenhum proxy escreve o cabeçalho, e aí todo mundo divide o mesmo balde
+     "local", que é o comportamento certo para uma máquina só. */
+  const bruto = h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "";
+  return bruto.split(",")[0]!.trim() || "local";
+}
+
+function excedeu(ip: string) {
+  const agora = Date.now();
+
+  if (balde.size > MAX_IPS) {
+    for (const [k, v] of balde) {
+      if (v.every((t) => agora - t > JANELA_MS)) balde.delete(k);
+    }
+    if (balde.size > MAX_IPS) balde.clear();
+  }
+
+  const recentes = (balde.get(ip) ?? []).filter((t) => agora - t < JANELA_MS);
+  if (recentes.length >= TETO) {
+    balde.set(ip, recentes);
+    return true;
+  }
+  recentes.push(agora);
+  balde.set(ip, recentes);
+  return false;
+}
 
 function validar(f: FormData) {
   const campos: Record<string, string> = {};
@@ -67,6 +122,17 @@ export async function enviarLead(
 
   /* Robô preencheu a isca: responde ok e não guarda nada. */
   if (dados.isca) return { estado: "ok", canal: "arquivo" };
+
+  /* ⛔ A CONTAGEM VEM DEPOIS DA VALIDAÇÃO, e isso é de propósito: quem errou o
+     formato do telefone e corrigiu não pode gastar tentativa. O balde conta
+     envio VÁLIDO, que é o que chega no CRM do cliente. */
+  if (await ipDeQuemChamou().then(excedeu)) {
+    return {
+      estado: "erro",
+      mensagem:
+        "Você já pediu contato há pouco e a mensagem foi registrada. Se for urgente, chame no WhatsApp ou ligue: o plantão atende 24 horas.",
+    };
+  }
 
   if (!UNIDADES.some((u) => u.cidade === dados.cidade)) {
     return { estado: "erro", campos: { cidade: "Escolha uma das cidades da lista." } };

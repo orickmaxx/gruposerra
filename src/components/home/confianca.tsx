@@ -1,9 +1,6 @@
 import { SITE } from "@/lib/site";
 import { Faixa, Titulo } from "../ui";
-import {
-  IconeConfere,
-  IconeTelefone,
-} from "../icones";
+import { IconeTelefone } from "../icones";
 
 /* ⛔ A BARRA DE CONFIANCA SAIU EM 11/09/2026, a pedido do dono ("remova toda
    essa parte"), e a estrutura dava razao a ele. Eram cinco selos numa faixa
@@ -107,53 +104,13 @@ export function ComoFunciona() {
   );
 }
 
-/**
- * Garantias.
- *
- * Aqui é onde o Florees mata objeção de compra, e onde eu preciso de mais
- * cuidado: cada linha abaixo é sustentada por algo que o próprio Grupo Serra
- * publica. O que a empresa NÃO diz em lugar nenhum, principalmente carência e
- * reajuste, sai declarado como lacuna em vez de virar promessa.
- */
-export function Garantias() {
-  return (
-    <Faixa>
-      <Titulo centro rotulo="Compromisso" apoio="Contratar plano funerário é assinar um compromisso de décadas. Vale saber exatamente o que está garantido, e o que ainda não dá para afirmar.">
-        O que está garantido
-      </Titulo>
-
-      <ul className="mt-12 grid gap-5 md:grid-cols-3">
-        {[
-          {
-            titulo: "Assistência 24 horas em todos os planos",
-            texto:
-              "Não é vantagem de um plano específico. Está em todos, do mais simples ao mais completo, junto com o traslado.",
-          },
-          {
-            titulo: "Quem atende é a unidade da sua cidade",
-            texto:
-              "O telefone do plano leva à equipe daquela cidade, não a uma central em outro estado. E se o falecimento for longe de casa, o traslado já está previsto: a cobertura é nacional.",
-          },
-          {
-            titulo: "Dá para mudar de plano depois",
-            texto:
-              "Para mais cobertura ou para menos. É uma conversa com a equipe de qualquer uma das 8 unidades, sem contrato novo do zero.",
-          },
-        ].map((g) => (
-          <li key={g.titulo}>
-            <article className="cartao-cine holofote flex h-full flex-col rounded-serra-lg border border-linha bg-white p-5 shadow-baixa sm:p-6">
-              <IconeConfere className="size-7 shrink-0 text-verde-forte" />
-              <h3 className="mt-4 font-display text-[1rem] font-bold text-tinta sm:mt-5 sm:text-[1.125rem]">
-                {g.titulo}
-              </h3>
-              <p className="mt-2 text-[0.875rem] leading-relaxed text-corpo sm:text-[0.9375rem]">
-                {g.texto}
-              </p>
-            </article>
-          </li>
-        ))}
-      </ul>
-
-    </Faixa>
-  );
-}
+/* ⛔ AQUI VIVIA `Garantias`, e ela foi APAGADA em 16/09/2026.
+   Estava exportada, completa e bem escrita, e nao era renderizada por ninguem:
+   nao aparecia em `app/page.tsx` nem em nenhuma outra rota. Codigo morto que
+   PARECE vivo e pior que codigo morto declarado, porque a proxima pessoa le,
+   acredita e decide com base nele. O comentario de ordem das secoes em
+   `app/page.tsx` chegou a listar essa secao como se ela estivesse no ar.
+   O conteudo dela (assistencia 24h em todos os planos, atendimento pela unidade
+   da cidade, troca de plano depois) continua no site, em `/planos` e na secao de
+   inclusos. Se um dia precisar voltar como secao propria, esta no historico:
+   `git show 87ea17f -- src/components/home/confianca.tsx`. */

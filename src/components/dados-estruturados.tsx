@@ -2,6 +2,7 @@ import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
 import { FAQ, PLANOS } from "@/data/planos";
 import { unidadeDo, type Obituario } from "@/data/obituarios";
+import type { Unidade } from "@/data/unidades";
 
 /**
  * Dados estruturados.
@@ -129,6 +130,66 @@ export function DadosEstruturados() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(grafo) }}
+    />
+  );
+}
+
+/**
+ * `FuneralHome` da unidade, na página da própria unidade.
+ *
+ * O mesmo `@id` que a home emite: é a MESMA entidade, e repetir o identificador
+ * é o que diz isso ao buscador. Aqui ela ganha `mainEntityOfPage`, que a home
+ * não pode dar, porque é esta URL que fala sobre este local — e é o que sustenta
+ * a busca por "funerária em Valinhos" resolver para esta página, e não para a
+ * listagem genérica.
+ */
+export function DadosUnidade({ u }: { u: Unidade }) {
+  const dados = {
+    "@context": "https://schema.org",
+    "@type": "FuneralHome",
+    "@id": `${SITE.url}/unidades/${u.slug}#local`,
+    name: `${SITE.nomeCompleto} · ${u.nome}`,
+    url: `${SITE.url}/unidades/${u.slug}`,
+    mainEntityOfPage: `${SITE.url}/unidades/${u.slug}`,
+    parentOrganization: { "@id": `${SITE.url}/#organizacao` },
+    telephone: u.tel,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: u.logradouro,
+      addressLocality: u.cidade,
+      addressRegion: u.uf,
+      ...(u.cep ? { postalCode: u.cep } : {}),
+      addressCountry: "BR",
+    },
+    /* ⚠️ `geo` NÃO ENTRA. As coordenadas de `unidades.ts` são aproximadas: nível
+       de endereço em três unidades, bairro em uma e centro de cidade em quatro.
+       Elas servem para ordenar qual unidade está mais perto; publicá-las como
+       `geo` seria afirmar ao Google uma localização que manda quem traça rota
+       para o quarteirão errado. */
+    areaServed: { "@type": "City", name: u.cidade },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "00:00",
+        closes: "23:59",
+        description: "Atendimento de óbito, 24 horas",
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(dados) }}
     />
   );
 }

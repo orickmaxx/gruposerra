@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { HeroiPagina } from "@/components/heroi-pagina";
 import { Botao, Faixa, Pendencia, Rotulo, Titulo } from "@/components/ui";
@@ -155,6 +156,17 @@ export default function Pagina() {
                     <IconeTelefone className="size-5 shrink-0" />
                     {u.telefone}
                   </a>
+                  {/* Sem este link as oito páginas de unidade nasceriam órfãs:
+                      existiriam no sitemap e não teriam como se chegar nelas
+                      pelo site. Página sem link de entrada é página que o
+                      buscador rebaixa e que ninguém encontra. */}
+                  <Link
+                    href={`/unidades/${u.slug}`}
+                    className="enche inline-flex min-h-[3rem] items-center justify-center gap-2 rounded-serra border border-serra-300 bg-white px-5 font-semibold text-serra-700 transition-colors hover:border-serra-500 hover:text-white"
+                  >
+                    Ver a unidade
+                    <IconeSeta className="size-4 shrink-0" />
+                  </Link>
                 </div>
               </article>
             </li>
