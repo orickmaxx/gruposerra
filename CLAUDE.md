@@ -33,6 +33,32 @@ Companheiros deste arquivo: `PRODUCT.md` (verdade de produto, usuários e princ�
    faturamento, ano de fundação. Se o cliente não confirmou, ou a interface **declara a lacuna**
    (componente `Pendencia`) ou o assunto não aparece. Omitir carência em página de venda de plano
    funerário é problema de Procon, não detalhe de design. Ver parte 7.
+
+   > 🟡 **OVERRIDE DA REGRA 1, autorizado pelo dono em 16/09/2026.** A regra acima
+   > continua valendo inteira; o que segue é uma exceção de escopo fechado, criada
+   > para a **demonstração comercial** que fecha o contrato.
+   >
+   > **O que é permitido:** registros fictícios de obituário em `src/data/obituarios.ts`,
+   > cada um marcado `ehExemplo: true`, e a maquete não funcional em `/painel`.
+   >
+   > **O escopo, que não se alarga:**
+   > - só material marcado `ehExemplo`, nunca dado solto;
+   > - só com o site em `noindex`, nunca em produção indexada;
+   > - a tela **declara** o que é, em três lugares: aviso na listagem, marca d'água
+   >   na página da despedida e rodapé em toda tela do painel;
+   > - registro de exemplo **não entra no sitemap**, **não recebe JSON-LD** e sai com
+   >   `noindex` próprio, além do global.
+   >
+   > **A trava não é este parágrafo.** É `scripts/sem-exemplo.mjs`, que lê o BUNDLE
+   > (não o código-fonte) e **falha o build** se `NEXT_PUBLIC_INDEXAVEL=1` e ainda
+   > houver material de demonstração publicado. Em produção, use
+   > `npm run build:producao`, que encadeia os dois. Disciplina humana não fecha
+   > escopo; build quebrado fecha.
+   >
+   > **Como sair do override:** apagar `src/data/obituarios.ts`,
+   > `src/app/obituario/[slug]/`, `src/app/painel/` e `src/components/painel/`, ou
+   > ligar o obituário ao sistema real de publicação. O script diz isso na falha.
+
 2. **Conteúdo nunca fica invisível.** Toda animação de entrada enriquece; nenhuma esconde. O estado
    inicial escondido só existe sob `html.js-revela`, classe que só o componente `Revelacao` liga
    depois de confirmar que vai observar. Sem JavaScript, em 3G ruim, de madrugada, a página inteira
@@ -84,9 +110,11 @@ GRUPO SERRA/
 │   └── parceiros/       marcas do Clube de Benefícios
 ├── scripts/             captura e verificação com Playwright em Chrome de verdade
 └── src/
-    ├── app/             layout, home e 12 rotas, sitemap, robots, opengraph-image
+    ├── app/             layout, home, 14 rotas + 3 dinâmicas, sitemap, robots, 2 opengraph-image
     ├── components/      cabeçalho, rodapé, ui, ícones, movimento, JSON-LD
-    │   └── home/        as 17 seções da home, uma por arquivo
+    │   ├── home/        as 15 seções da home, uma por arquivo
+    │   ├── obituario/   cartão, retrato e a lista com busca
+    │   └── painel/      a MAQUETE do painel. Não é sistema. Ver o override da regra 1
     ├── data/            unidades, planos, inclusos, FAQ, depoimentos, benefícios, artigos
     └── lib/site.ts      FONTE ÚNICA dos dados da empresa
 ```
@@ -103,11 +131,12 @@ defeito que nenhuma captura mostraria.
 
 | Comando | O que prova |
 |---|---|
-| `node scripts/verificar-cinema.mjs` | 20 checagens de que a camada de movimento **funciona no navegador**: holofote escreve `--mx`, ímã desloca o botão e respeita o teto de 7px, linha de título assenta em zero, **toda linha de título termina em espaço**, paralaxe escreve `--par`, trilho de progresso sai do zero, nenhuma cortina fica presa sobre a foto, nenhum bloco revelável fica invisível, **nenhum título em máscara fica escondido**, o sistema de título chegou à página inteira, e `prefers-reduced-motion` derruba tudo. Mais os efeitos de gesto: a esteira anda sozinha e se deixa arrastar, o trilho de depoimentos se arrasta **sem navegar** ao soltar, o relevo inclina dentro do teto de giro, o fio da linha do tempo se desenha até o fim, o simulador avança ao responder e volta, e as partículas **pintam pixels de verdade** na tela. |
-| `node scripts/verificar-celular.mjs` | O celular com **toque de verdade** (perfil Pixel 7 do Playwright). Simulador respondendo no dedo, linha do tempo acendendo ao arrastar, carrossel e esteira no dedo, relevo 3D desligado sem ponteiro, foco por posição acendendo cartão, nada invisível, e a barra de ligar não cobrindo link nenhum. `REDUZIDO=1` roda tudo de novo com `prefers-reduced-motion`. |
+| `node scripts/verificar-cinema.mjs` | 20 checagens de que a camada de movimento **funciona no navegador**: holofote escreve `--mx`, ímã desloca o botão e respeita o teto de 7px, linha de título assenta em zero, **toda linha de título termina em espaço**, paralaxe escreve `--par`, trilho de progresso sai do zero, nenhuma cortina fica presa sobre a foto, nenhum bloco revelável fica invisível, **nenhum título em máscara fica escondido**, o sistema de título chegou à página inteira, e `prefers-reduced-motion` derruba tudo. Mais os efeitos de gesto: a esteira anda sozinha e se deixa arrastar, o trilho da linha do tempo se arrasta **sem navegar** ao soltar, o relevo inclina dentro do teto de giro, o fio da linha do tempo se desenha até o fim, o simulador avança ao responder e volta, e as partículas **pintam pixels de verdade** na tela. |
+| `node scripts/verificar-celular.mjs` | O celular com **toque de verdade** (perfil Pixel 7 do Playwright). Simulador respondendo no dedo, linha do tempo acendendo ao arrastar, trilho e esteira no dedo, relevo 3D desligado sem ponteiro, foco por posição acendendo cartão, nada invisível, e a barra de ligar não cobrindo link nenhum. **Mais as quatro rotas de 16/09/2026** (`/obituario`, a despedida, a unidade e `/painel`), cada uma cobrada por rolagem lateral e bloco invisível, e a busca do obituário respondendo no dedo. `REDUZIDO=1` roda tudo de novo com `prefers-reduced-motion`. |
 | `node scripts/verificar-movimento.mjs` | Esteira, revelação, página legível sem JavaScript, carrossel rolável à mão em reduced-motion. |
-| `node scripts/verificar-interacao.mjs` | Setas do carrossel no celular, ausência de autoplay, e a escolha automática da unidade mais perto por geolocalização. |
-| `node scripts/verificar-novos.mjs` | Consent Mode v2 negado por padrão, banner com "Recusar", reabertura pelo rodapé, **duas abas concordando entre si**, formulário de lead, voltar ao topo e 404. |
+| `node scripts/verificar-interacao.mjs` | **Busca do obituário** em três larguras: acha com acento errado, filtra por unidade, o cartão abre a despedida, e quando não acha nada a tela oferece o telefone do plantão em vez de ficar vazia. Mais a escolha automática da unidade mais perto por geolocalização. |
+| `node scripts/verificar-novos.mjs` | Consent Mode v2 negado por padrão, banner com "Recusar", reabertura pelo rodapé, **duas abas concordando entre si**, formulário de lead, **teto de envios por IP e a saída de emergência na recusa**, voltar ao topo e 404. |
+| `node scripts/sem-exemplo.mjs` | **A trava do override da regra 1.** Lê o BUNDLE e falha se `NEXT_PUBLIC_INDEXAVEL=1` e ainda houver obituário de exemplo ou a rota `/painel` publicados. Com a indexação desligada, apenas relata. Encadeado em `npm run build:producao`. |
 | `node scripts/contraste-foto.mjs` | Contraste **medido no pixel** de todo texto que vive sobre fotografia. Recorta a área renderizada, devolve o PNG para dentro da própria página, desenha num canvas e lê os pixels. |
 | `node scripts/tira.mjs` | Home inteira em fatias do tamanho do viewport. `W=390 H=844 SAIDA=... ` para celular. |
 | `node scripts/tomada.mjs` | Uma tomada só, com `Y=` para a altura que interessa. |
@@ -115,18 +144,47 @@ defeito que nenhuma captura mostraria.
 Todos apontam para `http://127.0.0.1:4400` (o `next start`), por causa de 0.3. Os scripts de captura
 já dispensam o banner de cookies via `localStorage`, senão ele tapa um terço de toda tomada.
 
-**Números medidos na última rodada** (02/09/2026, produção, viewport 1440):
+**Números medidos na última rodada** (16/09/2026, `next build` + `next start`, viewport 1440):
 
 ```
-herói: manchete .................. 9,85:1   (mínimo 3:1, texto grande)
-herói: parágrafo de apoio ........ 9,14:1   (mínimo 4,5:1)
-herói: selo do Google ........... 10,39:1
-herói: linha de cidades .......... 6,01:1
-fecho: manchete ................. 10,12:1
-fecho: parágrafo ................. 9,39:1
-fecho: nota dos telefones ........ 6,09:1
-fecho: painel de planejamento .... 7,67:1
+CONTRASTE SOBRE FOTOGRAFIA, medido no pixel (scripts/contraste-foto.mjs)
+  home      herói: manchete .......... 9,87:1   fecho: manchete ....... 9,60:1
+            herói: parágrafo ......... 9,10:1   fecho: parágrafo ...... 9,38:1
+            herói: selo do Google .... 8,88:1   fecho: telefones ...... 6,13:1
+            herói: linha de cidades .. 6,01:1   fecho: painel ......... 8,87:1
+  /obituario            rótulo 6,80  manchete 9,21   resumo 7,49
+  /obituario/[slug]     rótulo 6,86  manchete 10,00  resumo 8,15
+  /unidades/[slug]      rótulo 7,96  manchete 13,56  resumo 9,40
+
+PESO, HTML gzip                          LIGHTHOUSE MOBILE, mediana de 3
+  /                     64,3 KB            rota        PERF  A11Y  BEST  SEO
+  /obituario            18,6 KB            /             44   100    96   69*
+  /obituario/[slug]     17,4 KB            /planos       68   100   100   69*
+  /unidades/[slug]      19,6 KB            /obit/[slug]  67   100   100   69*
+  /painel               12,7 KB
+  teto da home: 80 KB gzip               * com NEXT_PUBLIC_INDEXAVEL=1 a home
+  teto de rota nova: 30 KB                 vai a SEO 100. O 69 é o `noindex`
+                                           proposital da homologação, não defeito.
+SITEMAP: 27 URLs, 27 respondem 200, zero 404.
 ```
+
+> ⚠️ **Os números de PERF são do Chrome headless desta máquina, em software, com
+> a estrangulação móvel do Lighthouse (CPU 4x, 4G lento).** Servem para comparar
+> rotas entre si e para acompanhar regressão, **não** como promessa de campo. Ver
+> a nota de desempenho abaixo.
+
+**O que segura a nota de desempenho da home, e o custo de mexer:** TBT de 1,32 s
+(mediana) contra 0,58 s nas rotas internas, e LCP de 5,0 s contra 3,8 s. A causa é
+o JavaScript da home: 204 KB gzip em 10 arquivos, que é o preço do simulador de
+planos, dos trilhos arrastáveis, do relevo 3D e da camada cinema. **Nenhuma rota
+interna tem esse problema**, porque nenhuma carrega essas peças. Cortar significa
+remover interação, ou seja, mexer no design, e por isso não foi feito por conta
+própria. As duas saídas honestas, em ordem de retorno: (1) carregar o
+`Comparador` sob demanda, só quando ele entra na tela, o que tira a peça mais
+pesada do caminho crítico sem tirá-la da página; (2) aceitar a nota e medir Core
+Web Vitals de CAMPO depois do lançamento, que é o número que o Google usa de
+verdade. O CLS é **0** nas três rotas, e esse sim é resultado de disciplina de
+layout.
 
 ### 1.1 Armadilhas que já custaram rodada
 
@@ -256,6 +314,41 @@ bloco de `verificar-novos.mjs` abre o próprio `browserContext`.
 **⛔ Teste quebrado no repositório é pior que teste nenhum.** O rótulo do rodapé virou "Preferências
 de cookies" numa rodada antiga e `verificar-novos.mjs` continuou procurando "Rever minha escolha",
 falhando por 30 segundos de timeout. Vermelho que todo mundo aprende a ignorar deixa de ser sinal.
+
+**⛔ Rate limit por IP transforma a suíte em teste de estado, não de site.** O teto de envios em
+`acoes.ts` conta por IP numa janela de 10 minutos, e o `verificar-novos.mjs` passava na primeira
+rodada e falhava na segunda: o "envio válido" era recusado porque a rodada ANTERIOR já tinha gasto o
+teto, no mesmo IP, dentro da mesma janela. O teste media a rodada anterior. Hoje cada bloco que envia
+o formulário apresenta um `x-forwarded-for` próprio da faixa TEST-NET-2, e de quebra existe uma
+checagem nova provando que o balde é por IP e não um teto global, que derrubaria o formulário do site
+inteiro no primeiro flood.
+
+**⛔ `<dl>` só aceita `<dt>`, `<dd>` e um `<div>` agrupando o par.** A ficha da cerimônia nasceu com o
+ícone e mais um `<div>` como irmãos do par dentro do grupo, e o Lighthouse reprovou a página de
+despedida em **duas** auditorias de acessibilidade de uma vez (91 em vez de 100). O ícone mora dentro
+do `<dt>`, ao lado do rótulo que ele ilustra. Mesma correção em `/unidades/[slug]`.
+
+**⛔ Herói com `h1` e a primeira seção com `h3` pula um nível.** A página de despedida fazia isso, e
+leitor de tela navega por cabeçalho: nível pulado é seção que some do índice. Custou 9 pontos de
+acessibilidade e o conserto foi trocar uma letra.
+
+**⛔ Comentário que descreve o arquivo errado decide o próximo trabalho.** O comentário de ordem das
+seções em `app/page.tsx` dizia 17 seções enquanto o componente renderizava 14, e listava um bloco de
+Instagram que ninguém importava. Junto dele, `home/instagram.tsx` e o bloco `Garantias` estavam
+exportados, completos e mortos. Código morto que PARECE vivo é pior que código morto declarado.
+
+**⛔ Nome sem acento em dado de demonstração esconde a funcionalidade.** Os 8 obituários fictícios
+nasceram todos sem acento, e com isso a busca sem acento de `obituario/lista.tsx` não podia ser nem
+demonstrada nem testada. O teste que escrevi para ela passou a procurar "terezinha" esperando achar
+"Therezinha", o que falha com razão: o "h" de Th é LETRA, não acento, e normalizar acento não é nem
+deve virar busca aproximada. Dois nomes ganharam acento de propósito. Num país onde metade dos nomes
+tem acento, essa é a metade que importa.
+
+**⛔ A URL do sitemap que não existe é a primeira coisa que uma auditoria encontra.** O `sitemap.ts`
+publicava as 8 unidades desde a primeira versão e `/unidades/[slug]` nunca existiu: 8 de 27 URLs
+davam 404 por meses, com o dado inteiro em `data/unidades.ts` o tempo todo. E página nova sem link de
+entrada pelo site é meio conserto: o cartão da listagem ganhou "Ver a unidade" no mesmo commit, senão
+as oito nasciam órfãs.
 
 ### 1.2 Regras de tom para qualquer texto do site
 

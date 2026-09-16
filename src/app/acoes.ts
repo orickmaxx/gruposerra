@@ -51,6 +51,21 @@ const TETO = 5;
 const MAX_IPS = 5000;
 const balde = new Map<string, number[]>();
 
+/**
+ * ⚠️ `x-forwarded-for` É CABEÇALHO, E CABEÇALHO O CLIENTE ESCREVE.
+ *
+ * Atrás da Vercel isto não é problema: a plataforma SOBRESCREVE o cabeçalho com
+ * o IP real da conexão, então o que chega aqui é confiável. Num servidor cru,
+ * sem proxy que reescreva, qualquer um manda um IP diferente por requisição e o
+ * balde vira decoração.
+ *
+ * Fica escrito porque a hospedagem pode mudar: se este site um dia sair da
+ * Vercel para um nginx do cliente, ou o limite passa a ler o IP do socket, ou
+ * ele deixa de valer, e ninguém vai lembrar disso sozinho.
+ *
+ * É também o que permite `verificar-novos.mjs` testar o limite por IP sem que
+ * uma rodada envenene a seguinte.
+ */
 async function ipDeQuemChamou() {
   const h = await headers();
   /* `x-forwarded-for` é uma lista; o primeiro é o cliente. Em desenvolvimento

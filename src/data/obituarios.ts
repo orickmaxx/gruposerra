@@ -19,7 +19,11 @@ import { UNIDADES, type Unidade } from "./unidades";
  * no bundle. Comentário se ignora; build quebrado, não.
  *
  * Os nomes são inventados: combinações de sobrenomes que não correspondem a
- * pessoa conhecida da região. Cada registro carrega `ehExemplo`, a listagem
+ * pessoa conhecida da região. Dois deles levam ACENTO de propósito: sem nenhum
+ * nome acentuado, a busca sem acento de `components/obituario/lista.tsx` não
+ * podia ser demonstrada nem testada, e num país onde metade dos nomes tem acento
+ * essa é a metade que importa. Quem procura o velório de alguém não digita a
+ * grafia certa no pior dia da vida. Cada registro carrega `ehExemplo`, a listagem
  * avisa em voz alta e a página individual leva marca d'água. Se algum nome
  * coincidir com alguém de verdade, é coincidência e o registro sai na hora.
  *
@@ -109,8 +113,8 @@ export const OBITUARIOS: Obituario[] = [
     ehExemplo: true,
   },
   {
-    slug: "neuza-fontanella-quirino",
-    nome: "Neuza Fontanella Quirino",
+    slug: "neuza-fontanella-quiricio",
+    nome: "Neuza Fontanella Quirício",
     dataNascimento: "1944-09-02",
     dataFalecimento: "2026-09-13",
     dataVelorio: "2026-09-14",
@@ -151,8 +155,8 @@ export const OBITUARIOS: Obituario[] = [
     ehExemplo: true,
   },
   {
-    slug: "joaquim-tesseroli-esteves",
-    nome: "Joaquim Tesseroli Esteves",
+    slug: "joaquim-tesseroli-estevao",
+    nome: "Joaquim Tesseroli Estêvão",
     dataNascimento: "1947-07-25",
     dataFalecimento: "2026-09-11",
     dataVelorio: "2026-09-12",

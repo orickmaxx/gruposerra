@@ -1,9 +1,8 @@
 /**
  * Prova as interacoes NOVAS, em vez de eu afirmar que funcionam.
  *
- * 1. Carrossel: seta anda, marcador anda, autoplay anda, pausa para de verdade,
- *    e arrastar no dedo tambem muda o cartao (o defeito que derrubou a versao
- *    anterior era exatamente nao dar para parar nem arrastar no celular).
+ * 1. Busca do obituario: acha com acento errado, filtra por unidade, e quando
+ *    nao acha NADA oferece o telefone do plantao em vez de uma tela vazia.
  * 2. Geolocalizacao: com a posicao FINGIDA em Sumare, a unidade escolhida tem
  *    que virar Sumare. Se escolher Campinas, a conta de distancia esta errada.
  */
@@ -37,14 +36,22 @@ const nav = await chromium.launch({ channel: "chrome", args: ["--headless=new"] 
 }
 
 
-/* --------------------------------------------------------------- carrossel */
-/* O carrossel mudou: sem autoplay (o dono pediu), sem botao de pausa, seta em
-   cada BORDA e navegacao de PAGINA em pagina. Entao o teste mede pagina, e nao
-   cartao, e confere que no desktop cabem 3 por vez. */
-for (const [nome, w, h, porPagina] of [
-  ["desktop", 1440, 900, 3],
-  ["tablet ", 820, 1000, 2],
-  ["celular", 390, 844, 1],
+/* ------------------------------------------------------- busca do obituario */
+/* ⛔ ESTE BLOCO TESTAVA O CARROSSEL DE DEPOIMENTOS, que saiu em 16/09/2026 por
+   falta de autorizacao de uso de nome e imagem. O teste ficou quebrado e
+   estourava em timeout de 30s procurando uma seta que nao existe mais.
+
+   No lugar entrou a interacao nova que ninguem estava provando, e que e a peca
+   central da demonstracao: a busca do obituario. Ela e client-side, sem
+   endpoint, e tem tres jeitos conhecidos de falhar calada:
+     1. nao normalizar acento, e "terezinha" nao achar "Therezinha";
+     2. o filtro de unidade e a busca se atrapalharem;
+     3. a tela de "nao encontrei" nao oferecer saida nenhuma, que numa pagina de
+        velorio e a falha mais grave das tres. */
+for (const [nome, w, h] of [
+  ["desktop", 1440, 900],
+  ["tablet ", 820, 1000],
+  ["celular", 390, 844],
 ]) {
   const ctx = await nav.newContext({
     viewport: { width: w, height: h },
@@ -53,53 +60,54 @@ for (const [nome, w, h, porPagina] of [
     locale: "pt-BR",
   });
   const p = await ctx.newPage();
-  await p.goto(BASE + "/", { waitUntil: "networkidle" });
-  await p.evaluate(() => document.querySelector("#depoimentos")?.scrollIntoView());
-  await p.waitForTimeout(700);
+  await p.goto(BASE + "/obituario", { waitUntil: "networkidle" });
+  await p.waitForTimeout(400);
 
-  const visiveis = await p.evaluate(() => {
-    const t = document.querySelector(".trilho");
-    const cartoes = [...t.children];
-    const r = t.getBoundingClientRect();
-    return cartoes.filter((c) => {
-      const b = c.getBoundingClientRect();
-      return b.left >= r.left - 2 && b.right <= r.right + 2;
-    }).length;
-  });
+  const cartoes = () => p.locator("#conteudo ul li article").count();
+
+  const todos = await cartoes();
+  console.log(`${nome} lista completa ${todos} despedidas   ${todos === 8 ? "OK ✓" : "ESPERADO 8 ✗"}`);
+
+  /* Acento: quem digita "quiricio" tem que achar "Quirício". Ninguem escreve o
+     nome de quem morreu com a grafia certa no pior dia da vida.
+     ⚠️ O alvo tem que ser diferenca de ACENTO, nao de letra: a primeira versao
+     deste teste procurava "terezinha" esperando achar "Therezinha", e falhava
+     com razao. O "h" de Th e letra, nao acento, e normalizar acento nao e nem
+     deve virar busca aproximada. */
+  const busca = p.getByPlaceholder("Buscar pelo nome");
+  await busca.fill("quiricio");
+  await p.waitForTimeout(350);
+  const semAcento = await cartoes();
+  console.log(`${nome} busca sem acento ${semAcento}   ${semAcento === 1 ? "OK ✓" : "FALHOU ✗"}`);
+
+  /* Sem resultado: a tela NAO pode terminar em "nada encontrado". Precisa de
+     telefone, que e a resposta que serve para quem esta procurando um velorio. */
+  await busca.fill("zzzzzz");
+  await p.waitForTimeout(350);
+  const vazio = await cartoes();
+  const temTelefone = await p
+    .getByRole("link", { name: /Plantão|Ligar para/ })
+    .isVisible()
+    .catch(() => false);
   console.log(
-    `${nome} cabem ${visiveis} por vez  ->  ${visiveis === porPagina ? "OK ✓" : `ESPERADO ${porPagina} ✗`}`
+    `${nome} sem resultado ${vazio} cartoes, oferece telefone=${temTelefone}   ${
+      vazio === 0 && temTelefone ? "OK ✓" : "FALHOU ✗"
+    }`
   );
 
-  const pag = () =>
-    p.evaluate(() => {
-      const b = [...document.querySelectorAll('[aria-label^="Ir para a página"]')];
-      return b.findIndex((x) => x.getAttribute("aria-current") === "true");
-    });
+  /* Filtro por unidade, com a busca limpa. */
+  await busca.fill("");
+  await p.waitForTimeout(250);
+  await p.getByLabel("Filtrar por unidade").selectOption("valinhos");
+  await p.waitForTimeout(350);
+  const deValinhos = await cartoes();
+  console.log(`${nome} filtro por unidade ${deValinhos}   ${deValinhos === 1 ? "OK ✓" : "FALHOU ✗"}`);
 
-  const p0 = await pag();
-  await p.getByLabel("Próximos depoimentos").click();
+  /* O cartao leva para a pagina da despedida: sem isso a listagem e decoracao. */
+  await p.locator("#conteudo ul li article a").first().click();
   await p.waitForTimeout(900);
-  const p1 = await pag();
-  console.log(`${nome} seta direita ${p0} -> ${p1}    ${p1 === p0 + 1 ? "OK ✓" : "FALHOU ✗"}`);
-
-  await p.getByLabel("Depoimentos anteriores").click();
-  await p.waitForTimeout(900);
-  const p2 = await pag();
-  console.log(`${nome} seta esquerda ${p1} -> ${p2}   ${p2 === p0 ? "OK ✓" : "FALHOU ✗"}`);
-
-  // sem autoplay: nao pode andar sozinho
-  await p.mouse.move(5, 5);
-  await p.waitForTimeout(6500);
-  const p3 = await pag();
-  console.log(`${nome} sem autoplay ${p2} -> ${p3}    ${p2 === p3 ? "OK ✓ parado" : "ANDOU SOZINHO ✗"}`);
-
-  // as setas das bordas: uma em cada lado, longe uma da outra
-  const dist = await p.evaluate(() => {
-    const a = document.querySelector('[aria-label="Depoimentos anteriores"]').getBoundingClientRect();
-    const b = document.querySelector('[aria-label="Próximos depoimentos"]').getBoundingClientRect();
-    return Math.round(b.left - a.right);
-  });
-  console.log(`${nome} setas afastadas ${dist}px       ${dist > w * 0.6 ? "OK ✓ nas bordas" : "JUNTAS ✗"}`);
+  const naDespedida = /\/obituario\/[a-z-]+$/.test(new URL(p.url()).pathname);
+  console.log(`${nome} cartao abre a despedida   ${naDespedida ? "OK ✓" : "FALHOU ✗"}`);
 
   await ctx.close();
 }

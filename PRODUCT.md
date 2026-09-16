@@ -82,7 +82,10 @@ permite oferecer cremação sem terceirizar.
   Clube de Benefícios.
 - Linha do tempo de expansão, 1961 a 2024.
 - Missão, visão e valores, em texto oficial.
-- 3 depoimentos assinados, com nome de cliente e de colaborador.
+- ~~3 depoimentos assinados, com nome de cliente e de colaborador.~~ **RETIRADO em 16/09/2026.**
+  Os 9 depoimentos do Google com nome e foto saíram do site: republicar nome, rosto e texto de
+  alguém em site comercial é outro uso, e a autorização nunca chegou. No lugar ficou a prova social
+  agregada e o link para o Google. Ver `src/data/depoimentos.ts`.
 
 **Explicitamente indefinido, e proibido inventar:**
 - **Carência, limite de idade e regra de reajuste dos planos.** Nenhum plano funerário existe sem
@@ -94,12 +97,25 @@ permite oferecer cremação sem terceirizar.
 - Se a parceria com a Unimed ainda existe.
 - **A data de 1961 não tem prova pública** (o CNPJ ativo é de 1992). Usar "desde 1961" só depois de
   o cliente confirmar, porque é claim institucional.
+- **Autorização de uso de nome e imagem** dos avaliadores do Google. Sem ela, depoimento assinado
+  não volta ao site.
 
 **Restrições técnicas herdadas:**
 - Não existe logo em vetor. Só PNG de 485×130 em `marca/`. Em tela retina vai serrilhar até alguém
   entregar o SVG.
 - O checkout atual do plano aponta para uma URL `version-test` do Bubble. Não replicar esse link
   sem o cliente confirmar que é intencional.
+
+**Material de DEMONSTRAÇÃO no ar, e só até a assinatura (16/09/2026):**
+- 8 obituários **fictícios** em `src/data/obituarios.ts`, todos `ehExemplo: true`, e a maquete
+  **não funcional** de `/painel`. Existem para fechar o contrato: sem eles, a página que gera o
+  tráfego da empresa aparece vazia na demonstração e a pergunta "quem publica o velório às duas da
+  manhã de domingo?" fica sem resposta.
+- É um **override de escopo fechado** da regra 1, autorizado pelo dono. Ver `CLAUDE.md` 0.2.
+- Não são sistema: não há banco, autenticação, upload, moderação real nem rota de API. Quem for
+  vender isso não pode dizer que existe; o que existe é a tela.
+- `scripts/sem-exemplo.mjs` **falha o build** se a indexação for ligada com esse material presente.
+  Em produção, `npm run build:producao`.
 
 ## Brand Commitments
 

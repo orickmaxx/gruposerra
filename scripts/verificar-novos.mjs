@@ -125,8 +125,25 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
 }
 
 /* ------------------------------------------------------------- formulario */
+/* ⛔ CADA BLOCO QUE ENVIA O FORMULARIO USA UM IP PROPRIO, e isto nao e enfeite.
+   `app/acoes.ts` limita envios por IP numa janela de 10 minutos. Sem IP proprio,
+   rodar este arquivo duas vezes seguidas fazia o "envio valido" FALHAR na
+   segunda: o teto ja tinha sido gasto pela rodada anterior, no mesmo IP, dentro
+   da mesma janela. O teste media a rodada anterior, nao o site. E a armadilha
+   que o CLAUDE.md 1.1 descreve, e ela reapareceu no dia em que o rate limit
+   entrou.
+
+   De quebra, IPs distintos provam uma coisa que interessa: o balde e POR IP, e
+   nao um teto global que derrubaria o formulario para o site inteiro. */
+const ipFalso = () =>
+  `198.51.100.${Math.floor(Math.random() * 200) + 20}`; /* faixa TEST-NET-2, RFC 5737 */
+
 {
-  const ctx = await nav.newContext({ viewport: { width: 1440, height: 1000 }, locale: "pt-BR" });
+  const ctx = await nav.newContext({
+    viewport: { width: 1440, height: 1000 },
+    locale: "pt-BR",
+    extraHTTPHeaders: { "x-forwarded-for": ipFalso() },
+  });
   const p = await ctx.newPage();
   await p.goto(BASE + "/", { waitUntil: "networkidle" });
   await p.evaluate(() => document.querySelector("#contato")?.scrollIntoView());
@@ -156,6 +173,76 @@ const ok = (b) => (b ? "OK ✓" : "FALHOU ✗");
   const agradeceu = await p.getByText("Recebemos o seu contato").isVisible().catch(() => false);
   console.log(`envio valido      ${ok(agradeceu)}`);
   await ctx.close();
+}
+
+/* --------------------------------------------- teto de envios por IP
+   Uma Server Action e um endpoint publico: sem teto, um laco de shell enche o
+   CRM do cliente com milhares de leads falsos. O honeypot pega robo de
+   formulario; nao pega quem chama a action direto.
+
+   O teste preenche e envia ate o site recusar. `TETO` em `app/acoes.ts` e 5 por
+   10 minutos, e o bloco anterior ja gastou 1 neste mesmo IP, entao a recusa
+   precisa chegar dentro das tentativas abaixo. A verificacao nao e so "parou":
+   e que a tela de recusa OFERECE SAIDA, porque erro sem saida e pior que erro. */
+{
+  const ctx = await nav.newContext({
+    viewport: { width: 1440, height: 1000 },
+    locale: "pt-BR",
+    extraHTTPHeaders: { "x-forwarded-for": ipFalso() },
+  });
+  const p = await ctx.newPage();
+  let recusou = false;
+  let gastos = 0;
+
+  for (let i = 0; i < 8 && !recusou; i++) {
+    await p.goto(BASE + "/", { waitUntil: "networkidle" });
+    await p.evaluate(() => document.querySelector("#contato")?.scrollIntoView());
+    await p.waitForTimeout(250);
+    await p.getByLabel("Seu nome completo").fill(`Teste Limite ${i}`);
+    await p.getByLabel("WhatsApp com DDD").type("19992406881", { delay: 4 });
+    await p.getByLabel("Cidade mais perto de você").selectOption("Sumaré");
+    await p.getByLabel("Sobre o que você quer falar").selectOption("Contratar um plano");
+    await p.getByRole("button", { name: "Pedir contato" }).click();
+    await p.waitForTimeout(1500);
+    gastos++;
+    recusou = await p
+      .getByText("Você já pediu contato há pouco")
+      .isVisible()
+      .catch(() => false);
+  }
+
+  console.log(`teto por IP       recusou na ${gastos}a tentativa   ${ok(recusou && gastos <= 6)}`);
+
+  const temZap = recusou
+    ? await p.getByRole("link", { name: "Falar no WhatsApp" }).last().isVisible().catch(() => false)
+    : false;
+  console.log(`recusa da saida   WhatsApp no bloco de erro   ${ok(temZap)}`);
+  await ctx.close();
+
+  /* O teto e por IP: outro IP tem que passar na primeira, mesmo com o anterior
+     ja bloqueado. Sem esta checagem, um limitador GLOBAL passaria no teste
+     acima e derrubaria o formulario para o site inteiro no primeiro flood. */
+  const ctx2 = await nav.newContext({
+    viewport: { width: 1440, height: 1000 },
+    locale: "pt-BR",
+    extraHTTPHeaders: { "x-forwarded-for": ipFalso() },
+  });
+  const q = await ctx2.newPage();
+  await q.goto(BASE + "/", { waitUntil: "networkidle" });
+  await q.evaluate(() => document.querySelector("#contato")?.scrollIntoView());
+  await q.waitForTimeout(250);
+  await q.getByLabel("Seu nome completo").fill("Outro IP");
+  await q.getByLabel("WhatsApp com DDD").type("19992406881", { delay: 4 });
+  await q.getByLabel("Cidade mais perto de você").selectOption("Sumaré");
+  await q.getByLabel("Sobre o que você quer falar").selectOption("Contratar um plano");
+  await q.getByRole("button", { name: "Pedir contato" }).click();
+  await q.waitForTimeout(1800);
+  const outroPassou = await q
+    .getByText("Recebemos o seu contato")
+    .isVisible()
+    .catch(() => false);
+  console.log(`teto e por IP     outro IP nao foi bloqueado junto   ${ok(outroPassou)}`);
+  await ctx2.close();
 }
 
 /* --------------------------------------------------- voltar ao topo e 404 */

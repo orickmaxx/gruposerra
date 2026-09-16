@@ -129,10 +129,15 @@ export default async function Despedida({ params }: PageProps<"/obituario/[slug]
           {/* A CERIMÔNIA. É o bloco pelo qual a pessoa abriu esta página, então
               vem antes de qualquer outra coisa e não disputa espaço com nada. */}
           <div className="mt-10 rounded-serra-lg border border-linha bg-white p-6 shadow-baixa md:p-8">
-            <h3 className="flex items-center gap-2.5 font-display text-[1.125rem] font-bold text-tinta">
+            {/* ⛔ `h2`, NÃO `h3`. O `h1` da página é o nome, no herói. Com `h3`
+                aqui a hierarquia pulava um nível, e o Lighthouse reprovava em
+                acessibilidade ("Heading elements are not in a
+                sequentially-descending order"). Leitor de tela navega por
+                cabeçalho: um nível pulado é uma seção que some do índice. */}
+            <h2 className="flex items-center gap-2.5 font-display text-[1.125rem] font-bold text-tinta">
               <IconeVela className="size-5 shrink-0 text-serra-500" />
               Velório e despedida
-            </h3>
+            </h2>
 
             <dl className="mt-6 grid gap-5 sm:grid-cols-2">
               <Linha rotulo="Dia" Icone={IconeRelogio}>
@@ -208,6 +213,16 @@ export default async function Despedida({ params }: PageProps<"/obituario/[slug]
   );
 }
 
+/**
+ * Uma linha da ficha da cerimônia.
+ *
+ * ⛔ A ESTRUTURA DO `<dl>` É REGRA DE HTML, NÃO GOSTO. Dentro de uma lista de
+ * definição só podem existir `<dt>`, `<dd>` e `<div>` agrupando um par dos dois.
+ * A primeira versão punha o ícone e mais um `<div>` como irmãos do par dentro do
+ * grupo, e o Lighthouse reprovava em acessibilidade com duas auditorias de uma
+ * vez. O ícone mora no `<dt>`, ao lado do rótulo que ele ilustra, que também é
+ * o lugar onde ele faz sentido semântico.
+ */
 function Linha({
   rotulo,
   Icone,
@@ -218,16 +233,14 @@ function Linha({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <Icone aria-hidden className="mt-1 size-[1.05rem] shrink-0 text-serra-500" />
-      <div className="min-w-0">
-        <dt className="text-[0.75rem] font-bold tracking-[0.14em] text-pedra-600 uppercase">
-          {rotulo}
-        </dt>
-        <dd className="mt-1 font-display text-[1.0625rem] leading-snug font-bold text-tinta">
-          {children}
-        </dd>
-      </div>
+    <div className="min-w-0">
+      <dt className="flex items-center gap-2 text-[0.75rem] font-bold tracking-[0.14em] text-pedra-600 uppercase">
+        <Icone aria-hidden className="size-[1.05rem] shrink-0 text-serra-500" />
+        {rotulo}
+      </dt>
+      <dd className="mt-1.5 font-display text-[1.0625rem] leading-snug font-bold text-tinta">
+        {children}
+      </dd>
     </div>
   );
 }

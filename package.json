@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "//build:producao": "Build de PRODUCAO. Usar este no painel da Vercel, nao o `build` cru: se NEXT_PUBLIC_INDEXAVEL=1 e ainda houver obituario de exemplo ou a rota /painel no bundle, sem-exemplo.mjs derruba o deploy. Ver CLAUDE.md, override da regra 1.",
+    "build:producao": "next build && node scripts/sem-exemplo.mjs",
     "start": "next start",
     "lint": "eslint"
   },

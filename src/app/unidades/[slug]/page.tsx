@@ -238,6 +238,8 @@ export default async function Unidade({ params }: PageProps<"/unidades/[slug]">)
   );
 }
 
+/** Mesma regra de `<dl>` da página de despedida: só `<dt>`, `<dd>` e o `<div>`
+ *  que agrupa o par. O ícone vai dentro do `<dt>`. */
 function Item({
   rotulo,
   Icone,
@@ -248,16 +250,14 @@ function Item({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3.5">
-      <Icone aria-hidden className="mt-1 size-[1.15rem] shrink-0 text-serra-500" />
-      <div className="min-w-0">
-        <dt className="text-[0.75rem] font-bold tracking-[0.14em] text-pedra-600 uppercase">
-          {rotulo}
-        </dt>
-        <dd className="mt-1 font-display text-[1.0625rem] leading-snug font-bold text-tinta">
-          {children}
-        </dd>
-      </div>
+    <div className="min-w-0">
+      <dt className="flex items-center gap-2 text-[0.75rem] font-bold tracking-[0.14em] text-pedra-600 uppercase">
+        <Icone aria-hidden className="size-[1.15rem] shrink-0 text-serra-500" />
+        {rotulo}
+      </dt>
+      <dd className="mt-1.5 font-display text-[1.0625rem] leading-snug font-bold text-tinta">
+        {children}
+      </dd>
     </div>
   );
 }

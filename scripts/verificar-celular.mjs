@@ -259,6 +259,69 @@ const tapado = await p.evaluate(() => {
 });
 ok("a barra de ligar nao cobre nenhum link no fim da pagina", tapado === 0, `${tapado} alvos cobertos`);
 
+/* ================================================== as rotas novas no dedo ===
+   ⛔ POR QUE ISTO E UM BLOCO SEPARADO E NAO MAIS UMA CHECAGEM NA HOME. Todo o
+   arquivo acima roda contra `/`. As rotas de 16/09/2026 (obituario, despedida,
+   unidade, painel) nasceram depois e nunca passaram por um aparelho com toque:
+   e exatamente assim que o buraco de "tela pequena nao e celular" se reabre,
+   uma rota de cada vez. Aqui cada uma e aberta no Pixel 7 e cobrada pelas duas
+   coisas que quebram calado no celular: rolagem lateral e bloco invisivel. */
+for (const rota of [
+  "/obituario",
+  "/obituario/therezinha-pedrozo-galhardo",
+  "/unidades/valinhos",
+  "/painel",
+]) {
+  const ctx2 = await nav.newContext({ ...devices["Pixel 7"], locale: "pt-BR" });
+  await ctx2.addInitScript(() => {
+    try { localStorage.setItem("serra_consentimento", "recusado"); } catch {}
+  });
+  const q = await ctx2.newPage();
+  await q.goto(new URL(rota, BASE).href, { waitUntil: "networkidle" });
+  await q.evaluate(() => document.fonts.ready);
+
+  /* Percorre a pagina inteira: revelacao so dispara em quem cruza a tela. */
+  await q.evaluate(async () => {
+    const passo = window.innerHeight * 0.8;
+    for (let y = 0; y < document.documentElement.scrollHeight; y += passo) {
+      window.scrollTo(0, y);
+      await new Promise((r) => setTimeout(r, 40));
+    }
+    window.scrollTo(0, 0);
+  });
+  await q.waitForTimeout(900);
+
+  const sobra = await q.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  );
+  const sumidos = await q.evaluate(
+    () => [...document.querySelectorAll("[data-revela], .linha-mascara > span")]
+      .filter((el) => parseFloat(getComputedStyle(el).opacity) < 0.9).length
+  );
+  ok(`${rota}: nao rola de lado`, sobra <= 0, `${sobra}px de sobra`);
+  ok(`${rota}: nada invisivel`, sumidos === 0, `${sumidos} escondidos`);
+  await ctx2.close();
+}
+
+/* A BUSCA DO OBITUARIO NO DEDO. No desktop ela ja e testada em
+   `verificar-interacao.mjs`; aqui o que se prova e outra coisa: que o campo e o
+   seletor cabem e respondem num aparelho de 390px, onde a pessoa que perdeu
+   alguem realmente vai procurar. */
+{
+  const ctx2 = await nav.newContext({ ...devices["Pixel 7"], locale: "pt-BR" });
+  await ctx2.addInitScript(() => {
+    try { localStorage.setItem("serra_consentimento", "recusado"); } catch {}
+  });
+  const q = await ctx2.newPage();
+  await q.goto(new URL("/obituario", BASE).href, { waitUntil: "networkidle" });
+  await q.getByPlaceholder("Buscar pelo nome").tap();
+  await q.getByPlaceholder("Buscar pelo nome").fill("quiricio");
+  await q.waitForTimeout(400);
+  const achou = await q.locator("#conteudo ul li article").count();
+  ok("a busca do obituario responde no dedo", achou === 1, `${achou} resultado(s)`);
+  await ctx2.close();
+}
+
 await nav.close();
 console.log(falhas.length ? `\n${falhas.length} FALHA(S)` : "\ntudo verde no celular");
 process.exit(falhas.length ? 1 : 0);
