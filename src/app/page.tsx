@@ -8,6 +8,7 @@ import { Clube } from "@/components/home/clube";
 import { UnidadePerto } from "@/components/home/unidade-perto";
 import { Sobre } from "@/components/home/sobre";
 import { Historia } from "@/components/home/prova";
+import { Despedidas } from "@/components/home/despedidas";
 import { Duvidas, Fechamento } from "@/components/home/duvidas";
 import { Formulario } from "@/components/home/formulario";
 import { BarraFixaCelular } from "@/components/barra-emergencia";
@@ -22,22 +23,27 @@ import { DadosEstruturados } from "@/components/dados-estruturados";
  * brilho radial para dar ritmo. Aqui são três momentos escuros bem espaçados,
  * mais um laranja no clube, que é a única seção alegre que uma funerária tem.
  *
+ * ⛔ A LISTA ABAIXO É CONFERIDA, NÃO DECORATIVA. Ela já disse "17 seções"
+ * enquanto o componente renderizava 14, e listou um bloco de Instagram que não
+ * era importado por ninguém. Comentário que mente sobre o arquivo é pior que
+ * comentário nenhum, porque a próxima pessoa decide com base nele. Seção nova
+ * entra aqui no mesmo commit, com a superfície que ela realmente usa.
+ *
  *   1  Topo ................. malha clara
  *   2  Depoimentos .......... ESCURO (palco)
- *   4  Como funciona ........ papel
- *   5  Planos ............... branco
- *   6  Comparador ........... papel
- *   7  Serviços ............. branco
- *   8  Com plano e sem plano  ESCURO
- *   9  Garantias ............ branco
- *  10  Clube ................ LARANJA
- *  11  Unidade mais perto ... branco
- *  12  Sobre e equipe ....... papel
- *  13  Linha do tempo ....... branco
- *  14  Instagram ............ papel
- *  15  Dúvidas .............. branco
- *  16  Formulário ........... papel
- *  17  Fechamento ........... ESCURO
+ *   3  Como funciona ........ papel
+ *   4  Planos ............... branco
+ *   5  Comparador ........... papel
+ *   6  Serviços ............. branco, e fecha em ESCURO no bloco do crematório
+ *   7  O que está incluso ... ESCURO
+ *   8  Clube ................ LARANJA
+ *   9  Unidade mais perto ... branco
+ *  10  Sobre e equipe ....... papel
+ *  11  Linha do tempo ....... areia
+ *  12  Últimas despedidas ... branco
+ *  13  Dúvidas .............. papel
+ *  14  Formulário ........... branco
+ *  15  Fechamento ........... ESCURO
  */
 export default function Home() {
   return (
@@ -54,6 +60,7 @@ export default function Home() {
       <UnidadePerto />
       <Sobre />
       <Historia />
+      <Despedidas />
       <Duvidas />
       <Formulario />
       <Fechamento />

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { IconeBoleto, IconeTelefone, IconeVela, IconeWhatsApp } from "./icones";
 
@@ -41,13 +42,16 @@ export function BarraEmergencia() {
             <IconeBoleto className="size-[1.05rem] shrink-0 text-serra-300" />
             2ª via de boleto
           </a>
-          <a
+          {/* `Link`, não `<a>`: é rota interna, e com `<a>` a pessoa pagava um
+              carregamento de página inteira para ir ao obituário, que é
+              justamente onde alguém com pressa clica. */}
+          <Link
             href="/obituario"
             className="inline-flex items-center gap-2 font-medium text-serra-100 transition-colors hover:text-white"
           >
             <IconeVela className="size-[1.05rem] shrink-0 text-serra-300" />
             Obituário
-          </a>
+          </Link>
           <a
             href={SITE.whatsapp.link}
             target="_blank"

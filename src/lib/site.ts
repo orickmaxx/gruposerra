@@ -94,6 +94,24 @@ export const ROTAS_COM_HEROI = [
   "/homenagens",
 ] as const;
 
+/**
+ * Raizes cujas rotas FILHAS tambem abrem com heroi escuro.
+ *
+ * `/obituario/benedita-alvim-rosseto` e `/unidades/valinhos` usam o mesmo
+ * `HeroiPagina` que os pais delas. A comparacao era exata (`includes`), entao
+ * cada pagina de falecido e cada pagina de unidade nascia com a barra branca do
+ * cabecalho cortando a fotografia no primeiro terco: o defeito exato que o
+ * aviso acima existe para impedir.
+ */
+const RAIZES_COM_HEROI = ["/obituario/", "/unidades/"] as const;
+
+export function temHeroiEscuro(rota: string) {
+  return (
+    ROTAS_COM_HEROI.includes(rota as (typeof ROTAS_COM_HEROI)[number]) ||
+    RAIZES_COM_HEROI.some((r) => rota.startsWith(r))
+  );
+}
+
 export const NAV = [
   { href: "/planos", rotulo: "Planos" },
   { href: "/cremacao", rotulo: "Cremação" },

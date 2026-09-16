@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { NAV, ROTAS_COM_HEROI, SITE } from "@/lib/site";
+import { NAV, SITE, temHeroiEscuro } from "@/lib/site";
 import { IconeBoleto, IconeFechar, IconeMenu, IconeTelefone, IconeWhatsApp } from "./icones";
 
 /**
@@ -46,8 +46,7 @@ export function Cabecalho() {
    * transparente sobre fundo branco e texto branco invisivel, que e o defeito
    * classico desse padrao.
    */
-  const sobreHeroi =
-    !rolou && ROTAS_COM_HEROI.includes(rota as (typeof ROTAS_COM_HEROI)[number]);
+  const sobreHeroi = !rolou && temHeroiEscuro(rota);
 
   useEffect(() => {
     document.body.style.overflow = aberto ? "hidden" : "";

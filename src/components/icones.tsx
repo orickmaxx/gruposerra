@@ -208,3 +208,58 @@ export const IconeFacebook = ({ titulo, ...p }: Props) => (
     <path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94Z" />
   </svg>
 );
+
+/* ── Adicionados para o obituario e para o painel (16/09/2026) ────────────────
+   Mesmo traco de 1.75 em grade 24 dos demais. Nenhuma biblioteca entrou junto. */
+
+export const IconeBusca = (p: Props) => (
+  <Base {...p}>
+    <circle cx="10.8" cy="10.8" r="6.3" />
+    <path d="M15.4 15.4 20 20" />
+  </Base>
+);
+
+/**
+ * Retrato ausente.
+ *
+ * ⛔ NAO E FOTO DE BANCO DE IMAGEM E NAO E ROSTO GERADO. Um obituario de
+ * demonstracao com rosto inventado passa a ser a imagem de uma pessoa que nao
+ * existe apresentada como alguem que morreu. Silhueta anonima diz "nao ha
+ * retrato aqui" sem fingir nada, e e o que a familia ve enquanto nao envia a
+ * foto de verdade.
+ */
+export const IconeRetrato = (p: Props) => (
+  <Base {...p} strokeWidth={1.4}>
+    <circle cx="12" cy="9.2" r="3.9" />
+    <path d="M4.8 20.2c.6-3.9 3.6-6.2 7.2-6.2s6.6 2.3 7.2 6.2" />
+  </Base>
+);
+
+export const IconeMais = (p: Props) => (
+  <Base {...p} strokeWidth={2}>
+    <path d="M12 5.5v13M5.5 12h13" />
+  </Base>
+);
+
+export const IconeLapis = (p: Props) => (
+  <Base {...p}>
+    <path d="M4.5 19.5h3.2L18.4 8.8a2.1 2.1 0 0 0-3-3L4.5 16.3v3.2Z" />
+    <path d="M14.2 6.1 17.9 9.8" />
+  </Base>
+);
+
+export const IconeGrade = (p: Props) => (
+  <Base {...p}>
+    <rect x="4" y="4" width="7" height="7" rx="1.4" />
+    <rect x="13" y="4" width="7" height="7" rx="1.4" />
+    <rect x="4" y="13" width="7" height="7" rx="1.4" />
+    <rect x="13" y="13" width="7" height="7" rx="1.4" />
+  </Base>
+);
+
+export const IconeSaida = (p: Props) => (
+  <Base {...p}>
+    <path d="M14.5 8.2V5.8a1.8 1.8 0 0 0-1.8-1.8H6.3a1.8 1.8 0 0 0-1.8 1.8v12.4a1.8 1.8 0 0 0 1.8 1.8h6.4a1.8 1.8 0 0 0 1.8-1.8v-2.4" />
+    <path d="M10 12h9.5m0 0-2.9-2.9M19.5 12l-2.9 2.9" />
+  </Base>
+);

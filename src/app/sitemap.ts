@@ -3,6 +3,7 @@ import { SITE } from "@/lib/site";
 import { UNIDADES } from "@/data/unidades";
 import { ARTIGOS } from "@/data/artigos";
 import { PLANOS, PLANOS_ESPECIAIS } from "@/data/planos";
+import { OBITUARIOS } from "@/data/obituarios";
 
 /** O site atual do cliente nao tem sitemap.xml (HTTP 404). Ver CLAUDE.md 9.1. */
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -45,6 +46,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: agora,
       changeFrequency: "yearly" as const,
       priority: 0.6,
+    })),
+    /* ⛔ REGISTRO DE DEMONSTRAÇÃO NÃO ENTRA NO SITEMAP. Sitemap é um convite
+       explícito ao buscador; convidar o Google para a página de um falecido
+       inventado é publicar o registro, não simulá-lo. Hoje o filtro devolve
+       lista vazia, e é a resposta certa: quando o sistema real entrar, os
+       obituários de verdade passam a aparecer aqui sozinhos. */
+    ...OBITUARIOS.filter((o) => !o.ehExemplo).map((o) => ({
+      url: `${SITE.url}/obituario/${o.slug}`,
+      lastModified: new Date(`${o.dataFalecimento}T12:00:00`),
+      changeFrequency: "yearly" as const,
+      priority: 0.7,
     })),
   ];
 }
