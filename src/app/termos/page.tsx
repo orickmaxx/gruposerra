@@ -107,15 +107,17 @@ export default function Termos() {
         </p>
       </Secao>
 
-      <Secao n={7} titulo="Depoimentos publicados">
+      <Secao n={7} titulo="Avaliações de clientes">
         <p>
-          Os depoimentos exibidos neste site são avaliações públicas feitas por clientes no Google,
-          reproduzidas na íntegra, sem edição de texto, e cada uma leva de volta à avaliação
-          original. Se você é autor de uma delas e não quer que apareça aqui, escreva para{" "}
+          Este site <strong>não reproduz</strong> avaliações de clientes. Ele descreve, em texto
+          próprio, os temas que mais aparecem nas avaliações públicas do Grupo Serra no Google, e
+          leva quem quiser ler ao próprio Google, onde cada avaliação continua sendo de quem a
+          escreveu. Nenhum nome, foto ou texto de avaliador é republicado aqui. Se você encontrar
+          algum, escreva para{" "}
           <a href={`mailto:${SITE.email}`} className="link-texto font-semibold">
             {SITE.email}
           </a>{" "}
-          que ela é retirada.
+          que é retirado.
         </p>
       </Secao>
 

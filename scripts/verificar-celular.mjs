@@ -145,21 +145,23 @@ ok("a pagina nao rola de lado", vaza <= 1, `${vaza}px de sobra`);
   ok("o fio do ano aceso esta desenhado", fio > 0.95, `scaleX=${fio.toFixed(2)}`);
 }
 
-/* ------------------------------------------- carrossel de depoimentos no dedo */
+/* ------------------------------------- trilho da linha do tempo no dedo
+   Apontava para o carrossel de depoimentos, removido em 16/09/2026 por falta de
+   autorizacao de uso de nome e imagem. A mecanica e a mesma. */
 {
-  const trilho = p.locator("#depoimentos ul.trilho");
+  const trilho = p.locator("#historia ol.trilho");
   await trilho.scrollIntoViewIfNeeded();
   await p.waitForTimeout(700);
   const antes = await trilho.evaluate((el) => el.scrollLeft);
   await trilho.evaluate((el) => el.scrollBy({ left: el.clientWidth }));
   await p.waitForTimeout(800);
   const depois = await trilho.evaluate((el) => el.scrollLeft);
-  ok("o carrossel de depoimentos anda no dedo", depois > antes + 50, `${antes} -> ${depois}`);
+  ok("o trilho da linha do tempo anda no dedo", depois > antes + 50, `${antes} -> ${depois}`);
 
   /* Em tela sem ponteiro o relevo 3D nao pode existir: sem cursor nao ha de
      onde tirar o angulo, e um cartao torto parado le como defeito. */
   const giro = await p
-    .locator("#depoimentos li.relevo")
+    .locator("#historia li.relevo")
     .first()
     .evaluate((el) => getComputedStyle(el).transform);
   ok("o relevo 3D fica desligado sem ponteiro", giro === "none", giro);

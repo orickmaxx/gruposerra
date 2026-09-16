@@ -1,123 +1,82 @@
 /**
- * Depoimentos REAIS do Google, raspados dos 9 links que o dono mandou em
- * 03/09/2026, com Chrome de verdade (o Maps so monta a review com JS).
+ * Avaliações do Google, em forma AGREGADA.
  *
- * Nome, foto, nota, data e texto sao do proprio Google, na integra, sem corte
- * e sem correcao de portugues: mexer no texto de um depoimento e falsifica-lo.
- * A foto veio da mesma URL que o Maps serve, pedida em 200px.
+ * ⛔ O QUE ESTAVA AQUI ANTES, E POR QUE SAIU. Este arquivo trazia 9 avaliações
+ * do Google na íntegra, com o NOME e a FOTO de cada pessoa, raspadas dos links
+ * que o dono mandou em 03/09/2026. O próprio comentário original avisava:
+ * "confirmar com o Grupo Serra que há autorização para exibir nome e foto
+ * dessas pessoas fora do Google".
  *
- * ATENCAO ANTES DE IR AO AR: confirmar com o Grupo Serra que ha autorizacao
- * para exibir nome e foto dessas pessoas fora do Google. Sao avaliacoes
- * publicas, mas republicar em site comercial e outro uso. O campo `link`
- * guarda a origem de cada uma para conferencia.
+ * Essa autorização nunca chegou. Avaliação pública no Google é uma coisa;
+ * republicar nome, rosto e texto de alguém em site comercial de terceiro é
+ * outro uso, e quem responde por ele é o Grupo Serra, não o Google. Numa
+ * empresa que vai colocar este site no ar com o nome dela, deixar isso
+ * pendurado até alguém lembrar é transferir um risco jurídico para o cliente
+ * sem avisar. Saiu em 16/09/2026, junto com as 9 fotos em `public/depoimentos/`.
  *
- * Varios citam colaboradores pelo nome: Robson, Anderson, Rosemeire, Thalia,
- * Jessica, Marli, Luciana, William, Julio, John, Patricia, Gabriel, Amaury,
- * Marcio. E o ativo mais dificil de copiar que essa empresa tem.
+ * O que fica: a prova social AGREGADA e o link para a origem. Quem quiser ler
+ * as avaliações lê no Google, que é onde elas são de quem escreveu.
+ *
+ * Para voltar a exibir depoimento assinado, o caminho é um só: autorização por
+ * escrito de cada pessoa. Ver a pergunta 9 do CLAUDE.md.
  */
 
-export type Depoimento = {
-  slug: string;
-  autor: string;
-  foto: string;
-  estrelas: number;
-  data: string;
-  texto: string;
-  link: string;
-};
+export const GOOGLE = {
+  /**
+   * Nota média da matriz de Campinas.
+   *
+   * ⚠️ `notaConfirmada: false` porque o 4,1 veio de AGREGADOR indexado
+   * (funerariasbrasil, locaisdobrasil), não da página do Google, que bloqueia
+   * leitura automatizada. Enquanto for false, o número NÃO aparece na tela:
+   * publicar nota de avaliação lida de terceiro é afirmar um dado que ninguém
+   * conferiu. Abra o perfil no Maps, confirme, e vire para true — a nota
+   * aparece sozinha onde precisa.
+   */
+  nota: 4.1,
+  notaConfirmada: false,
 
-export const DEPOIMENTOS: Depoimento[] = [
-  {
-    slug: "carla-paraizo",
-    autor: "Carla Paraizo",
-    foto: "/depoimentos/carla-paraizo.jpg",
-    estrelas: 5,
-    data: "11 meses atrás",
-    texto:
-      "Hoje eu e minha mãe tivemos uma experiência muito agradável no atendimento na Unidade de Campinas. A atendente Rosemeire de Carvalho, foi muito gentil, paciente, acolhedora e educada conosco. Esclareceu com confiança e conhecimento nossas dúvidas. Muito bom ser atendida com tanta gentileza! Parabéns Rose! Deus te ilumine sempre, com graça e sabedoria! Coração agradecido!",
-    link: "https://share.google/6chchMJA5A7Azl0hZ",
-  },
-  {
-    slug: "roberto-guimaraes",
-    autor: "Roberto Guimarães",
-    foto: "/depoimentos/roberto-guimaraes.jpg",
-    estrelas: 5,
-    data: "um mês atrás",
-    texto:
-      "Na hora mais difícil, a gente conhece um amigo. O Sr Robson nos atendeu de maneira excepcional. Educado, atencioso, prestativo. Nos deu todas as informações e explicações necessárias. Atendimento eficaz e cortês. Lugar limpo e organizado. Excelente atendimento de todos. Nada a reclamar, só elogios. Fomos muito bem atendidos. Obrigado",
-    link: "https://share.google/OXCQohZsGEtP5rMYr",
-  },
-  {
-    slug: "daniele-hafliger",
-    autor: "Daniele Hafliger",
-    foto: "/depoimentos/daniele-hafliger.jpg",
-    estrelas: 5,
-    data: "2 meses atrás",
-    texto:
-      "Só tenho a agradecer a agilidade e profissionalismo das agentes Jéssica, que estava atendendo outro cliente, e prontamente entrou em contato com outra agente para me atender, na hora em que eu precisava buscar funerária na \"sala da família \" da Unicamp, para enterrar minha mãe. Eu só queria conseguir fazer o enterro no mesmo dia e em outra cidade. E a Thalia, com toda a expertise e delicadeza, conseguiu. Chegamos em Limeira às 16:20 e o enterro foi às 16:30. O valor também foi o melhor das cotadas naquela mesma hora. Indico para quem precisar. Essa ótima qualidade de serviços prestados foi da unidade de Valinhos. Nota 10 em tudo!!!",
-    link: "https://share.google/5eQ8oPyIdJVShQB91",
-  },
-  {
-    slug: "thais-bigoli",
-    autor: "Thaís Bigoli",
-    foto: "/depoimentos/thais-bigoli.jpg",
-    estrelas: 5,
-    data: "um mês atrás",
-    texto:
-      "Muito bom, o profissional Robson é eficaz no atendimento teve paciência e explicou com detalhes de forma profissional e com muita calma e paciência.",
-    link: "https://share.google/tIYsJ5zn3FKjrYGPM",
-  },
-  {
-    slug: "jonathan-ciribelli",
-    autor: "Jonathan Ciribelli",
-    foto: "/depoimentos/jonathan-ciribelli.jpg",
-    estrelas: 5,
-    data: "2 meses atrás",
-    texto:
-      "Quero agradecer ao Grupo Serra que nos suportou em todo o processo que passamos. Agradeço a Marli, Luciana, Anderson e William por todo o apoio neste tempo. Que Deus abençoe a cada um de vocês 🤍",
-    link: "https://share.google/UhYuQsVJlaB37Weqv",
-  },
-  {
-    slug: "rose-soares",
-    autor: "Rose Soares",
-    foto: "/depoimentos/rose-soares.jpg",
-    estrelas: 5,
-    data: "um mês atrás",
-    texto:
-      "Quer o deixar aqui o meu agradecimento ao Anderson e o toda equipe pelo excelente atendimento e cuidados prestados em momentos mais frágeis o meu muito obrigado e Deus abençoe a todos 🙏",
-    link: "https://share.google/YlC03gTgr8exItC3w",
-  },
-  {
-    slug: "renato-filho",
-    autor: "Renato Filho",
-    foto: "/depoimentos/renato-filho.jpg",
-    estrelas: 5,
-    data: "3 meses atrás",
-    texto:
-      "Boa tarde. O meu profundo agradecimento pela atenção e dedicação dos profissionais prestados a minha mãe (Wanda Apparecida Geribello Camargo) nos dias 25/26 de Abril, entre os quais, Patricia, Gabriel, Amaury e Marcio.Obrigado. Atenciosamente Renato G. Camargo Filho",
-    link: "https://share.google/r8vunSoBr6griDJur",
-  },
-  {
-    slug: "ana-emilia",
-    autor: "Ana Emilia",
-    foto: "/depoimentos/ana-emilia.jpg",
-    estrelas: 5,
-    data: "10 meses atrás",
-    texto:
-      "Venho agradecer , que Deus abençoe abundantemente a Vida do agente funerário Robison. Que em minha perca inestimável da minha filha de 5 aninhos, ele tratou a nós com muito amor e carinho, em seu trabalho com muita dedicação. Me deixou, um presente, o cabelinho, palavras de conforto. A ultima recordação de minha filha muito bem tratada. Pelo Robison, que Deus o abençoou com um bebê. Assim diz o Senhor \" os filhos que Deus nos dá para cuidar, pertence a Deus.\" Salmo 127:3. Meus muito obrigada pelos funcionários da funerária Sera, que me trataram muito bem.",
-    link: "https://share.google/7oNgBIPyatuMvWW2T",
-  },
-  {
-    slug: "fatima-souza",
-    autor: "Fatima Souza",
-    foto: "/depoimentos/fatima-souza.jpg",
-    estrelas: 5,
-    data: "2 anos atrás",
-    texto:
-      "Perdemos nossa mãe recentemente e apesar de todo o sofrimento nesse momento, encontramos conforto pelo atendimento excepcional de todos do Grupo Serra, em especial ao Julio que nos ajudou com todos os trâmites, com o John que nos atendeu no Memorial e a todos que tiveram um respeito muito grande. Ficamos impressionados e muito satisfeitos apesar de toda a tristeza.",
-    link: "https://share.google/b2jPrkpVdv4bbfFoJ",
-  },
-];
+  /** Quantidade total de avaliações. NÃO SEI: não é público sem abrir o perfil. */
+  avaliacoes: null as number | null,
 
-/** Nota media publica da matriz no Google, conferida em 02/09/2026. */
-export const GOOGLE = { nota: 4.1, escala: 5 } as const;
+  /**
+   * Quantas avaliações o dono enviou em 03/09/2026, todas de 5 estrelas. Este
+   * número É confirmado, mas não vai para a tela: nove é um número que trabalha
+   * CONTRA a prova social. Fica registrado porque é o que sustenta a frase da
+   * seção sobre o que as famílias mais citam.
+   */
+  enviadasPeloDono: 9,
+
+  /**
+   * Busca no Maps em vez da URL do perfil. O perfil tem um identificador que
+   * não foi confirmado, e link quebrado numa seção de prova social é pior que
+   * link nenhum. A busca resolve para a ficha da empresa e não afirma nada.
+   */
+  perfil:
+    "https://www.google.com/maps/search/?api=1&query=Grupo+Serra+Funer%C3%A1rias+Campinas",
+} as const;
+
+/**
+ * O que mais aparece nas avaliações, resumido pela própria casa.
+ *
+ * ⛔ ISTO NÃO É CITAÇÃO E NÃO PODE VIRAR CITAÇÃO. É a leitura que fizemos das
+ * avaliações públicas, escrita em voz própria. No momento em que alguém colar
+ * aqui um trecho de avaliação de alguém, o problema que este arquivo resolveu
+ * volta inteiro.
+ */
+export const TEMAS = [
+  {
+    titulo: "Atendimento que acolhe",
+    texto:
+      "O elogio que mais se repete não é sobre preço nem sobre estrutura. É sobre como a família foi tratada na hora em que chegou.",
+  },
+  {
+    titulo: "Resolvido no mesmo dia",
+    texto:
+      "Agilidade aparece em quase todas: documentação, remoção e cerimônia acertadas sem a família precisar correr atrás.",
+  },
+  {
+    titulo: "Gente com nome",
+    texto:
+      "As avaliações citam os atendentes pelo primeiro nome. É o ativo mais difícil de copiar que uma funerária pode ter.",
+  },
+] as const;

@@ -1,79 +1,39 @@
-"use client";
-
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { DEPOIMENTOS, type Depoimento } from "@/data/depoimentos";
+import { GOOGLE, TEMAS } from "@/data/depoimentos";
 import { Rotulo, TituloCine } from "../ui";
 import { IconeGoogle, IconeSeta } from "../icones";
-import { useArrastar } from "../movimento";
 
 /**
- * Depoimentos reais do Google.
+ * Prova social do Google, em forma agregada.
  *
- * Refeito pela terceira vez, e as duas primeiras estavam erradas por motivos
- * diferentes:
- *  1. esteira de CSS que so parava no `:hover`, que nao existe em celular;
- *  2. carrossel com as duas setas juntas num canto, andando de um em um e com
- *     autoplay, o que atropelava a leitura.
+ * ⛔ AQUI HAVIA UM CARROSSEL DE 9 DEPOIMENTOS COM NOME E FOTO DE PESSOAS REAIS,
+ * e ele saiu por risco jurídico, não por design: a autorização de uso de nome e
+ * imagem nunca foi confirmada com o cliente. Ver o cabeçalho de
+ * `data/depoimentos.ts`. O que ficou aponta para o Google em vez de copiar dele.
  *
- * O que o dono pediu, e o que o site do Florees faz de fato:
- *  - fundo ESCURO dramatico, com o conteudo branco saltando (`.palco`);
- *  - no maximo TRES cartoes por vez, nunca uma fila infinita;
- *  - uma seta em CADA borda do carrossel, nao duas grudadas num canto;
- *  - SEM autoplay: quem le um depoimento de luto decide quando passar.
+ * ⛔ E NÃO É SÓ UM CARROSSEL A MENOS. A seção deixou de ser client component:
+ * sem estado, sem `useArrastar`, sem medir páginas a cada `resize`. É JavaScript
+ * a menos na home inteira, e a home é a página que carrega mais.
  *
- * A navegacao anda de PAGINA em pagina (3, 2 ou 1 cartao conforme a largura),
- * nao de cartao em cartao, senao a seta parece nao fazer nada no desktop.
+ * O peso visual foi mantido de propósito: o palco escuro continua sendo o
+ * segundo momento da página, logo depois do herói, porque é ali que a prova
+ * social precisa bater. O que mudou é que a prova agora é um agregado e um
+ * link, não o rosto de nove pessoas que não assinaram nada.
+ *
+ * ⚠️ A NOTA SÓ APARECE QUANDO FOR CONFERIDA. `GOOGLE.notaConfirmada` está
+ * false porque o 4,1 veio de agregador, não do perfil. Enquanto isso a seção
+ * funciona sem número, e nada na tela afirma uma nota que ninguém abriu.
  */
 export function Depoimentos() {
-  const trilho = useRef<HTMLUListElement>(null);
-  useArrastar(trilho);
-  const [pagina, setPagina] = useState(0);
-  const [paginas, setPaginas] = useState(1);
-
-  const medir = useCallback(() => {
-    const t = trilho.current;
-    if (!t) return;
-    setPaginas(Math.max(1, Math.round(t.scrollWidth / t.clientWidth)));
-    setPagina(Math.round(t.scrollLeft / t.clientWidth));
-  }, []);
-
-  useEffect(() => {
-    const t = trilho.current;
-    if (!t) return;
-    medir();
-    let quadro = 0;
-    const aoRolar = () => {
-      cancelAnimationFrame(quadro);
-      quadro = requestAnimationFrame(medir);
-    };
-    t.addEventListener("scroll", aoRolar, { passive: true });
-    window.addEventListener("resize", medir);
-    return () => {
-      cancelAnimationFrame(quadro);
-      t.removeEventListener("scroll", aoRolar);
-      window.removeEventListener("resize", medir);
-    };
-  }, [medir]);
-
-  const irPara = (p: number) => {
-    const t = trilho.current;
-    if (!t) return;
-    const alvo = Math.min(Math.max(p, 0), paginas - 1);
-    t.scrollTo({ left: alvo * t.clientWidth, behavior: "smooth" });
-  };
-
   return (
-    <section id="depoimentos" className="palco aurora mosaico grao relative isolate overflow-hidden py-20 md:py-28">
+    <section
+      id="depoimentos"
+      className="palco aurora mosaico grao relative isolate overflow-hidden py-20 md:py-28"
+    >
       <div aria-hidden className="fio-luz absolute inset-x-0 top-0 z-[1]" />
-      {/*
-        MARCA D'AGUA. Antes era o LOGOTIPO INTEIRO, girado 8 graus no canto
-        superior esquerdo, com a palavra "Grupo Serra Funerarias" legivel e
-        torta. Ficava exatamente com cara de placeholder de gerador. O site do
-        Florees usa so o simbolo, reto e centralizado, e e o certo: simbolo e
-        ambiente, logotipo com texto e ruido. Este arquivo foi recortado do
-        logotipo HD real do cliente.
-      */}
+
+      {/* Marca d'agua: so o SIMBOLO, reto e centralizado. O logotipo inteiro,
+          girado, lia como placeholder de gerador. Recortado do logo HD real. */}
       <Image
         src="/marca/simbolo-serra-branco.png"
         alt=""
@@ -85,142 +45,61 @@ export function Depoimentos() {
         className="pointer-events-none absolute top-1/2 left-1/2 w-[34rem] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-[0.045]"
       />
 
-      <div className="relative mx-auto max-w-[76rem] px-5 text-center" data-revela>
-        <Rotulo claro>
-          <IconeGoogle className="size-4 shrink-0" />
-          Avaliações públicas no Google
-        </Rotulo>
-        <TituloCine className="mx-auto max-w-[20ch] text-t2 text-white">
-          Quem já passou por isso conta melhor
-        </TituloCine>
-        <p className="mx-auto mt-5 max-w-[58ch] text-lead text-serra-100">
-          Copiadas na íntegra, sem corte e sem retoque. Quase todas fazem
-          questão de dizer o nome de quem atendeu.
-        </p>
-      </div>
+      <div className="relative mx-auto max-w-[76rem] px-5" data-revela>
+        <div className="text-center">
+          <Rotulo claro>
+            <IconeGoogle className="size-4 shrink-0" />
+            Avaliações públicas no Google
+          </Rotulo>
+          <TituloCine className="mx-auto max-w-[20ch] text-t2 text-white">
+            Quem já passou por isso conta melhor
+          </TituloCine>
+          <p className="mx-auto mt-5 max-w-[58ch] text-lead text-serra-100">
+            As avaliações ficam no Google, onde são de quem escreveu. Aqui está o que elas repetem,
+            e o caminho para ler todas por conta própria.
+          </p>
 
-      {/* Seta em cada borda, tres cartoes por vez, sem autoplay. */}
-      <div className="relative mx-auto mt-12 max-w-[84rem] px-4 md:px-16">
-        <button
-          type="button"
-          onClick={() => irPara(pagina - 1)}
-          disabled={pagina === 0}
-          aria-label="Depoimentos anteriores"
-          className="seta absolute top-1/2 left-1 z-10 -translate-y-1/2 md:left-3"
-        >
-          <IconeSeta className="size-5 rotate-180" />
-        </button>
+          {GOOGLE.notaConfirmada ? (
+            <p className="mt-8 inline-flex items-baseline gap-3 rounded-serra-lg border border-white/15 bg-white/[0.06] px-6 py-4">
+              <span className="numerais font-display text-[2.75rem] leading-none font-extrabold text-white">
+                {GOOGLE.nota.toLocaleString("pt-BR", { minimumFractionDigits: 1 })}
+              </span>
+              <span className="text-[0.9375rem] text-serra-100">
+                de 5 no Google
+                {GOOGLE.avaliacoes ? (
+                  <span className="numerais"> · {GOOGLE.avaliacoes} avaliações</span>
+                ) : null}
+              </span>
+            </p>
+          ) : null}
+        </div>
 
-        {/* A perspectiva mora no TRILHO, nao em cada cartao: assim os tres
-            visiveis dividem o mesmo ponto de fuga e leem como uma prateleira.
-            Com `perspective` por cartao, cada um vira o proprio mundo e a
-            fileira inteira fica torta. */}
-        <ul
-          ref={trilho}
-          className="trilho palco3d grid snap-x snap-mandatory grid-flow-col gap-5 overflow-x-auto pt-2 pb-4 [grid-auto-columns:100%] sm:[grid-auto-columns:calc(50%-0.625rem)] lg:[grid-auto-columns:calc(33.333%-0.834rem)]"
-          aria-label="Depoimentos de clientes no Google"
-        >
-          {DEPOIMENTOS.map((d, i) => (
-            <li
-              key={d.slug}
-              className="depo-entra relevo flex snap-start"
-              data-giro="5"
-              style={{ ["--i" as string]: i % 3 }}
-            >
-              <Cartao d={d} />
+        <ul className="mt-14 grid gap-5 md:grid-cols-3">
+          {TEMAS.map((t, i) => (
+            <li key={t.titulo} className="item-cascata flex" style={{ ["--i" as string]: i }}>
+              <article className="cartao-cine holofote holofote-escuro aro-luz relative flex w-full flex-col rounded-serra-xl border border-white/12 bg-white/[0.05] p-7 md:p-8">
+                <h3 className="font-display text-[1.125rem] font-bold text-white">{t.titulo}</h3>
+                <p className="mt-3 text-[0.9375rem] leading-relaxed text-serra-100">{t.texto}</p>
+              </article>
             </li>
           ))}
         </ul>
 
-        <button
-          type="button"
-          onClick={() => irPara(pagina + 1)}
-          disabled={pagina >= paginas - 1}
-          aria-label="Próximos depoimentos"
-          className="seta absolute top-1/2 right-1 z-10 -translate-y-1/2 md:right-3"
-        >
-          <IconeSeta className="size-5" />
-        </button>
-      </div>
-
-      <div className="relative mx-auto mt-8 flex max-w-[76rem] flex-wrap items-center justify-center gap-3 px-5">
-        {Array.from({ length: paginas }).map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            aria-label={`Ir para a página ${i + 1} de depoimentos`}
-            aria-current={i === pagina}
-            onClick={() => irPara(i)}
-            className={`h-2.5 rounded-full transition-all duration-300 ${
-              i === pagina ? "w-8 bg-white" : "w-2.5 bg-white/35 hover:bg-white/60"
-            }`}
-          />
-        ))}
+        <div className="mt-11 text-center">
+          <a
+            href={GOOGLE.perfil}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ima varre vidro-escuro group inline-flex min-h-[3.25rem] items-center gap-3 rounded-serra border border-white/25 px-7 text-[1.0625rem] font-semibold text-white transition-[transform,border-color,background-color] duration-300 hover:-translate-y-0.5 hover:border-white/50 hover:bg-white/15"
+          >
+            <span className="flex size-6 items-center justify-center rounded-full bg-white">
+              <IconeGoogle className="size-4 shrink-0" />
+            </span>
+            Ler as avaliações no Google
+            <IconeSeta className="size-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+          </a>
+        </div>
       </div>
     </section>
-  );
-}
-
-function Cartao({ d }: { d: Depoimento }) {
-  return (
-    <a
-      href={d.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="depo-cartao group relative flex w-full flex-col overflow-hidden rounded-serra-xl bg-white p-7 shadow-alta md:p-8"
-    >
-      {/* Fio de cor que corre no topo do cartao ao passar o ponteiro. */}
-      <span aria-hidden className="depo-fio" />
-      {/* Brilho especular que corre com a inclinacao. E o que diz "isto tem
-          superficie" em vez de "isto girou". */}
-      <span aria-hidden className="relevo-luz" />
-      {/* O depoimento mais longo tem 3x o tamanho do mais curto e esticava os
-          tres cartoes da pagina. O corte deixa os curtos inteiros e so encurta
-          os dois maiores, que continuam abrindo completos no Google. */}
-      <p className="aspa relative line-clamp-[11] flex-1 text-[1.0625rem] leading-relaxed text-corpo">
-        {d.texto}
-      </p>
-
-      {/* A assinatura sobe no eixo Z: e o pedaco que precisa saltar quando o
-          cartao inclina, porque e nele que mora a prova (nome, nota, Google). */}
-      <div className="relevo-frente relative mt-6 flex items-center gap-3.5 border-t border-linha pt-5">
-        <Image
-          src={d.foto}
-          alt=""
-          width={52}
-          height={52}
-          sizes="52px"
-          className="size-13 shrink-0 rounded-full bg-pedra-200 object-cover ring-2 ring-serra-100"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate font-display text-[1.0625rem] font-bold text-tinta">
-            {d.autor}
-          </p>
-          <p className="mt-0.5 flex items-center gap-2">
-            <Estrelas nota={d.estrelas} />
-            <span className="text-[0.8125rem] text-pedra-600">{d.data}</span>
-          </p>
-        </div>
-        <IconeGoogle className="size-5 shrink-0 opacity-70 transition-opacity group-hover:opacity-100" />
-      </div>
-    </a>
-  );
-}
-
-function Estrelas({ nota }: { nota: number }) {
-  return (
-    <span className="inline-flex gap-0.5" role="img" aria-label={`${nota} de 5 estrelas`}>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <svg
-          key={i}
-          viewBox="0 0 20 20"
-          className={`size-[0.9375rem] ${i < nota ? "text-ouro" : "text-pedra-400"}`}
-          fill="currentColor"
-          aria-hidden
-        >
-          <path d="M10 1.6l2.47 5.28 5.53.73-4.08 3.9 1.05 5.62L10 14.42l-4.97 2.71 1.05-5.62L2 7.61l5.53-.73z" />
-        </svg>
-      ))}
-    </span>
   );
 }

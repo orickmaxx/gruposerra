@@ -94,9 +94,11 @@ STORY: quem chega em luto acha o telefone sem procurar; quem e associado tira a 
 pesquisa entende os 20 itens inclusos antes de falar com vendedor.
 FIRST VIEWPORT: faixa 24h no topo com o telefone; malha de luz azul e ciano; titulo grande em Manrope,
 as 8 unidades como prova de proximidade e as tres acoes rapidas em cartoes de vidro.
-SIGNATURE: (1) carrossel de 9 depoimentos reais do Google com foto, seta, marcador, autoplay e pausa
-visivel, que arrasta no dedo; (2) o site pergunta a localizacao e ja escolhe a unidade mais perto,
-mostrando endereco e os dois telefones, com botao para ver as outras 7.
+SIGNATURE: (1) o obituario com Open Graph por falecido: o link que a familia manda no WhatsApp chega
+com nome, periodo de vida, data, horario e unidade, contra o link pelado do site antigo; (2) o site
+pergunta a localizacao e ja escolhe a unidade mais perto, mostrando endereco e os dois telefones.
+NOTA 16/09/2026: a assinatura (1) era o carrossel de 9 depoimentos do Google com nome e foto. Saiu
+por falta de autorizacao de uso de imagem, nao por design. Ver data/depoimentos.ts.
 COR: azul da marca no institucional, laranja vivo so no Clube de Beneficios (a unica secao alegre de
 um site de funeraria), verde da propria marca WhatsApp no botao flutuante com pulso.
 FORM: candidato canon (saida padrao), seed 3cf85566, regua = Zelo, Flamboyant e Parque das Flores.
@@ -114,8 +116,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* Consent Mode v2: tudo NEGADO por padrao. Precisa rodar antes de
             qualquer tag, por isso vai inline aqui e nao num componente. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_PADRAO_NEGADO }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* ⛔ NÃO REPONHA OS `preconnect` PARA O GOOGLE FONTS. Eles estavam
+            aqui e não serviam para nada: `next/font` baixa Manrope e Inter no
+            build e serve os dois `.woff2` do próprio domínio, em
+            `/_next/static/media`. Nenhuma requisição sai para `fonts.gstatic.com`
+            nem para `fonts.googleapis.com` em momento algum.
+            O que os dois faziam era abrir DNS e TLS com o Google em toda visita,
+            antes de qualquer consentimento, sem trazer um byte de volta: custo
+            de rede puro e um contato com terceiro que a LGPD não precisa ter. */}
       </head>
       <body className="flex min-h-dvh flex-col bg-white">
         <div hidden dangerouslySetInnerHTML={{ __html: `<!--${CONTRATO}-->` }} />

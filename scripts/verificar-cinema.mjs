@@ -194,18 +194,24 @@ ok(
   `${arrEsteira.antes.toFixed(0)} -> ${arrEsteira.depois.toFixed(0)}`
 );
 
-/* 10. DEPOIMENTOS: o trilho tambem se pega, e arrastar NAO pode navegar.
-   Cada cartao e um link para o Google. Um arrasto de 200px que termina em
-   clique abriria uma aba nova no meio do gesto, que e o jeito classico de
-   este efeito estragar a pagina. */
-const trilhoDepo = p.locator("#depoimentos ul.trilho").first();
+/* 10. LINHA DO TEMPO: o trilho tambem se pega, e arrastar NAO pode navegar.
+   Um arrasto de 200px que termina em clique navegaria no meio do gesto, que e
+   o jeito classico de este efeito estragar a pagina.
+
+   ⚠️ ESTE TESTE APONTAVA PARA O CARROSSEL DE DEPOIMENTOS, que foi removido em
+   16/09/2026 por falta de autorizacao de uso de nome e imagem (ver
+   data/depoimentos.ts). A mecanica testada aqui (useArrastar + palco3d +
+   relevo) e a mesma, e a linha do tempo e agora o unico trilho arrastavel com
+   relevo da home. Repontar em vez de apagar: sem isso, o arrasto e o giro 3D
+   ficariam sem nenhuma checagem. */
+const trilhoDepo = p.locator("#historia ol.trilho").first();
 await trilhoDepo.scrollIntoViewIfNeeded();
 await p.waitForTimeout(500);
 const urlAntes = p.url();
 const arrDepo = await arrastar(trilhoDepo, -300);
 await p.waitForTimeout(500);
 ok(
-  "trilho de depoimentos se deixa arrastar",
+  "trilho da linha do tempo se deixa arrastar",
   arrDepo.depois > arrDepo.antes + 80,
   `${arrDepo.antes.toFixed(0)} -> ${arrDepo.depois.toFixed(0)}`
 );
@@ -217,7 +223,7 @@ ok("arrastar sobre o cartao nao navega", p.url() === urlAntes && ctx.pages().len
    acerta nada. */
 await trilhoDepo.evaluate((el) => (el.scrollLeft = 0));
 await p.waitForTimeout(400);
-const cartao3d = p.locator("#depoimentos li.relevo").first();
+const cartao3d = p.locator("#historia li.relevo").first();
 const cx3d = await cartao3d.boundingBox();
 await p.mouse.move(cx3d.x + cx3d.width * 0.85, cx3d.y + cx3d.height * 0.2);
 await p.waitForTimeout(260);
